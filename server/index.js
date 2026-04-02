@@ -5,7 +5,6 @@ const cors = require("cors");
 const axios = require("axios"); 
 
 // --- MODELS ---
-// Ensure these match your file names exactly (case-sensitive for Linux/Render)
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal'); 
 const PublicMessageModel = require('./models/Message');
@@ -13,16 +12,22 @@ const PublicMessageModel = require('./models/Message');
 const app = express();
 app.use(express.json());
 
-// --- CORS CONFIGURATION ---
-// This allow-list ensures your local development and future deployed frontend can access the API
+// --- SAFE MODE CORS CONFIGURATION ---
+// This allows ANY origin to connect temporarily to fix the "CORS Policy" block
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], 
+    origin: true, 
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 
+// --- HEALTH CHECK ROUTE ---
+// Visit https://still-csmi.onrender.com/ in your browser. 
+// If you see this message, the server is working perfectly!
+app.get("/", (req, res) => {
+    res.send("Server is alive and reaching the internet!");
+});
+
 // --- DATABASE CONNECTION ---
-// Pulls the connection string from your Render Environment Variables
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
@@ -47,7 +52,7 @@ app.get("/music-search", async (req, res) => {
     }
 });
 
-// --- PUBLIC MESSAGES (SEND A SONG) ---
+// --- PUBLIC MESSAGES ---
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
@@ -62,7 +67,6 @@ app.post("/api/messages", async (req, res) => {
         const newMessage = await PublicMessageModel.create(req.body);
         res.status(201).json(newMessage);
     } catch (err) {
-        console.error("Post Message Error:", err.message);
         res.status(500).json(err);
     }
 });
@@ -70,31 +74,10 @@ app.post("/api/messages", async (req, res) => {
 // --- JOURNAL LOGIC ---
 app.post("/api/journals", async (req, res) => {
     try {
-        console.log("Saving Entry for:", req.body.username);
         const newJournal = await JournalModel.create(req.body);
         res.status(201).json(newJournal);
     } catch (err) {
-        console.error("Save Journal Error:", err.message);
         res.status(500).json({ error: "Failed to save journal", details: err.message });
-    }
-});
-
-app.get("/api/journals", async (req, res) => {
-    try {
-        const journals = await JournalModel.find().sort({ createdAt: -1 });
-        res.json(journals);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch journals" });
-    }
-});
-
-app.get("/api/journals/:userId", async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const journals = await JournalModel.find({ userId: userId }).sort({ createdAt: -1 });
-        res.json(journals);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch user journals" });
     }
 });
 
@@ -136,7 +119,6 @@ app.post('/register', (req, res) => {
 });
 
 // --- SERVER START ---
-// PORT is provided by Render env or defaults to 3001 for local
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
