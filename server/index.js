@@ -5,7 +5,7 @@ const cors = require("cors");
 const axios = require("axios"); 
 
 // --- MODELS ---
-const UsersModel = require('./models/users');
+const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal'); 
 const PublicMessageModel = require('./models/Message');
 
