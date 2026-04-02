@@ -1,18 +1,23 @@
-const express = require("express")
-const mongoose = require('mongoose')
-const cors = require("cors")
-const axios = require("axios") 
+require('dotenv').config(); // MUST be the very first line
+const express = require("express");
+const mongoose = require('mongoose');
+const cors = require("cors");
+const axios = require("axios"); 
 
 // --- MODELS ---
-const UsersModel = require('./models/users')
-const JournalModel = require('./models/Journal') 
-const PublicMessageModel = require('./models/Message'); // Moved to top
+const UsersModel = require('./models/users');
+const JournalModel = require('./models/Journal'); 
+const PublicMessageModel = require('./models/Message');
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-mongoose.connect("mongodb://localhost:27017/users")
+// --- DATABASE CONNECTION ---
+// Pulls the connection string from your .env file
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("Connected to MongoDB Atlas!"))
+    .catch(err => console.error("MongoDB Connection Error:", err));
 
 // --- FIXED ITUNES SEARCH LOGIC ---
 app.get("/music-search", async (req, res) => {
@@ -20,12 +25,11 @@ app.get("/music-search", async (req, res) => {
     try {
         const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
         
-        // UPDATED: Mapping keys to match Home.js expectations (name, artist, albumArt)
         const tracks = response.data.results.map(track => ({
             id: track.trackId,
-            name: track.trackName,         // Changed from trackName to name
-            artist: track.artistName,      // Changed from artistName to artist
-            albumArt: track.artworkUrl100.replace('100x100', '400x400'), // Changed from artworkUrl100 to albumArt
+            name: track.trackName,
+            artist: track.artistName,
+            albumArt: track.artworkUrl100.replace('100x100', '400x400'),
             previewUrl: track.previewUrl
         }));
         res.json(tracks);
@@ -115,14 +119,17 @@ app.post("/login", (req, res) => {
             res.json("No record existed")
         }
     })
-})
+});
 
 app.post('/register', (req, res) => {
     UsersModel.create(req.body)
     .then(users => res.json(users))
     .catch(err => res.json(err))
-})
+});
 
-app.listen(3001, () => {
-    console.log("server is running on port 3001")
-})
+// --- SERVER START ---
+// PORT is flexible for deployment (Render) or local testing (3001)
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
