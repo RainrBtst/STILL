@@ -1,0 +1,159 @@
+/* Unique container to avoid Home.jsx conflicts */
+.archive-main {
+    padding: 40px 6%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: transparent;
+    animation: fadeInArchive 0.6s ease-out;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}
+
+@keyframes fadeInArchive {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.archive-header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+}
+
+/* MATCHES LOGOUT BUTTON: Outline pill style */
+.archive-back-btn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 25px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}
+
+.archive-back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    /* MATCHED: Hover color from Home.css logout button */
+    border-color: white;
+    color: white;
+}
+
+.archive-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin: 10px 0;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}
+
+/* FIXED: Font color changed to Theme Yellow for a clean look */
+.archive-subtitle {
+    /* UPDATED: Changed from Green to Yellow #FAEF5D */
+    color: #FAEF5D;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}
+
+.archive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.archive-card {
+    background: #111;
+    border: 1px solid #222;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.4s ease;
+}
+
+.archive-card:hover {
+    transform: translateY(-5px);
+    /* UPDATED: Changed from Green to Yellow #FAEF5D to match Home.css card hover */
+    border-color: #FAEF5D;
+}
+
+.archive-album-art {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    /* EDITED: Removed grayscale(100%) to keep natural colors */
+    filter: none;
+    transition: 0.5s ease;
+    position: relative;
+}
+
+.archive-card:hover .archive-album-art {
+    /* EDITED: Ensure filter remains off on hover */
+    filter: none;
+}
+
+.archive-overlay {
+    position: absolute;
+    inset: 0;
+    /* UPDATED: Changed background from Green to Yellow #FAEF5D with opacity */
+    background: rgba(250, 239, 93, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000; /* Adjusted text to black for readability on bright yellow overlay */
+    font-weight: 800;
+    letter-spacing: 3px;
+    opacity: 0;
+    transition: 0.3s;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}
+
+.archive-card:hover .archive-overlay {
+    opacity: 1;
+}
+
+.archive-content {
+    padding: 20px;
+}
+
+.archive-date-text {
+    color: white;
+    font-size: 1.2rem;
+    /* EDITED: Changed from serif to Inter to match Home.css */
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+}
+
+.archive-song-metadata {
+    margin-top: 10px;
+    /* MATCHED: Subtitle gray from Home.css */
+    color: #a7a7a7;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}
+
+.archive-empty-msg {
+    grid-column: 1/-1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 100px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* MATCHED: Font family from Home.css */
+    font-family: 'Inter', sans-serif;
+}

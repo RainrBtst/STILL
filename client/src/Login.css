@@ -1,0 +1,125 @@
+/* =========================================
+   LOGIN.CSS - COMPACT DARK THEME
+   ========================================= */
+
+.login-full-page {
+    background-color: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    margin: 0;
+}
+
+.login-content-wrapper {
+    width: 100%;
+    /* REDUCED from 800px to 500px for a sleeker look */
+    max-width: 500px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-logo-large {
+    color: #FAEF5D;
+    font-weight: 900;
+    letter-spacing: -3px;
+    font-size: 3.5rem !important;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+/* Card styling - Narrowed down */
+.login-wide-card {
+    background: #1e1e1e !important;
+    /* REDUCED horizontal padding from 5rem to 2.5rem */
+    padding: 3.5rem 2.5rem !important; 
+    border-radius: 20px;
+    border: 1px solid #333;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.login-header {
+    font-size: 2.2rem !important;
+    font-weight: 800;
+    margin-bottom: 0.5rem !important;
+    letter-spacing: -1px;
+    color: #fff;
+}
+
+.login-sub {
+    color: #a7a7a7;
+    font-size: 1rem;
+    margin-bottom: 2.5rem !important;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 100%;
+}
+
+.login-input-group {
+    background: #282828 !important;
+    padding: 1rem 1.2rem !important;
+    border-radius: 12px !important;
+    border: 1px solid transparent;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+.login-input-group:focus-within {
+    border-color: #FAEF5D;
+}
+
+.login-input-group input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Button - Matching the + START TODAY'S ENTRY style */
+.login-submit-btn {
+    background-color: #FAEF5D !important;
+    color: #000 !important;
+    padding: 1rem !important;
+    border-radius: 50px !important;
+    font-weight: 900 !important;
+    font-size: 1rem !important;
+    margin-top: 1rem;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-submit-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(250, 239, 93, 0.4);
+}
+
+.login-register-link {
+    margin-top: 2rem;
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: #FAEF5D !important;
+    text-transform: uppercase;
+    transition: color 0.3s;
+}
+
+.login-register-link:hover {
+    color: #fff !important;
+}

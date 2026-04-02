@@ -1,0 +1,118 @@
+/* =========================================
+   SIGNUP.CSS - MATCHES THE "STILL" THEME
+   ========================================= */
+
+.login-full-page {
+    background-color: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    margin: 0;
+    font-family: 'Inter', sans-serif; /* Or your preferred bold font */
+}
+
+.login-content-wrapper {
+    width: 100%;
+    max-width: 500px; /* Kept narrow as requested */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-logo-large {
+    color: #FAEF5D;
+    font-weight: 900;
+    letter-spacing: -3px;
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+.login-wide-card {
+    background: #1e1e1e;
+    padding: 3.5rem 2.5rem;
+    border-radius: 20px;
+    border: 1px solid #333;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.login-header {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -1px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.login-sub {
+    color: #a7a7a7;
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.login-input-group {
+    background: #282828;
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.login-input-group:focus-within {
+    border-color: #FAEF5D;
+}
+
+.login-input-group input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.login-submit-btn {
+    background-color: #FAEF5D;
+    color: #000;
+    padding: 1rem;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-submit-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(250, 239, 93, 0.4);
+}
+
+.login-register-link {
+    margin-top: 2rem;
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: #FAEF5D;
+    text-transform: uppercase;
+}
+
+.login-register-link:hover {
+    color: #fff;
+}

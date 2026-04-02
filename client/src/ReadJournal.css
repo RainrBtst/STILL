@@ -1,0 +1,187 @@
+.read-journal-overlay {
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3000;
+    background-color: #1a1a1a;
+}
+
+.read-overlay-content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+
+.read-modal-nav {
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 2rem;
+}
+
+.read-back-btn {
+    background: #2a2a2a;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.read-hero-text {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.read-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.1rem;
+}
+
+/* --- THE PAPER CARD --- */
+.read-paper-card {
+    background: #f4f1ea;
+    color: #1a1a1a;
+    border-radius: 40px;
+    padding: 60px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.read-music-section {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.read-modal-art {
+    width: 150px;
+    height: 150px;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.read-label {
+    font-size: 0.7rem;
+    color: #888;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.read-song-name {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 5px 0;
+}
+
+.read-artist-name {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* PLAY PREVIEW BUTTON - Match Journal.jsx style but for Paper Mode */
+.read-play-preview-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.read-body-content {
+    margin-top: 30px;
+}
+
+.read-entry-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.read-entry-text {
+    font-family: 'Georgia', serif;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #222;
+    white-space: pre-wrap; /* Keeps paragraphs preserved */
+}
+
+.read-page-footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 0.7rem;
+    color: #aaa;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.read-sparkle {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    color: rgba(255,255,255,0.2);
+    font-size: 2rem;
+}
+
+/* Container for the footer and arrows */
+.read-pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.read-nav-arrow {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.read-nav-arrow:hover {
+    transform: scale(1.1);
+    background: #333;
+}
+
+.read-nav-arrow.hidden {
+    visibility: hidden; /* Keeps spacing consistent but hides the button */
+}
+
+.read-page-footer {
+    font-size: 0.75rem;
+    color: #aaa;
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Ensure the text area has a consistent height for long entries */
+.read-body-content {
+    min-height: 300px;
+}
