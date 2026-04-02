@@ -69,7 +69,7 @@ function Home() {
 
             try {
                 // Use the new username-based route we added to index.js
-                const res = await axios.get(`http://localhost:3001/api/journals/user/${username}`);
+                const res = await axios.get(`https://still-csmi.onrender.com/api/journals/user/${username}`);
                 console.log("DEBUG: Fetched Entries Data ->", res.data); // ADDED: Log to check data structure
                 setEntries(res.data);
             } catch (err) {
@@ -127,7 +127,7 @@ function Home() {
 
         try {
             // Save to MongoDB via Backend
-            const response = await axios.post('http://localhost:3001/api/journals', newEntryData);
+            const response = await axios.post('https://still-csmi.onrender.com/api/journals', newEntryData);
             
             // Add the returned saved entry to the top of the list
             setEntries([response.data, ...entries]);
@@ -143,7 +143,7 @@ function Home() {
         const fetchSongs = async () => {
             if (searchQuery.length > 2) {
                 try {
-                    const res = await axios.get(`http://localhost:3001/music-search?query=${searchQuery}`);
+                    const res = await axios.get(`https://still-csmi.onrender.com/music-search?query=${searchQuery}`);
                     setResults(res.data);
                 } catch (err) {
                     console.error("Search failed", err);

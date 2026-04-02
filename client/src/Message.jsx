@@ -13,7 +13,7 @@ const Message = ({ isOpen, onClose, formData, handleInputChange, handleSubmit })
             if (query.length > 2) {
                 setIsLoading(true);
                 try {
-                    const res = await axios.get(`http://localhost:3001/music-search?query=${query}`);
+                    const res = await axios.get(`https://still-csmi.onrender.com/music-search?query=${query}`);
                     setSearchResults(res.data);
                 } catch (err) {
                     console.error("Search error:", err);

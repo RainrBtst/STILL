@@ -11,7 +11,7 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/login', { email, password })
+        axios.post('https://still-csmi.onrender.com/login', { email, password })
             .then(result => {
                 if (result.data.status === "Success") {
                     localStorage.setItem("currentUserId", result.data.userId);

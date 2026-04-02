@@ -22,7 +22,7 @@ function SendSong() {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const res = await axios.get('http://localhost:3001/api/messages');
+                const res = await axios.get('https://still-csmi.onrender.com/api/messages');
                 setMessages(res.data);
             } catch (err) {
                 console.error("Error fetching messages:", err);
@@ -87,7 +87,7 @@ function SendSong() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/api/messages', formData);
+            const response = await axios.post('https://still-csmi.onrender.com/api/messages', formData);
             setMessages([response.data, ...messages]);
             setIsModalOpen(false);
             setFormData({ recipient: '', message: '', song: '', albumArt: '', previewUrl: '' });
