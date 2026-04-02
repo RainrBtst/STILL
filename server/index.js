@@ -5,21 +5,29 @@ const cors = require("cors");
 const axios = require("axios"); 
 
 // --- MODELS ---
+// Ensure these match your file names exactly (case-sensitive for Linux/Render)
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal'); 
 const PublicMessageModel = require('./models/Message');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// --- CORS CONFIGURATION ---
+// This allow-list ensures your local development and future deployed frontend can access the API
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"], 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
 
 // --- DATABASE CONNECTION ---
-// Pulls the connection string from your .env file
+// Pulls the connection string from your Render Environment Variables
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- FIXED ITUNES SEARCH LOGIC ---
+// --- ITUNES SEARCH LOGIC ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
@@ -128,7 +136,7 @@ app.post('/register', (req, res) => {
 });
 
 // --- SERVER START ---
-// PORT is flexible for deployment (Render) or local testing (3001)
+// PORT is provided by Render env or defaults to 3001 for local
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
