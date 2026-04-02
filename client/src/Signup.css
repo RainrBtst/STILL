@@ -40,6 +40,10 @@
     box-shadow: 0 15px 35px rgba(0,0,0,0.5);
 }
 
+.login-wide-card:hover {
+    border-color: #FAEF5D;
+}
+
 .login-header {
     font-size: 2.2rem;
     font-weight: 800;
