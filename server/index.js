@@ -3,30 +3,25 @@ const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer"); // Added for OTP
 
 // --- MODELS ---
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal');
 const PublicMessageModel = require('./models/Message');
-const OTPModel = require('./models/OTP'); 
+const OTPModel = require('./models/OTP'); // Added for OTP
 
 const app = express();
 app.use(express.json());
 
-// --- CORS CONFIGURATION ---
+// --- SAFE MODE CORS CONFIGURATION ---
 app.use(cors({
     origin: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 
-// --- DATABASE CONNECTION ---
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("Connected to MongoDB Atlas!"))
-    .catch(err => console.error("MongoDB Connection Error:", err));
-
-// --- NODEMAILER CONFIG ---
+// --- NODEMAILER CONFIG (Added for OTP) ---
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -35,10 +30,97 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// --- HEALTH CHECK ---
-app.get("/", (req, res) => res.send("Server is alive!"));
+// --- HEALTH CHECK ROUTE ---
+app.get("/", (req, res) => {
+    res.send("Server is alive and reaching the internet!");
+});
 
-// --- 1. AUTH & OTP LOGIC ---
+// --- DATABASE CONNECTION ---
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("Connected to MongoDB Atlas!"))
+    .catch(err => console.error("MongoDB Connection Error:", err));
+
+// --- ITUNES SEARCH LOGIC (Your Original) ---
+app.get("/music-search", async (req, res) => {
+    const { query } = req.query;
+    try {
+        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
+        
+        const tracks = response.data.results.map(track => ({
+            id: track.trackId,
+            name: track.trackName,
+            artist: track.artistName,
+            albumArt: track.artworkUrl100.replace('100x100', '400x400'),
+            previewUrl: track.previewUrl
+        }));
+        res.json(tracks);
+    } catch (err) {
+        console.error("Music Search Error:", err.message);
+        res.status(500).json({ error: "Music search failed" });
+    }
+});
+
+// --- PUBLIC MESSAGES (Your Original) ---
+app.get("/api/messages", async (req, res) => {
+    try {
+        const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+app.post("/api/messages", async (req, res) => {
+    try {
+        const newMessage = await PublicMessageModel.create(req.body);
+        res.status(201).json(newMessage);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+// --- JOURNAL LOGIC (Your Original) ---
+app.post("/api/journals", async (req, res) => {
+    try {
+        const newJournal = await JournalModel.create(req.body);
+        res.status(201).json(newJournal);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to save journal", details: err.message });
+    }
+});
+
+app.get("/api/journals/user/:username", async (req, res) => {
+    try {
+        const { username } = req.params;
+        const journals = await JournalModel.find({ username: username }).sort({ createdAt: -1 });
+        res.json(journals);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch journals" });
+    }
+});
+
+// --- AUTH (Your Original + OTP) ---
+app.post("/login", (req, res) => {
+    const {email, password} = req.body;
+    UsersModel.findOne({email: email})
+    .then(user => {
+        if(user) {
+            if(user.password === password) {
+                res.json({
+                    status: "Success",
+                    userId: user._id,
+                    username: user.name
+                })
+            } else {
+                res.json("The password is incorrect")
+            }
+        } else {
+            res.json("No record existed")
+        }
+    })
+});
+
+// New OTP Registration Logic
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -48,18 +130,15 @@ app.post('/register', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'STILL - Your Verification Code',
-            html: `<div style="background:#121212; color:white; padding:20px; text-align:center;">
-                    <h1 style="color:#FAEF5D;">STILL</h1>
-                    <p>Your 6-digit verification code is:</p>
-                    <h2 style="letter-spacing:5px; color:#FAEF5D;">${otp}</h2>
-                   </div>`
+            html: `<h1>STILL</h1><p>Your code is: <b>${otp}</b></p>`
         });
         res.json({ status: "OTP_SENT" });
     } catch (err) {
-        res.status(500).json({ error: "Failed to send verification email" });
+        res.status(500).json({ error: "Failed to send OTP" });
     }
 });
 
+// Verify OTP Logic
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
@@ -80,75 +159,8 @@ app.post("/verify-otp", async (req, res) => {
     }
 });
 
-app.post("/login", (req, res) => {
-    const {email, password} = req.body;
-    UsersModel.findOne({email: email})
-    .then(user => {
-        if(user && user.password === password) {
-            res.json({ status: "Success", userId: user._id, username: user.name });
-        } else {
-            res.json("Invalid credentials");
-        }
-    });
-});
-
-// --- 2. MUSIC SEARCH (FIXES 500 ERROR) ---
-app.get("/music-search", async (req, res) => {
-    const { query } = req.query;
-    try {
-        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`, {
-            headers: { 'User-Agent': 'Mozilla/5.0' }
-        });
-        const tracks = (response.data.results || []).map(track => ({
-            id: track.trackId,
-            name: track.trackName,
-            artist: track.artistName,
-            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '',
-            previewUrl: track.previewUrl
-        }));
-        res.json(tracks);
-    } catch (err) {
-        res.status(500).json({ error: "Music search failed" });
-    }
-});
-
-// --- 3. PUBLIC MESSAGES (FIXES 404 ERROR) ---
-app.get("/api/messages", async (req, res) => {
-    try {
-        const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
-        res.json(messages);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
-app.post("/api/messages", async (req, res) => {
-    try {
-        const newMessage = await PublicMessageModel.create(req.body);
-        res.status(201).json(newMessage);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
-// --- 4. JOURNAL LOGIC (FIXES 404 ERROR) ---
-app.get("/api/journals/user/:username", async (req, res) => {
-    try {
-        const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
-        res.json(journals);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch journals" });
-    }
-});
-
-app.post("/api/journals", async (req, res) => {
-    try {
-        const newJournal = await JournalModel.create(req.body);
-        res.status(201).json(newJournal);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to save journal" });
-    }
-});
-
+// --- SERVER START ---
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
