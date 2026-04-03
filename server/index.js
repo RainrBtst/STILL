@@ -34,7 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- MUSIC SEARCH (STABILIZED) ---
+// --- MUSIC SEARCH ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
@@ -43,19 +43,16 @@ app.get("/music-search", async (req, res) => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
             }
         });
-        
         const results = response.data.results || [];
         const tracks = results.map(track => ({
             id: track.trackId,
             name: track.trackName,
             artist: track.artistName,
-            // "?" check prevents 500 error for all users
             albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '',
             previewUrl: track.previewUrl
         }));
         res.json(tracks);
     } catch (err) {
-        console.error("Music Search Error:", err.message);
         res.status(500).json({ error: "Music search failed" });
     }
 });
@@ -90,25 +87,34 @@ app.get("/api/journals/user/:username", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to fetch journals" }); }
 });
 
-// --- AUTH & OTP ---
+// --- AUTH & LOGIN (UPDATED LOGIC) ---
 app.post("/login", (req, res) => {
-    const {email, password} = req.body;
-    UsersModel.findOne({email: email}).then(user => {
-        if(user && user.password === password) {
-            res.json({ status: "Success", userId: user._id, username: user.name });
-        } else { res.json("Invalid credentials"); }
-    });
+    const { email, password } = req.body;
+    UsersModel.findOne({ email: email })
+        .then(user => {
+            if (user) {
+                // If email is correct, check password
+                if (user.password === password) {
+                    res.json({ status: "Success", userId: user._id, username: user.name });
+                } else {
+                    // Password wrong, email right
+                    res.json("Incorrect password");
+                }
+            } else {
+                // Email wrong (no user found)
+                res.json("Invalid credential");
+            }
+        })
+        .catch(err => res.status(500).json(err));
 });
 
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
-        // NEW: Check if email exists first
         const existingUser = await UsersModel.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ error: "Your email is already verified" });
         }
-
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         await OTPModel.create({ email, otp, userData: { name, password } });
         await transporter.sendMail({
