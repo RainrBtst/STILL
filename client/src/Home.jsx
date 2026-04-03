@@ -99,6 +99,12 @@ function Home() {
 
     // --- NEW: FUNCTION TO STOP MUSIC AND OPEN JOURNAL ---
     const handleStartEntry = () => {
+        // --- ADDED VALIDATION ---
+        if (!selectedSong) {
+            alert("Search and choose a song first");
+            return;
+        }
+
         if (audioRef.current) {
             audioRef.current.pause(); // Stops the music
             audioRef.current.currentTime = 0; // Resets it to the beginning
