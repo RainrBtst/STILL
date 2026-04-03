@@ -84,7 +84,6 @@ function SendSong() {
         msg.recipient.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // UPDATED: Now chunking by 8 messages per row
     const chunkedRows = [];
     for (let i = 0; i < filteredMessages.length; i += 8) {
         chunkedRows.push(filteredMessages.slice(i, i + 8));
@@ -99,6 +98,7 @@ function SendSong() {
                 preload="auto"
             />
 
+            {/* RESTORED ORIGINAL MODAL DESIGN */}
             {playingMessage && (
                 <div className="ss-letter-overlay">
                     <button className="ss-close-letter" onClick={() => {
@@ -110,7 +110,8 @@ function SendSong() {
                         <h2 className="ss-letter-greeting">
                             Hello, <span className="ss-handwritten-name">{playingMessage.recipient}</span>
                         </h2>
-                        <p className="ss-letter-sub">There's someone sending you a song...</p>
+                        <p className="ss-letter-sub">There's someone sending you a song, they want you to hear this song that maybe you'll like :)</p>
+                        
                         <div className="ss-spotify-card">
                             <img src={playingMessage.albumArt} alt="" className="ss-spotify-art" />
                             <div className="ss-spotify-info">
@@ -120,12 +121,16 @@ function SendSong() {
                                         <div className="ss-mini-fill" style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}></div>
                                     </div>
                                     <button type="button" onClick={togglePlay} className="ss-mini-play">
-                                        {isPlaying ? "⏸" : "▶"}
+                                        {isPlaying ? (
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="black"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                        ) : (
+                                            <svg viewBox="0 0 24 24" width="20" height="20" fill="black"><path d="M8 5v14l11-7z"></path></svg>
+                                        )}
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <p className="ss-sender-label">MESSAGE FROM SENDER:</p>
+                        <p className="ss-sender-label">HERE'S A MESSAGE FROM THE SENDER:</p>
                         <div className="ss-handwritten-body">"{playingMessage.message}"</div>
                     </div>
                 </div>
