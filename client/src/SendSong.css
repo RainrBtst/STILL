@@ -64,7 +64,7 @@
     color: #777;
 }
 
-/* MARQUEE */
+/* MARQUEE CONTAINER */
 .ss-marquee-container {
     width: 100%;
     overflow: hidden;
@@ -72,6 +72,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-height: 400px;
 }
 
 .ss-marquee-row {
@@ -94,6 +95,12 @@
     justify-content: flex-start;
     gap: 8px;
     cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.ss-dark-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-5px);
 }
 
 .ss-card-label {
@@ -101,7 +108,6 @@
     color: #faef5d;
     text-transform: uppercase;
     font-weight: 700;
-    margin-bottom: 0;
 }
 
 .ss-card-text {
@@ -111,11 +117,9 @@
     line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0;
 }
 
 .ss-card-meta {
@@ -136,7 +140,36 @@
     object-fit: cover;
 }
 
-/* Animations - Both use 50s for identical speed */
+/* SEARCH RESULTS GRID */
+.ss-search-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 0 20px 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.ss-static-card {
+    margin-right: 0 !important;
+    width: 100% !important;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.ss-no-results {
+    color: #777;
+    text-align: center;
+    grid-column: 1 / -1;
+    margin-top: 40px;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Animations - Identical Speed */
 .ss-track-left { 
     display: flex; 
     animation: scrollLeft 50s linear infinite; 

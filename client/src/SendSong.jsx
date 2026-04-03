@@ -69,9 +69,7 @@ function SendSong() {
                 await audio.play();
                 setIsPlaying(true);
             } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error("Manual play failed:", err);
-                }
+                if (err.name !== 'AbortError') console.error("Manual play failed:", err);
             }
         } else {
             audio.pause();
@@ -98,7 +96,6 @@ function SendSong() {
         msg.recipient.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // LOGIC: Chunk messages into groups of 8
     const chunkedRows = [];
     for (let i = 0; i < filteredMessages.length; i += 8) {
         chunkedRows.push(filteredMessages.slice(i, i + 8));
@@ -136,7 +133,6 @@ function SendSong() {
                             <img src={playingMessage.albumArt} alt="" className="ss-spotify-art" />
                             <div className="ss-spotify-info">
                                 <h3>{playingMessage.song}</h3>
-                                
                                 <div className="ss-spotify-controls">
                                     <div className="ss-mini-progress">
                                         <div
@@ -144,12 +140,7 @@ function SendSong() {
                                             style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
                                         ></div>
                                     </div>
-                                    
-                                    <button
-                                        type="button"
-                                        onClick={togglePlay}
-                                        className="ss-mini-play"
-                                    >
+                                    <button type="button" onClick={togglePlay} className="ss-mini-play">
                                         {isPlaying ? (
                                             <svg viewBox="0 0 24 24" width="20" height="20" fill="black"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
                                         ) : (
@@ -161,9 +152,7 @@ function SendSong() {
                         </div>
 
                         <p className="ss-sender-label"> HERE'S A MESSAGE FROM THE SENDER:</p>
-                        <div className="ss-handwritten-body">
-                            "{playingMessage.message}"
-                        </div>
+                        <div className="ss-handwritten-body">"{playingMessage.message}"</div>
                     </div>
                 </div>
             )}
@@ -187,19 +176,23 @@ function SendSong() {
                 <div className="ss-alignment-wrapper">
                     <div className="ss-search-input-box">
                         <span className="ss-search-icon">🔍</span>
-                        <input type="text" placeholder="Search for names" className="ss-custom-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        <input 
+                            type="text" 
+                            placeholder="Search for names" 
+                            className="ss-custom-input" 
+                            value={searchTerm} 
+                            onChange={(e) => setSearchTerm(e.target.value)} 
+                        />
                     </div>
                 </div>
             </header>
 
             <div className="ss-marquee-container">
-                {chunkedRows.map((row, index) => (
-                    <div key={index} className="ss-marquee-row">
-                        {/* Alternate class for direction based on index */}
-                        <div className={index % 2 === 0 ? "ss-track-left" : "ss-track-right"}>
-                            {/* Duplicating the row for seamless continuous scrolling */}
-                            {[...row, ...row].map((item, i) => (
-                                <div key={i} className="ss-dark-card" onClick={() => setPlayingMessage(item)}>
+                {searchTerm ? (
+                    <div className="ss-search-results-grid">
+                        {filteredMessages.length > 0 ? (
+                            filteredMessages.map((item, i) => (
+                                <div key={i} className="ss-dark-card ss-static-card" onClick={() => setPlayingMessage(item)}>
                                     <span className="ss-card-label">TO: {item.recipient}</span>
                                     <p className="ss-card-text">"{item.message}"</p>
                                     <div className="ss-card-meta">
@@ -207,10 +200,29 @@ function SendSong() {
                                         {item.song}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            ))
+                        ) : (
+                            <p className="ss-no-results">No messages found for "{searchTerm}"</p>
+                        )}
                     </div>
-                ))}
+                ) : (
+                    chunkedRows.map((row, index) => (
+                        <div key={index} className="ss-marquee-row">
+                            <div className={index % 2 === 0 ? "ss-track-left" : "ss-track-right"}>
+                                {[...row, ...row].map((item, i) => (
+                                    <div key={i} className="ss-dark-card" onClick={() => setPlayingMessage(item)}>
+                                        <span className="ss-card-label">TO: {item.recipient}</span>
+                                        <p className="ss-card-text">"{item.message}"</p>
+                                        <div className="ss-card-meta">
+                                            {item.albumArt && <img src={item.albumArt} alt="" className="ss-meta-mini-art" />}
+                                            {item.song}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
 
             <Message isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} formData={formData} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
