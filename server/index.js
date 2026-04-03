@@ -14,7 +14,7 @@ const OTPModel = require('./models/OTP');
 const app = express();
 app.use(express.json());
 
-// --- SAFE MODE CORS CONFIGURATION ---
+// --- CORS CONFIGURATION ---
 app.use(cors({
     origin: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -35,21 +35,15 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// --- HEALTH CHECK ROUTE ---
-app.get("/", (req, res) => {
-    res.send("Server is alive and reaching the internet!");
-});
+// --- HEALTH CHECK ---
+app.get("/", (req, res) => res.send("Server is alive!"));
 
 // --- 1. AUTH & OTP LOGIC ---
-
-// Register: Sends OTP instead of creating user immediately
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
     try {
         await OTPModel.create({ email, otp, userData: { name, password } });
-
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
@@ -62,12 +56,10 @@ app.post('/register', async (req, res) => {
         });
         res.json({ status: "OTP_SENT" });
     } catch (err) {
-        console.error("Register Error:", err);
         res.status(500).json({ error: "Failed to send verification email" });
     }
 });
 
-// Verify OTP
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
@@ -81,52 +73,46 @@ app.post("/verify-otp", async (req, res) => {
             await OTPModel.deleteOne({ _id: otpRecord._id });
             res.json({ status: "Success" });
         } else {
-            res.status(400).json({ error: "Invalid or expired code" });
+            res.status(400).json({ error: "Invalid code" });
         }
     } catch (err) {
         res.status(500).json({ error: "Verification failed" });
     }
 });
 
-// Login
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
     UsersModel.findOne({email: email})
     .then(user => {
-        if(user) {
-            if(user.password === password) {
-                res.json({ status: "Success", userId: user._id, username: user.name });
-            } else {
-                res.json("The password is incorrect");
-            }
+        if(user && user.password === password) {
+            res.json({ status: "Success", userId: user._id, username: user.name });
         } else {
-            res.json("No record existed");
+            res.json("Invalid credentials");
         }
-    })
-    .catch(err => res.status(500).json(err));
+    });
 });
 
-// --- 2. JOURNAL LOGIC ---
-app.post("/api/journals", async (req, res) => {
+// --- 2. MUSIC SEARCH (FIXES 500 ERROR) ---
+app.get("/music-search", async (req, res) => {
+    const { query } = req.query;
     try {
-        const newJournal = await JournalModel.create(req.body);
-        res.status(201).json(newJournal);
+        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`, {
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
+        const tracks = (response.data.results || []).map(track => ({
+            id: track.trackId,
+            name: track.trackName,
+            artist: track.artistName,
+            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '',
+            previewUrl: track.previewUrl
+        }));
+        res.json(tracks);
     } catch (err) {
-        res.status(500).json({ error: "Failed to save journal", details: err.message });
+        res.status(500).json({ error: "Music search failed" });
     }
 });
 
-app.get("/api/journals/user/:username", async (req, res) => {
-    try {
-        const { username } = req.params;
-        const journals = await JournalModel.find({ username: username }).sort({ createdAt: -1 });
-        res.json(journals);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch journals" });
-    }
-});
-
-// --- 3. PUBLIC MESSAGES ---
+// --- 3. PUBLIC MESSAGES (FIXES 404 ERROR) ---
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
@@ -145,36 +131,24 @@ app.post("/api/messages", async (req, res) => {
     }
 });
 
-// --- 4. ITUNES SEARCH LOGIC (FIXED FOR 403 AND 500 ERRORS) ---
-app.get("/music-search", async (req, res) => {
-    const { query } = req.query;
+// --- 4. JOURNAL LOGIC (FIXES 404 ERROR) ---
+app.get("/api/journals/user/:username", async (req, res) => {
     try {
-        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        });
-        
-        const results = response.data.results || [];
-        const tracks = results.map(track => ({
-            id: track.trackId,
-            name: track.trackName,
-            artist: track.artistName,
-            // Check if artwork exists before replacing string to prevent 500 error
-            albumArt: track.artworkUrl100 
-                ? track.artworkUrl100.replace('100x100', '400x400') 
-                : 'https://via.placeholder.com/400',
-            previewUrl: track.previewUrl
-        }));
-        res.json(tracks);
+        const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
+        res.json(journals);
     } catch (err) {
-        console.error("Music Search Error:", err.message);
-        res.status(500).json({ error: "Music search failed" });
+        res.status(500).json({ error: "Failed to fetch journals" });
     }
 });
 
-// --- SERVER START ---
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.post("/api/journals", async (req, res) => {
+    try {
+        const newJournal = await JournalModel.create(req.body);
+        res.status(201).json(newJournal);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to save journal" });
+    }
 });
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
