@@ -2,20 +2,20 @@ require('dotenv').config();
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
-const axios = require("axios"); 
 const nodemailer = require("nodemailer");
 
-// Models
+// Models - Ensure these paths are correct
 const UsersModel = require('./models/Users');
-const OTPModel = require('./models/OTP'); // Import the new OTP model
-const JournalModel = require('./models/Journal'); 
-const PublicMessageModel = require('./models/Message');
+const OTPModel = require('./models/OTP'); 
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 
-// --- NODEMAILER CONFIG ---
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI);
+
+// Email Config
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -24,47 +24,42 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// --- REGISTER ROUTE (Sends OTP) ---
+// 1. REGISTER: Generate and send OTP
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
-        // Save temporary user data and OTP
-        await OtpModel.create({ email, otp, userData: { name, password } });
+        await OTPModel.create({ email, otp, userData: { name, password } });
 
-        const mailOptions = {
+        await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
-            subject: 'STILL - Your Verification Code',
+            subject: 'STILL - Verification Code',
             html: `<div style="background:#121212; color:white; padding:20px; text-align:center;">
                     <h1 style="color:#FAEF5D;">STILL</h1>
-                    <p>Your 6-digit verification code is:</p>
-                    <h2 style="letter-spacing:5px; color:#FAEF5D;">${otp}</h2>
+                    <p>Your code is: <b style="letter-spacing:5px;">${otp}</b></p>
                    </div>`
-        };
-
-        await transporter.sendMail(mailOptions);
+        });
         res.json({ status: "OTP_SENT" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Failed to send verification email" });
+        res.status(500).json({ error: "Failed to send email" });
     }
 });
 
-// --- VERIFY OTP ROUTE (Finalizes Registration) ---
+// 2. VERIFY: Check OTP and move to Users collection
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
-        const otpRecord = await OtpModel.findOne({ email, otp });
+        const otpRecord = await OTPModel.findOne({ email, otp });
         if (otpRecord) {
-            // Move data to permanent Users collection
             await UsersModel.create({
                 name: otpRecord.userData.name,
                 email: email,
                 password: otpRecord.userData.password
             });
-            await OtpModel.deleteOne({ _id: otpRecord._id });
+            await OTPModel.deleteOne({ _id: otpRecord._id });
             res.json({ status: "Success" });
         } else {
             res.status(400).json({ error: "Invalid or expired code" });
@@ -74,7 +69,7 @@ app.post("/verify-otp", async (req, res) => {
     }
 });
 
-// --- LOGIN ROUTE ---
+// 3. LOGIN
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
     UsersModel.findOne({email: email})
@@ -87,6 +82,4 @@ app.post("/login", (req, res) => {
     });
 });
 
-// Keep your existing Music and Journal routes below...
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(3001, () => console.log("Server running on port 3001"));
