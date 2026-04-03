@@ -84,6 +84,7 @@ function SendSong() {
         msg.recipient.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Keep the update: Chunking into 8 items per row
     const chunkedRows = [];
     for (let i = 0; i < filteredMessages.length; i += 8) {
         chunkedRows.push(filteredMessages.slice(i, i + 8));
@@ -98,7 +99,7 @@ function SendSong() {
                 preload="auto"
             />
 
-            {/* RESTORED ORIGINAL MODAL DESIGN */}
+            {/* RESTORED OLD OVERLAY DESIGN */}
             {playingMessage && (
                 <div className="ss-letter-overlay">
                     <button className="ss-close-letter" onClick={() => {
@@ -106,6 +107,7 @@ function SendSong() {
                         setPlayingMessage(null);
                         setIsPlaying(false);
                     }}>✕</button>
+                    
                     <div className="ss-letter-paper">
                         <h2 className="ss-letter-greeting">
                             Hello, <span className="ss-handwritten-name">{playingMessage.recipient}</span>
@@ -130,8 +132,11 @@ function SendSong() {
                                 </div>
                             </div>
                         </div>
+
                         <p className="ss-sender-label">HERE'S A MESSAGE FROM THE SENDER:</p>
-                        <div className="ss-handwritten-body">"{playingMessage.message}"</div>
+                        <div className="ss-handwritten-body">
+                            "{playingMessage.message}"
+                        </div>
                     </div>
                 </div>
             )}
@@ -160,6 +165,7 @@ function SendSong() {
                 </div>
             </header>
 
+            {/* KEEP THE UPDATE: Alternating Marquee Rows */}
             <div className="ss-marquee-container">
                 {chunkedRows.map((row, rowIndex) => (
                     <div className="ss-marquee-row" key={rowIndex}>
