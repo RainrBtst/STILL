@@ -6,10 +6,11 @@ const axios = require("axios");
 const nodemailer = require("nodemailer");
 
 // --- MODELS ---
+// Ensure these files exist in your 'models' folder
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal');
 const PublicMessageModel = require('./models/Message');
-const OTPModel = require('./models/OTP'); // Ensure this file exists in /models
+const OTPModel = require('./models/OTP'); 
 
 const app = express();
 app.use(express.json());
@@ -42,7 +43,7 @@ app.get("/", (req, res) => {
 
 // --- 1. AUTH & OTP LOGIC ---
 
-// Updated Register: Sends OTP instead of creating user immediately
+// REGISTER: Generates and sends OTP
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -62,12 +63,12 @@ app.post('/register', async (req, res) => {
         });
         res.json({ status: "OTP_SENT" });
     } catch (err) {
-        console.error(err);
+        console.error("Register Error:", err);
         res.status(500).json({ error: "Failed to send verification email" });
     }
 });
 
-// Verify OTP: The final step of registration
+// VERIFY OTP: Finalizes registration and moves user to main database
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
@@ -84,10 +85,12 @@ app.post("/verify-otp", async (req, res) => {
             res.status(400).json({ error: "Invalid or expired code" });
         }
     } catch (err) {
+        console.error("Verification Error:", err);
         res.status(500).json({ error: "Verification failed" });
     }
 });
 
+// LOGIN
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
     UsersModel.findOne({email: email})
@@ -101,7 +104,8 @@ app.post("/login", (req, res) => {
         } else {
             res.json("No record existed");
         }
-    });
+    })
+    .catch(err => res.status(500).json(err));
 });
 
 // --- 2. JOURNAL LOGIC ---
@@ -143,20 +147,25 @@ app.post("/api/messages", async (req, res) => {
     }
 });
 
-// --- 4. ITUNES SEARCH LOGIC ---
+// --- 4. ITUNES SEARCH LOGIC (FIXED) ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
         const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
-        const tracks = response.data.results.map(track => ({
+        
+        const tracks = (response.data.results || []).map(track => ({
             id: track.trackId,
             name: track.trackName,
             artist: track.artistName,
-            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '',
+            // Added safety check to prevent crashing if artworkUrl100 is missing
+            albumArt: track.artworkUrl100 
+                ? track.artworkUrl100.replace('100x100', '400x400') 
+                : 'https://via.placeholder.com/400',
             previewUrl: track.previewUrl
         }));
         res.json(tracks);
     } catch (err) {
+        console.error("Music Search Error:", err.message);
         res.status(500).json({ error: "Music search failed" });
     }
 });
