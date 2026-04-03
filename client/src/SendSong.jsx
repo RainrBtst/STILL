@@ -98,8 +98,6 @@ function SendSong() {
         msg.recipient.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const displayRow = filteredMessages;
-
     return (
         <div className="nt-container">
             <audio 
@@ -188,23 +186,20 @@ function SendSong() {
                 </div>
             </header>
 
-            <div className="ss-marquee-container">
-                <div className="ss-marquee-row">
-                    <div className="ss-track-left">
-                        {[...displayRow, ...displayRow].map((item, i) => (
-                            <div key={i} className="ss-dark-card" onClick={() => {
-                                setPlayingMessage(item);
-                            }}>
-                                <span className="ss-card-label">TO: {item.recipient}</span>
-                                <p className="ss-card-text">"{item.message}"</p>
-                                <div className="ss-card-meta">
-                                    {item.albumArt && <img src={item.albumArt} alt="" className="ss-meta-mini-art" />}
-                                    {item.song}
-                                </div>
-                            </div>
-                        ))}
+            {/* UPDATED: 6-COLUMN GRID CONTAINER */}
+            <div className="ss-grid-container">
+                {filteredMessages.map((item, i) => (
+                    <div key={item._id || i} className="ss-dark-card" onClick={() => {
+                        setPlayingMessage(item);
+                    }}>
+                        <span className="ss-card-label">TO: {item.recipient}</span>
+                        <p className="ss-card-text">"{item.message}"</p>
+                        <div className="ss-card-meta">
+                            {item.albumArt && <img src={item.albumArt} alt="" className="ss-meta-mini-art" />}
+                            <span className="ss-song-name">{item.song}</span>
+                        </div>
                     </div>
-                </div>
+                ))}
             </div>
 
             <Message isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} formData={formData} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />

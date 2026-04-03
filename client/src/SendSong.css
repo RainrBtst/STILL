@@ -64,36 +64,37 @@
     color: #777;
 }
 
-/* MARQUEE */
-.ss-marquee-container {
+/* UPDATED: GRID SYSTEM FOR 6 COLUMNS */
+.ss-grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
     width: 100%;
-    overflow: hidden;
-    margin-top: 50px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.ss-marquee-row {
-    display: flex;
-    width: 100%;
+    max-width: 1400px;
+    margin: 50px auto;
+    padding: 0 20px;
 }
 
 .ss-dark-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(5px);
-    min-width: 280px;
-    width: 280px;
-    height: 150px; 
+    width: 100%; 
+    height: 160px; 
     padding: 15px;
     border-radius: 15px;
-    margin-right: 20px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
     gap: 8px;
     cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.ss-dark-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(250, 239, 93, 0.4);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .ss-card-label {
@@ -101,49 +102,46 @@
     color: #faef5d;
     text-transform: uppercase;
     font-weight: 700;
-    margin-bottom: 0;
 }
 
 .ss-card-text {
     color: #e0e0e0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-style: italic;
     line-height: 1.2;
     display: -webkit-box;
-    -webkit-line-clamp: 2; 
+    -webkit-line-clamp: 3; 
+    line-clamp: 3; /* Add this line to fix the warning */
     -webkit-box-orient: vertical;
-    line-clamp: 2; 
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 0; 
 }
 
 .ss-card-meta {
     display: flex;
     align-items: center;
-    gap: 10px; 
-    font-size: 0.75rem;
+    gap: 8px; 
+    font-size: 0.7rem;
     color: #777;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     padding-top: 8px;
     margin-top: auto; 
+    overflow: hidden;
+}
+
+.ss-song-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ss-meta-mini-art {
-    width: 30px; 
-    height: 30px; 
+    width: 24px; 
+    height: 24px; 
     border-radius: 4px;
     object-fit: cover;
+    flex-shrink: 0;
 }
-
-/* Animations */
-.ss-track-left { display: flex; animation: scrollLeft 50s linear infinite; }
-.ss-track-right { display: flex; animation: scrollRight 50s linear infinite; }
-
-@keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-@keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
-
-.ss-marquee-row:hover div { animation-play-state: paused; }
 
 /* Navbar */
 .nt-navbar {
@@ -192,11 +190,9 @@
     background: #121212;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    /* REDUCED PADDING TO MAKE THE CONTAINER THINNER */
     padding: 5px; 
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    /* ADJUSTED MIN-WIDTH TO MATCH NEW BUTTON WIDTH */
     min-width: 120px; 
 }
 
@@ -207,7 +203,6 @@
     color: #ffffff; 
     font-weight: 700;
     text-align: left;
-    /* REDUCED VERTICAL PADDING TO BRING BOX CLOSER TO TEXT */
     padding: 8px 12px; 
     font-size: 0.9rem;
     cursor: pointer;
