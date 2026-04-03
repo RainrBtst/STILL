@@ -34,11 +34,10 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- MUSIC SEARCH (FIXED FOR ALL USERS) ---
+// --- MUSIC SEARCH (STABILIZED) ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
-        // Added User-Agent to stop the 403 Forbidden block for all users
         const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
@@ -50,7 +49,7 @@ app.get("/music-search", async (req, res) => {
             id: track.trackId,
             name: track.trackName,
             artist: track.artistName,
-            // The "?" check stops the 500 error when images are formatted as 400x400bb.jpg
+            // "?" check prevents 500 error for all users
             albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '',
             previewUrl: track.previewUrl
         }));
@@ -61,7 +60,7 @@ app.get("/music-search", async (req, res) => {
     }
 });
 
-// --- PUBLIC MESSAGES (Original) ---
+// --- PUBLIC MESSAGES ---
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
@@ -76,7 +75,7 @@ app.post("/api/messages", async (req, res) => {
     } catch (err) { res.status(500).json(err); }
 });
 
-// --- JOURNAL LOGIC (Original) ---
+// --- JOURNAL LOGIC ---
 app.post("/api/journals", async (req, res) => {
     try {
         const newJournal = await JournalModel.create(req.body);
@@ -103,8 +102,14 @@ app.post("/login", (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     try {
+        // NEW: Check if email exists first
+        const existingUser = await UsersModel.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: "Your email is already verified" });
+        }
+
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         await OTPModel.create({ email, otp, userData: { name, password } });
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
