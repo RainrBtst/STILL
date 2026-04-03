@@ -6,7 +6,6 @@ const axios = require("axios");
 const nodemailer = require("nodemailer");
 
 // --- MODELS ---
-// Ensure these files exist in your 'models' folder
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal');
 const PublicMessageModel = require('./models/Message');
@@ -43,7 +42,7 @@ app.get("/", (req, res) => {
 
 // --- 1. AUTH & OTP LOGIC ---
 
-// REGISTER: Generates and sends OTP
+// Register: Sends OTP instead of creating user immediately
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -68,7 +67,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// VERIFY OTP: Finalizes registration and moves user to main database
+// Verify OTP
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
@@ -85,12 +84,11 @@ app.post("/verify-otp", async (req, res) => {
             res.status(400).json({ error: "Invalid or expired code" });
         }
     } catch (err) {
-        console.error("Verification Error:", err);
         res.status(500).json({ error: "Verification failed" });
     }
 });
 
-// LOGIN
+// Login
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
     UsersModel.findOne({email: email})
@@ -147,17 +145,22 @@ app.post("/api/messages", async (req, res) => {
     }
 });
 
-// --- 4. ITUNES SEARCH LOGIC (FIXED) ---
+// --- 4. ITUNES SEARCH LOGIC (FIXED FOR 403 AND 500 ERRORS) ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
-        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
+        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
         
-        const tracks = (response.data.results || []).map(track => ({
+        const results = response.data.results || [];
+        const tracks = results.map(track => ({
             id: track.trackId,
             name: track.trackName,
             artist: track.artistName,
-            // Added safety check to prevent crashing if artworkUrl100 is missing
+            // Check if artwork exists before replacing string to prevent 500 error
             albumArt: track.artworkUrl100 
                 ? track.artworkUrl100.replace('100x100', '400x400') 
                 : 'https://via.placeholder.com/400',
