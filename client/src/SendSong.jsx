@@ -84,10 +84,10 @@ function SendSong() {
         msg.recipient.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // CHUNKING LOGIC: 10 messages per row
+    // UPDATED: Now chunking by 8 messages per row
     const chunkedRows = [];
-    for (let i = 0; i < filteredMessages.length; i += 10) {
-        chunkedRows.push(filteredMessages.slice(i, i + 10));
+    for (let i = 0; i < filteredMessages.length; i += 8) {
+        chunkedRows.push(filteredMessages.slice(i, i + 8));
     }
 
     return (
@@ -158,7 +158,6 @@ function SendSong() {
             <div className="ss-marquee-container">
                 {chunkedRows.map((row, rowIndex) => (
                     <div className="ss-marquee-row" key={rowIndex}>
-                        {/* ALTERNATING CLASSES: row-left or row-right */}
                         <div className={`ss-track ${rowIndex % 2 === 0 ? 'ss-track-left' : 'ss-track-right'}`}>
                             {[...row, ...row].map((item, i) => (
                                 <div key={i} className="ss-dark-card" onClick={() => setPlayingMessage(item)}>
