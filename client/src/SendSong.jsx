@@ -98,10 +98,10 @@ function SendSong() {
         msg.recipient.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Logic to chunk messages into groups of 8
-    const chunkedMessages = [];
+    // LOGIC: Chunk messages into groups of 8
+    const chunkedRows = [];
     for (let i = 0; i < filteredMessages.length; i += 8) {
-        chunkedMessages.push(filteredMessages.slice(i, i + 8));
+        chunkedRows.push(filteredMessages.slice(i, i + 8));
     }
 
     return (
@@ -193,11 +193,11 @@ function SendSong() {
             </header>
 
             <div className="ss-marquee-container">
-                {chunkedMessages.map((row, rowIndex) => (
-                    <div key={rowIndex} className="ss-marquee-row">
-                        {/* rowIndex % 2 === 0 means Row 1, 3, 5... (Track Left) 
-                            Otherwise Row 2, 4, 6... (Track Right) */}
-                        <div className={rowIndex % 2 === 0 ? "ss-track-left" : "ss-track-right"}>
+                {chunkedRows.map((row, index) => (
+                    <div key={index} className="ss-marquee-row">
+                        {/* Alternate class for direction based on index */}
+                        <div className={index % 2 === 0 ? "ss-track-left" : "ss-track-right"}>
+                            {/* Duplicating the row for seamless continuous scrolling */}
                             {[...row, ...row].map((item, i) => (
                                 <div key={i} className="ss-dark-card" onClick={() => setPlayingMessage(item)}>
                                     <span className="ss-card-label">TO: {item.recipient}</span>

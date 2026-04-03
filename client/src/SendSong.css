@@ -136,14 +136,31 @@
     object-fit: cover;
 }
 
-/* Animations */
-.ss-track-left { display: flex; animation: scrollLeft 50s linear infinite; }
-.ss-track-right { display: flex; animation: scrollRight 50s linear infinite; }
+/* Animations - Both use 50s for identical speed */
+.ss-track-left { 
+    display: flex; 
+    animation: scrollLeft 50s linear infinite; 
+}
 
-@keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-@keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+.ss-track-right { 
+    display: flex; 
+    animation: scrollRight 50s linear infinite; 
+}
 
-.ss-marquee-row:hover div { animation-play-state: paused; }
+@keyframes scrollLeft { 
+    0% { transform: translateX(0); } 
+    100% { transform: translateX(-50%); } 
+}
+
+@keyframes scrollRight { 
+    0% { transform: translateX(-50%); } 
+    100% { transform: translateX(0); } 
+}
+
+.ss-marquee-row:hover .ss-track-left,
+.ss-marquee-row:hover .ss-track-right { 
+    animation-play-state: paused; 
+}
 
 /* Navbar */
 .nt-navbar {
