@@ -12,7 +12,20 @@ const OTPModel = require('./models/OTP');
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: true, methods: ["GET", "POST", "PUT", "DELETE"], credentials: true }));
+
+// --- UPDATED: Specific CORS for Vercel + Ngrok ---
+app.use(cors({ 
+    origin: ["https://still-cyan.vercel.app", "http://localhost:3000"], 
+    methods: ["GET", "POST", "PUT", "DELETE"], 
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"]
+}));
+
+// Middleware to bypass Ngrok browser warning
+app.use((req, res, next) => {
+    res.setHeader('ngrok-skip-browser-warning', 'true');
+    next();
+});
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas!"))
@@ -56,7 +69,7 @@ app.post("/verify-otp", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Verification failed" }); }
 });
 
-// --- LOGIN (With Specific Alerts) ---
+// --- LOGIN ---
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
     UsersModel.findOne({ email: email })
@@ -64,16 +77,12 @@ app.post("/login", (req, res) => {
             if (user) {
                 if (user.password === password) {
                     res.json({ status: "Success", userId: user._id, username: user.name });
-                } else {
-                    res.status(401).json("Incorrect Password");
-                }
-            } else {
-                res.status(401).json("Invalid Credentials");
-            }
+                } else { res.status(401).json("Incorrect Password"); }
+            } else { res.status(401).json("Invalid Credentials"); }
         }).catch(err => res.status(500).json(err));
 });
 
-// --- JOURNALS (FIXED: Returns the saved object) ---
+// --- JOURNALS ---
 app.post("/api/journals", async (req, res) => {
     try {
         const newJournal = await JournalModel.create(req.body);

@@ -5,7 +5,6 @@ import Journal from './Journal';
 import ReadJournal from './ReadJournal';
 import Archive from './Archive';
 
-// --- UPDATED: Use your active Ngrok URL ---
 const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
 
 function Home() {
@@ -21,13 +20,11 @@ function Home() {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const dropdownRef = useRef(null);
 
-    // --- LOGOUT FUNCTION ---
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/login';
     };
 
-    // --- CLOSE DROPDOWN ON CLICK OUTSIDE ---
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -38,29 +35,26 @@ function Home() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // --- EXPIRATION CALCULATION (24 Hours) ---
     const isExpired = (createdAt) => {
         const entryDate = new Date(createdAt);
         const now = new Date();
-        const differenceInHours = (now - entryDate) / (1000 * 60 * 60);
-        return differenceInHours >= 24;
+        return (now - entryDate) / (1000 * 60 * 60) >= 24;
     };
 
     const activeEntries = entries.filter(entry => !isExpired(entry.createdAt));
     const archivedEntries = entries.filter(entry => isExpired(entry.createdAt));
 
-    // --- FETCH ENTRIES ---
+    // --- FETCH ENTRIES WITH NGROK FIX ---
     useEffect(() => {
         const loadEntries = async () => {
             const username = localStorage.getItem("currentUsername"); 
             if (!username) return;
-
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`);
+                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 setEntries(res.data);
-            } catch (err) {
-                console.error("Failed to load journals", err);
-            }
+            } catch (err) { console.error("Failed to load journals", err); }
         };
         loadEntries();
     }, []);
@@ -83,10 +77,7 @@ function Home() {
     };
 
     const handleStartEntry = () => {
-        if (!selectedSong) {
-            alert("Search and choose a song first");
-            return;
-        }
+        if (!selectedSong) { alert("Search and choose a song first"); return; }
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -95,10 +86,9 @@ function Home() {
         setIsJournaling(true);
     };
 
-    // --- FIXED: SAVE ENTRY FUNCTION ---
+    // --- SAVE ENTRY ---
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername"); 
-
         const newEntryData = {
             username: username,
             journalTitle: journalData.title,
@@ -113,30 +103,29 @@ function Home() {
         };
 
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData);
-            // Use the full object returned from the backend (includes ID and timestamp)
+            const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             setEntries([response.data, ...entries]);
             setIsJournaling(false);
             setSelectedSong(null);
         } catch (err) {
             console.error("Error saving entry:", err);
-            alert("Could not save your entry. Please check your connection.");
+            alert("Could not save your entry.");
         }
     };
 
-    // --- DEBOUNCED SEARCH ---
+    // --- MUSIC SEARCH WITH NGROK FIX ---
     useEffect(() => {
         const fetchSongs = async () => {
             if (searchQuery.length > 2) {
                 try {
-                    const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`);
+                    const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`, {
+                        headers: { 'ngrok-skip-browser-warning': 'true' }
+                    });
                     setResults(res.data);
-                } catch (err) {
-                    console.error("Search failed", err);
-                }
-            } else {
-                setResults([]);
-            }
+                } catch (err) { console.error("Search failed", err); }
+            } else { setResults([]); }
         };
         const debounce = setTimeout(fetchSongs, 500); 
         return () => clearTimeout(debounce);
@@ -162,9 +151,7 @@ function Home() {
 
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
-                <div className="nt-nav-note" 
-                    style={{cursor: 'pointer', pointerEvents: 'auto'}} 
-                    onClick={() => window.location.href = '/send-song'} >
+                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
                     <span>Send a Song</span>
                 </div>
                 <div className="nt-nav-actions">
@@ -178,7 +165,6 @@ function Home() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        
                         {results.length > 0 && (
                             <div className="nt-search-dropdown">
                                 {results.map((track) => (
@@ -193,25 +179,11 @@ function Home() {
                             </div>
                         )}
                     </div>
-                    
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                            👤
-                        </div>
+                        <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
                         {showProfileDropdown && (
-                            <div className="nt-profile-dropdown" style={{
-                                position: 'absolute', top: '100%', right: 0,
-                                backgroundColor: '#181818', border: '1px solid #333',
-                                borderRadius: '8px', padding: '10px', marginTop: '10px',
-                                zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
-                            }}>
-                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{
-                                    background: 'none', border: 'none', color: 'white',
-                                    width: '100%', textAlign: 'left', cursor: 'pointer',
-                                    fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'
-                                }}>
-                                    LOGOUT
-                                </button>
+                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000}}>
+                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontWeight: 'bold'}}>LOGOUT</button>
                             </div>
                         )}
                     </div>
@@ -223,7 +195,6 @@ function Home() {
                     <header className="nt-hero">
                         <h2 className="nt-welcome">WELCOME BACK, {localStorage.getItem("currentUsername")?.toUpperCase() || "USER"}!</h2>
                         <p className="nt-subtitle">Everyday has a rhythm, what yours?</p>
-
                         {selectedSong && (
                             <div className="nt-player-card">
                                 <img src={selectedSong.albumArt} alt="album" />
@@ -238,29 +209,15 @@ function Home() {
                                 <button className="nt-remove-btn" onClick={() => setSelectedSong(null)}>✕</button>
                             </div>
                         )}
-
-                        <button className="nt-btn-primary" onClick={handleStartEntry}>
-                            + START TODAY'S ENTRY
-                        </button>
+                        <button className="nt-btn-primary" onClick={handleStartEntry}>+ START TODAY'S ENTRY</button>
                     </header>
-
                     <main className="nt-main">
-                        <div className="nt-section-header">
-                            <h3>TODAY</h3>
-                        </div>
-
+                        <div className="nt-section-header"><h3>TODAY</h3></div>
                         <div className="nt-grid">
                             {activeEntries.map((entry) => (
                                 <div key={entry._id || entry.id} className="nt-card" onClick={() => setViewingEntry(entry)}>
                                     <div className="nt-album-placeholder">
-                                        <img 
-                                            src={entry.songDetails?.albumArt || entry.albumArt} 
-                                            alt="Album Art"
-                                            onError={(e) => {
-                                                e.target.src = "https://via.placeholder.com/300?text=Still+Journal";
-                                                e.target.style.opacity = "0.3";
-                                            }}
-                                        />
+                                        <img src={entry.songDetails?.albumArt || entry.albumArt} alt="Album Art" />
                                         <div className="nt-play-overlay">VIEW</div>
                                     </div>
                                     <div className="nt-card-content">
@@ -268,25 +225,16 @@ function Home() {
                                             <span className="nt-date">{entry.journalTitle || "Untitled Entry"}</span>
                                             {entry.mood && <span className="nt-vibe-tag">{entry.mood}</span>}
                                         </div>
-                                        <p className="nt-song-info">
-                                            {new Date(entry.createdAt).toLocaleDateString()} • {entry.songDetails?.title || "No Title"} - {entry.songDetails?.artist || "Unknown"}
-                                        </p>
+                                        <p className="nt-song-info">{new Date(entry.createdAt).toLocaleDateString()} • {entry.songDetails?.title}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
-
-                        <div className="nt-footer">
-                            <button className="nt-link" onClick={() => setShowArchives(true)}>VIEW ALL ARCHIVES ➔</button>
-                        </div>
+                        <div className="nt-footer"><button className="nt-link" onClick={() => setShowArchives(true)}>VIEW ALL ARCHIVES ➔</button></div>
                     </main>
                 </>
             ) : (
-                <Archive 
-                    archivedEntries={archivedEntries} 
-                    onBack={() => setShowArchives(false)} 
-                    onViewEntry={(entry) => setViewingEntry(entry)} 
-                />
+                <Archive archivedEntries={archivedEntries} onBack={() => setShowArchives(false)} onViewEntry={(entry) => setViewingEntry(entry)} />
             )}
         </div>
     );
