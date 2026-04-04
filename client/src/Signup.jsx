@@ -16,10 +16,8 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        // Updated with your active Ngrok URL
         axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/register', { name, email, password })
             .then(result => {
-                console.log("Server Response:", result.data);
                 if (result.data.status === "OTP_SENT") {
                     setIsVerifying(true);
                 } else {
@@ -28,7 +26,7 @@ function Signup() {
             })
             .catch(err => {
                 console.log("Error Detail:", err);
-                alert("Registration error. Check if your local server and ngrok are running.");
+                alert("Registration error.");
             })
             .finally(() => {
                 setLoading(false);
@@ -39,7 +37,6 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        // Updated with your active Ngrok URL
         axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/verify-otp', { email, otp })
             .then(result => {
                 if (result.data.status === "Success") {
@@ -48,8 +45,7 @@ function Signup() {
                 }
             })
             .catch(err => {
-                console.log(err);
-                alert("Invalid Verification Code. Check your terminal for logs.");
+                alert("Invalid Verification Code.");
             })
             .finally(() => {
                 setLoading(false);
@@ -91,6 +87,8 @@ function Signup() {
                                         type="text" 
                                         placeholder="Enter code" 
                                         maxLength="6"
+                                        /* FIXED: Added value={otp} to ensure it doesn't default to the name state */
+                                        value={otp}
                                         onChange={(e) => setOtp(e.target.value)} 
                                         required 
                                         style={{ textAlign: 'center', letterSpacing: '5px', fontSize: '1.5rem' }}
@@ -103,7 +101,10 @@ function Signup() {
                                     type="button" 
                                     className="login-register-link" 
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '10px' }} 
-                                    onClick={() => setIsVerifying(false)}
+                                    onClick={() => {
+                                        setIsVerifying(false);
+                                        setOtp(""); // Clear OTP if they go back
+                                    }}
                                 >
                                     BACK TO SIGNUP
                                 </button>
