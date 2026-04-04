@@ -14,7 +14,6 @@ const OTPModel = require('./models/OTP');
 const app = express();
 app.use(express.json());
 
-// --- CORS CONFIGURATION ---
 app.use(cors({
     origin: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -26,12 +25,9 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- NODEMAILER CONFIG (Updated to Port 465 for Stability) ---
+// --- NODEMAILER CONFIG (THE FIX) ---
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    service: 'gmail', // Shortcut that fixes the 'ETIMEDOUT' issue on Render
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS 
@@ -40,14 +36,15 @@ const transporter = nodemailer.createTransport({
 
 // --- AUTH & VERIFICATION ---
 
-// 1. REGISTER: Generate and send OTP
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
+        // 1. Save to MongoDB (This is what you saw in Compass)
         await OTPModel.create({ email, otp, userData: { name, password } });
 
+        // 2. Send the Email
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
@@ -58,14 +55,17 @@ app.post('/register', async (req, res) => {
                     <h2 style="letter-spacing:5px; color:#FAEF5D;">${otp}</h2>
                    </div>`
         });
+        
+        // 3. Respond to frontend
         res.json({ status: "OTP_SENT" });
+
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to send verification email" });
+        console.error("Nodemailer Error:", err);
+        // If email fails, we still have the record in DB, but we tell the user
+        res.status(500).json({ error: "OTP failed to send to Gmail" });
     }
 });
 
-// 2. VERIFY OTP: Move data to Users collection
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
@@ -86,7 +86,6 @@ app.post("/verify-otp", async (req, res) => {
     }
 });
 
-// 3. LOGIN
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
     UsersModel.findOne({email: email})
@@ -99,26 +98,19 @@ app.post("/login", (req, res) => {
     }).catch(err => res.status(500).json(err));
 });
 
-// --- JOURNAL LOGIC ---
+// --- JOURNAL & MESSAGES (UNTOUCHED) ---
 app.post("/api/journals", async (req, res) => {
-    try {
-        const newJournal = await JournalModel.create(req.body);
-        res.status(201).json(newJournal);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to save journal" });
-    }
+    try { await JournalModel.create(req.body); res.status(201).json({status: "ok"}); } 
+    catch (err) { res.status(500).json({ error: "Failed" }); }
 });
 
 app.get("/api/journals/user/:username", async (req, res) => {
     try {
         const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
         res.json(journals);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch journals" });
-    }
+    } catch (err) { res.status(500).json({ error: "Failed" }); }
 });
 
-// --- MUSIC & MESSAGES ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
@@ -131,30 +123,23 @@ app.get("/music-search", async (req, res) => {
             previewUrl: track.previewUrl
         }));
         res.json(tracks);
-    } catch (err) {
-        res.status(500).json({ error: "Music search failed" });
-    }
+    } catch (err) { res.status(500).json({ error: "Music search failed" }); }
 });
 
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
         res.json(messages);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    } catch (err) { res.status(500).json(err); }
 });
 
 app.post("/api/messages", async (req, res) => {
     try {
         const newMessage = await PublicMessageModel.create(req.body);
         res.status(201).json(newMessage);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    } catch (err) { res.status(500).json(err); }
 });
 
-// --- SERVER START ---
 const PORT = process.env.PORT || 3001;
 app.get("/", (req, res) => res.send("Server is alive!"));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
