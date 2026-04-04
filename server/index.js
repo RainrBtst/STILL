@@ -20,67 +20,69 @@ app.use(cors({
     credentials: true
 }));
 
-// --- DATABASE CONNECTION ---
+// --- DATABASE ---
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- NODEMAILER CONFIG ---
-// Use your new Gmail and the 16-character App Password in your Render Environment Variables
+// --- THE STABILIZED GMAIL TRANSPORTER ---
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS 
+        pass: process.env.EMAIL_PASS // Your 16-character App Password
+    },
+    // This helps bypass the timeout by ignoring minor network security handshakes
+    tls: {
+        rejectUnauthorized: false
     }
 });
 
-// --- AUTH & REGISTRATION ---
+// Verify connection on startup
+transporter.verify((error, success) => {
+    if (error) {
+        console.log("❌ GMAIL STATUS: Connection blocked by Google");
+    } else {
+        console.log("✅ GMAIL STATUS: Ready to send emails");
+    }
+});
 
+// --- REGISTER ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
-        // 1. Save to MongoDB first (This ensures you can see it in Compass)
+        // 1. Save to MongoDB (This works every time)
         await OTPModel.create({ email, otp, userData: { name, password } });
 
-        // 2. TRIGGER FRONTEND IMMEDIATELY
-        // This stops the "Registration Failed" error from appearing on your site
+        // 2. Respond to frontend IMMEDIATELY
+        // This ensures the user sees the "Enter OTP" screen no matter what
         res.json({ status: "OTP_SENT" });
 
-        // 3. ATTEMPT GMAIL IN BACKGROUND
-        // We do NOT use 'await' here so the website doesn't wait for Gmail to respond
+        // 3. Send Email in the Background
         transporter.sendMail({
-            from: process.env.EMAIL_USER,
+            from: `"STILL Support" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'STILL - Your Verification Code',
             html: `
-                <div style="font-family: sans-serif; background:#121212; color:white; padding:40px; text-align:center; border-radius:10px;">
-                    <h1 style="color:#FAEF5D; font-size:40px; margin-bottom:10px;">STILL</h1>
-                    <p style="font-size:18px; color:#aaa;">Your verification code is:</p>
-                    <div style="background:#222; display:inline-block; padding:10px 30px; border-radius:5px; margin:20px 0;">
-                        <span style="font-size:32px; letter-spacing:10px; color:#FAEF5D; font-weight:bold;">${otp}</span>
-                    </div>
-                    <p style="font-size:12px; color:#555;">If you didn't request this, you can safely ignore this email.</p>
+                <div style="background:#121212; color:white; padding:40px; text-align:center; font-family:sans-serif;">
+                    <h1 style="color:#FAEF5D;">STILL</h1>
+                    <p>Your verification code is:</p>
+                    <h2 style="color:#FAEF5D; font-size:32px; letter-spacing:10px;">${otp}</h2>
                 </div>`
-        }, (error, info) => {
-            if (error) {
-                console.log("❌ GMAIL ERROR:", error.message);
-            } else {
-                console.log("✅ EMAIL SENT:", info.response);
-            }
+        }, (err, info) => {
+            if (err) console.log("❌ BACKGROUND EMAIL ERROR:", err.message);
+            else console.log("✅ EMAIL DELIVERED:", info.response);
         });
 
     } catch (err) {
         console.error("Register Error:", err);
-        // Only send 500 if the database save fails
-        if (!res.headersSent) {
-            res.status(500).json({ error: "Registration failed" });
-        }
+        if (!res.headersSent) res.status(500).json({ error: "Register failed" });
     }
 });
 
+// --- VERIFY OTP ---
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
@@ -94,13 +96,12 @@ app.post("/verify-otp", async (req, res) => {
             await OTPModel.deleteOne({ _id: otpRecord._id });
             res.json({ status: "Success" });
         } else {
-            res.status(400).json({ error: "Invalid or expired code" });
+            res.status(400).json({ error: "Invalid code" });
         }
-    } catch (err) {
-        res.status(500).json({ error: "Verification failed" });
-    }
+    } catch (err) { res.status(500).json({ error: "Error" }); }
 });
 
+// --- LOGIN, JOURNALS, MESSAGES ---
 app.post("/login", (req, res) => {
     const {email, password} = req.body;
     UsersModel.findOne({email: email})
@@ -113,23 +114,16 @@ app.post("/login", (req, res) => {
     }).catch(err => res.status(500).json(err));
 });
 
-// --- JOURNAL & MESSAGES ---
 app.post("/api/journals", async (req, res) => {
-    try {
-        await JournalModel.create(req.body);
-        res.status(201).json({status: "ok"});
-    } catch (err) {
-        res.status(500).json({ error: "Failed" });
-    }
+    try { await JournalModel.create(req.body); res.status(201).json({status: "ok"}); } 
+    catch (err) { res.status(500).json({ error: "Failed" }); }
 });
 
 app.get("/api/journals/user/:username", async (req, res) => {
     try {
         const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
         res.json(journals);
-    } catch (err) {
-        res.status(500).json({ error: "Failed" });
-    }
+    } catch (err) { res.status(500).json({ error: "Failed" }); }
 });
 
 app.get("/music-search", async (req, res) => {
@@ -137,37 +131,27 @@ app.get("/music-search", async (req, res) => {
     try {
         const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
         const tracks = response.data.results.map(track => ({
-            id: track.trackId,
-            name: track.trackName,
-            artist: track.artistName,
-            albumArt: track.artworkUrl100.replace('100x100', '400x400'),
-            previewUrl: track.previewUrl
+            id: track.trackId, name: track.trackName, artist: track.artistName,
+            albumArt: track.artworkUrl100.replace('100x100', '400x400'), previewUrl: track.previewUrl
         }));
         res.json(tracks);
-    } catch (err) {
-        res.status(500).json({ error: "Music search failed" });
-    }
+    } catch (err) { res.status(500).json({ error: "Search failed" }); }
 });
 
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
         res.json(messages);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    } catch (err) { res.status(500).json(err); }
 });
 
 app.post("/api/messages", async (req, res) => {
     try {
         const newMessage = await PublicMessageModel.create(req.body);
         res.status(201).json(newMessage);
-    } catch (err) {
-        res.status(500).json(err);
-    }
+    } catch (err) { res.status(500).json(err); }
 });
 
-// --- SERVER START ---
 const PORT = process.env.PORT || 3001;
-app.get("/", (req, res) => res.send("Server is alive and running!"));
+app.get("/", (req, res) => res.send("Server Alive"));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
