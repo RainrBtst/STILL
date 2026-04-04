@@ -9,22 +9,17 @@ function Signup() {
     const [password, setPassword] = useState("");
     const [otp, setOtp] = useState(""); 
     const [isVerifying, setIsVerifying] = useState(false); 
-    const [loading, setLoading] = useState(false); // New Loading State
+    const [loading, setLoading] = useState(false); 
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true); // Start loading
+        setLoading(true);
 
-        // UPDATED: Using your newest active tunnel link and bypass header
-        axios.post('https://bumpy-maps-cut.loca.lt/register', { name, email, password }, {
-            headers: {
-                "bypass-tunnel-reminder": "true"
-            }
-        })
+        // Updated with your active Ngrok URL
+        axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/register', { name, email, password })
             .then(result => {
                 console.log("Server Response:", result.data);
-                // Check if the backend confirms OTP was saved/sent
                 if (result.data.status === "OTP_SENT") {
                     setIsVerifying(true);
                 } else {
@@ -33,10 +28,10 @@ function Signup() {
             })
             .catch(err => {
                 console.log("Error Detail:", err);
-                alert("Registration error. Check if the email is already in use.");
+                alert("Registration error. Check if your local server and ngrok are running.");
             })
             .finally(() => {
-                setLoading(false); // Stop loading
+                setLoading(false);
             });
     };
 
@@ -44,12 +39,8 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        // UPDATED: Using your newest active tunnel link and bypass header
-        axios.post('https://bumpy-maps-cut.loca.lt/verify-otp', { email, otp }, {
-            headers: {
-                "bypass-tunnel-reminder": "true"
-            }
-        })
+        // Updated with your active Ngrok URL
+        axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/verify-otp', { email, otp })
             .then(result => {
                 if (result.data.status === "Success") {
                     alert("Email Verified Successfully!");
@@ -58,7 +49,7 @@ function Signup() {
             })
             .catch(err => {
                 console.log(err);
-                alert("Invalid Verification Code. Check MongoDB Compass if the email didn't arrive.");
+                alert("Invalid Verification Code. Check your terminal for logs.");
             })
             .finally(() => {
                 setLoading(false);
