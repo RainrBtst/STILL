@@ -104,10 +104,16 @@ app.post("/login", (req, res) => {
     const { email, password } = req.body;
     UsersModel.findOne({ email: email })
         .then(user => {
-            if (user && user.password === password) {
-                res.json({ status: "Success", userId: user._id, username: user.name });
+            if (user) {
+                if (user.password === password) {
+                    res.json({ status: "Success", userId: user._id, username: user.name });
+                } else {
+                    // Send specific message for wrong password
+                    res.status(401).json("Incorrect Password");
+                }
             } else {
-                res.status(401).json("Incorrect email or password");
+                // Send specific message if email doesn't exist
+                res.status(401).json("Invalid Credentials");
             }
         }).catch(err => res.status(500).json(err));
 });

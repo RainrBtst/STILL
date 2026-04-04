@@ -7,14 +7,14 @@ import './Login.css';
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false); // Added loading state for better UX
+    const [loading, setLoading] = useState(false); 
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
 
-        // UPDATED: Using your active Ngrok URL instead of the Render URL
+        // UPDATED: Using your active Ngrok URL
         axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/login', { email, password })
             .then(result => {
                 if (result.data.status === "Success") {
@@ -22,17 +22,14 @@ function Login() {
                     localStorage.setItem("currentUsername", result.data.username);
                     alert("Login Successful!");
                     navigate('/home');
-                } else {
-                    // Handles cases where the server sends a 200 but status isn't "Success"
-                    alert(result.data.message || "Invalid credentials.");
                 }
             })
             .catch(err => {
                 console.log("Login Error:", err);
                 
-                // FIXED: This handles the 401 error you saw in the console
+                // If the server sent a 401, we show the specific message it sent
                 if (err.response && err.response.status === 401) {
-                    alert("Invalid Credentials: The email or password you entered is incorrect.");
+                    alert(err.response.data); 
                 } else {
                     alert("Server Error: Please make sure your local server and Ngrok are running.");
                 }
