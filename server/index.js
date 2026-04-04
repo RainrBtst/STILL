@@ -13,7 +13,7 @@ const OTPModel = require('./models/OTP');
 const app = express();
 app.use(express.json());
 
-// --- ONLY CHANGED THIS FOR SECURITY/NGROK ---
+// --- CORS & NGROK SETTINGS ---
 app.use(cors({ 
     origin: ["https://still-cyan.vercel.app", "http://localhost:3000"], 
     methods: ["GET", "POST", "PUT", "DELETE"], 
@@ -24,7 +24,6 @@ app.use((req, res, next) => {
     res.setHeader('ngrok-skip-browser-warning', 'true');
     next();
 });
-// --------------------------------------------
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas!"))
@@ -35,12 +34,21 @@ const transporter = nodemailer.createTransport({
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
-// --- REGISTER & OTP ---
+// --- UPDATED REGISTER & OTP ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
     try {
+        // Check if user already exists in the database
+        const existingUser = await UsersModel.findOne({ email });
+        if (existingUser) {
+            return res.json({ status: "ALREADY_EXISTS" });
+        }
+
+        // If not, generate and send OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
         await OTPModel.create({ email, otp, userData: { name, password } });
+        
         const mailOptions = {
             from: `"STILL Support" <${process.env.EMAIL_USER}>`,
             to: email,
@@ -51,9 +59,13 @@ app.post('/register', async (req, res) => {
                     <h2 style="color:#FAEF5D; font-size:40px; letter-spacing:10px;">${otp}</h2>
                    </div>`
         };
+        
         await transporter.sendMail(mailOptions);
         res.json({ status: "OTP_SENT" });
-    } catch (err) { res.status(500).json({ error: "Registration failed" }); }
+    } catch (err) { 
+        console.error(err);
+        res.status(500).json({ error: "Registration failed" }); 
+    }
 });
 
 app.post("/verify-otp", async (req, res) => {
@@ -80,6 +92,7 @@ app.post("/login", (req, res) => {
         }).catch(err => res.status(500).json(err));
 });
 
+// --- JOURNAL & MUSIC ROUTES ---
 app.post("/api/journals", async (req, res) => {
     try {
         const newJournal = await JournalModel.create(req.body);
@@ -103,16 +116,6 @@ app.get("/music-search", async (req, res) => {
             albumArt: track.artworkUrl100.replace('100x100', '400x400'), previewUrl: track.previewUrl
         })));
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
-});
-
-app.get("/api/messages", async (req, res) => {
-    try { res.json(await PublicMessageModel.find().sort({ createdAt: -1 })); } 
-    catch (err) { res.status(500).json(err); }
-});
-
-app.post("/api/messages", async (req, res) => {
-    try { res.status(201).json(await PublicMessageModel.create(req.body)); } 
-    catch (err) { res.status(500).json(err); }
 });
 
 const PORT = process.env.PORT || 3001;

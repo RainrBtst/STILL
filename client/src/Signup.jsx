@@ -3,6 +3,8 @@ import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
+const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
+
 function Signup() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -16,11 +18,16 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/register', { name, email, password })
+        axios.post(`${API_BASE_URL}/register`, { name, email, password })
             .then(result => {
                 if (result.data.status === "OTP_SENT") {
                     setIsVerifying(true);
-                } else {
+                } 
+                else if (result.data.status === "ALREADY_EXISTS") {
+                    alert("Already verified.");
+                    navigate('/login');
+                }
+                else {
                     alert("Something went wrong. Please try again.");
                 }
             })
@@ -37,7 +44,7 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/verify-otp', { email, otp })
+        axios.post(`${API_BASE_URL}/verify-otp`, { email, otp })
             .then(result => {
                 if (result.data.status === "Success") {
                     alert("Email Verified Successfully!");
@@ -87,7 +94,6 @@ function Signup() {
                                         type="text" 
                                         placeholder="Enter code" 
                                         maxLength="6"
-                                        /* FIXED: Added value={otp} to ensure it doesn't default to the name state */
                                         value={otp}
                                         onChange={(e) => setOtp(e.target.value)} 
                                         required 
@@ -101,10 +107,7 @@ function Signup() {
                                     type="button" 
                                     className="login-register-link" 
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '10px' }} 
-                                    onClick={() => {
-                                        setIsVerifying(false);
-                                        setOtp(""); // Clear OTP if they go back
-                                    }}
+                                    onClick={() => { setIsVerifying(false); setOtp(""); }}
                                 >
                                     BACK TO SIGNUP
                                 </button>
