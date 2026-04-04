@@ -14,113 +14,40 @@ const OTPModel = require('./models/OTP');
 const app = express();
 app.use(express.json());
 
+// --- CORS CONFIGURATION ---
 app.use(cors({
     origin: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 
-// --- NODEMAILER (FIXED FOR RENDER TIMEOUTS) ---
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587, // Changed from 465 to 587 to avoid Render timeout
-    secure: false, // Must be false for port 587
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS 
-    },
-    tls: {
-        rejectUnauthorized: false // Prevents certificate blocks
-    }
-});
-
-// --- DATABASE ---
+// --- DATABASE CONNECTION ---
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- MUSIC SEARCH (UNTOUCHED) ---
-app.get("/music-search", async (req, res) => {
-    const { query } = req.query;
-    try {
-        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
-            }
-        });
-        const results = response.data.results || [];
-        const tracks = results.map(track => ({
-            id: track.trackId,
-            name: track.trackName,
-            artist: track.artistName,
-            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '',
-            previewUrl: track.previewUrl
-        }));
-        res.json(tracks);
-    } catch (err) {
-        res.status(500).json({ error: "Music search failed" });
+// --- NODEMAILER CONFIG (Updated to Port 465 for Stability) ---
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS 
     }
 });
 
-// --- PUBLIC MESSAGES ---
-app.get("/api/messages", async (req, res) => {
-    try {
-        const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
-        res.json(messages);
-    } catch (err) { res.status(500).json(err); }
-});
+// --- AUTH & VERIFICATION ---
 
-app.post("/api/messages", async (req, res) => {
-    try {
-        const newMessage = await PublicMessageModel.create(req.body);
-        res.status(201).json(newMessage);
-    } catch (err) { res.status(500).json(err); }
-});
-
-// --- JOURNAL LOGIC ---
-app.post("/api/journals", async (req, res) => {
-    try {
-        const newJournal = await JournalModel.create(req.body);
-        res.status(201).json(newJournal);
-    } catch (err) { res.status(500).json({ error: "Failed to save journal" }); }
-});
-
-app.get("/api/journals/user/:username", async (req, res) => {
-    try {
-        const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
-        res.json(journals);
-    } catch (err) { res.status(500).json({ error: "Failed to fetch journals" }); }
-});
-
-// --- AUTH & LOGIN ---
-app.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    UsersModel.findOne({ email: email })
-        .then(user => {
-            if (user) {
-                if (user.password === password) {
-                    res.json({ status: "Success", userId: user._id, username: user.name });
-                } else {
-                    res.json("The password is incorrect");
-                }
-            } else {
-                res.json("Invalid credential");
-            }
-        })
-        .catch(err => res.status(500).json(err));
-});
-
-// --- REGISTER (INTEGRATED FROM LAST NIGHT) ---
+// 1. REGISTER: Generate and send OTP
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
-    // 6-digit OTP generation from last night
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
-        // Saving the record as we did last night
         await OTPModel.create({ email, otp, userData: { name, password } });
 
-        // Email layout based on your last night's code
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
@@ -131,28 +58,24 @@ app.post('/register', async (req, res) => {
                     <h2 style="letter-spacing:5px; color:#FAEF5D;">${otp}</h2>
                    </div>`
         });
-        
         res.json({ status: "OTP_SENT" });
     } catch (err) {
-        console.error("Nodemailer Error:", err);
-        // This triggers the alert in your frontend if email fails
+        console.error(err);
         res.status(500).json({ error: "Failed to send verification email" });
     }
 });
 
-// --- OTP VERIFICATION (INTEGRATED FROM LAST NIGHT) ---
+// 2. VERIFY OTP: Move data to Users collection
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
         const otpRecord = await OTPModel.findOne({ email, otp });
         if (otpRecord) {
-            // Move data to Users collection
             await UsersModel.create({
                 name: otpRecord.userData.name,
                 email: email,
                 password: otpRecord.userData.password
             });
-            // Clean up OTP record
             await OTPModel.deleteOne({ _id: otpRecord._id });
             res.json({ status: "Success" });
         } else {
@@ -163,7 +86,75 @@ app.post("/verify-otp", async (req, res) => {
     }
 });
 
-app.get("/", (req, res) => res.send("Server is alive!"));
+// 3. LOGIN
+app.post("/login", (req, res) => {
+    const {email, password} = req.body;
+    UsersModel.findOne({email: email})
+    .then(user => {
+        if(user && user.password === password) {
+            res.json({ status: "Success", userId: user._id, username: user.name });
+        } else {
+            res.json("The password is incorrect");
+        }
+    }).catch(err => res.status(500).json(err));
+});
 
+// --- JOURNAL LOGIC ---
+app.post("/api/journals", async (req, res) => {
+    try {
+        const newJournal = await JournalModel.create(req.body);
+        res.status(201).json(newJournal);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to save journal" });
+    }
+});
+
+app.get("/api/journals/user/:username", async (req, res) => {
+    try {
+        const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
+        res.json(journals);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch journals" });
+    }
+});
+
+// --- MUSIC & MESSAGES ---
+app.get("/music-search", async (req, res) => {
+    const { query } = req.query;
+    try {
+        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
+        const tracks = response.data.results.map(track => ({
+            id: track.trackId,
+            name: track.trackName,
+            artist: track.artistName,
+            albumArt: track.artworkUrl100.replace('100x100', '400x400'),
+            previewUrl: track.previewUrl
+        }));
+        res.json(tracks);
+    } catch (err) {
+        res.status(500).json({ error: "Music search failed" });
+    }
+});
+
+app.get("/api/messages", async (req, res) => {
+    try {
+        const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+app.post("/api/messages", async (req, res) => {
+    try {
+        const newMessage = await PublicMessageModel.create(req.body);
+        res.status(201).json(newMessage);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+// --- SERVER START ---
 const PORT = process.env.PORT || 3001;
+app.get("/", (req, res) => res.send("Server is alive!"));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
