@@ -14,20 +14,19 @@ function Login() {
         e.preventDefault();
         setLoading(true);
 
-        // UPDATED: Using your active Ngrok URL
         axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/login', { email, password })
             .then(result => {
                 if (result.data.status === "Success") {
                     localStorage.setItem("currentUserId", result.data.userId);
                     localStorage.setItem("currentUsername", result.data.username);
-                    alert("Login Successful!");
+                    
+                    // Alert removed for a smoother transition
                     navigate('/home');
                 }
             })
             .catch(err => {
                 console.log("Login Error:", err);
                 
-                // If the server sent a 401, we show the specific message it sent
                 if (err.response && err.response.status === 401) {
                     alert(err.response.data); 
                 } else {
