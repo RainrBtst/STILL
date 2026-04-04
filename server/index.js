@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
 const axios = require("axios");
-const { Resend } = require('resend'); // Replaced nodemailer with resend
+const nodemailer = require("nodemailer"); // Brought back nodemailer
 
 // --- MODELS ---
 const UsersModel = require('./models/Users');
@@ -20,14 +20,28 @@ app.use(cors({
     credentials: true
 }));
 
-// --- INITIALIZE RESEND ---
-// Ensure you added RESEND_API_KEY to your Render Environment Variables
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // --- DATABASE ---
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas!"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
+
+// --- NODEMAILER CONFIGURATION ---
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS // Your 16-character App Password
+    }
+});
+
+// Verify transporter
+transporter.verify((error, success) => {
+    if (error) {
+        console.log("❌ NODEMAILER ERROR:", error.message);
+    } else {
+        console.log("✅ NODEMAILER: Ready to send emails");
+    }
+});
 
 // --- REGISTER & SEND OTP ---
 app.post('/register', async (req, res) => {
@@ -38,10 +52,9 @@ app.post('/register', async (req, res) => {
         // 1. Save OTP and User Data to MongoDB
         await OTPModel.create({ email, otp, userData: { name, password } });
 
-        // 2. Send Email via Resend API
-        // NOTE: On the free tier, 'from' must be 'onboarding@resend.dev'
-        const { data, error } = await resend.emails.send({
-            from: 'STILL Support <onboarding@resend.dev>',
+        // 2. Prepare Email
+        const mailOptions = {
+            from: `"STILL Support" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'STILL - Your Verification Code',
             html: `
@@ -51,13 +64,11 @@ app.post('/register', async (req, res) => {
                     <h2 style="color:#FAEF5D; font-size:40px; letter-spacing:10px; margin:20px 0;">${otp}</h2>
                     <p style="color:#aaaaaa; font-size:12px;">If you didn't request this, please ignore this email.</p>
                 </div>`
-        });
+        };
 
-        if (error) {
-            console.error("❌ RESEND ERROR:", error);
-            return res.status(500).json({ error: "Failed to send email" });
-        }
-
+        // 3. Send Email
+        await transporter.sendMail(mailOptions);
+        
         console.log(`✅ OTP sent successfully to ${email}`);
         res.json({ status: "OTP_SENT" });
 
