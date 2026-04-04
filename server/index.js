@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal');
-const PublicMessageModel = require('./models/Message');
+const PublicMessageModel = require('./models/Message'); // Ensure this model exists!
 const OTPModel = require('./models/OTP');
 
 const app = express();
@@ -34,18 +34,13 @@ const transporter = nodemailer.createTransport({
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
-// --- UPDATED REGISTER & OTP ---
+// --- REGISTER, OTP, & LOGIN ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
-    
     try {
-        // Check if user already exists in the database
         const existingUser = await UsersModel.findOne({ email });
-        if (existingUser) {
-            return res.json({ status: "ALREADY_EXISTS" });
-        }
+        if (existingUser) return res.json({ status: "ALREADY_EXISTS" });
 
-        // If not, generate and send OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         await OTPModel.create({ email, otp, userData: { name, password } });
         
@@ -59,13 +54,9 @@ app.post('/register', async (req, res) => {
                     <h2 style="color:#FAEF5D; font-size:40px; letter-spacing:10px;">${otp}</h2>
                    </div>`
         };
-        
         await transporter.sendMail(mailOptions);
         res.json({ status: "OTP_SENT" });
-    } catch (err) { 
-        console.error(err);
-        res.status(500).json({ error: "Registration failed" }); 
-    }
+    } catch (err) { res.status(500).json({ error: "Registration failed" }); }
 });
 
 app.post("/verify-otp", async (req, res) => {
@@ -84,12 +75,25 @@ app.post("/login", (req, res) => {
     const { email, password } = req.body;
     UsersModel.findOne({ email: email })
         .then(user => {
-            if (user) {
-                if (user.password === password) {
-                    res.json({ status: "Success", userId: user._id, username: user.name });
-                } else { res.status(401).json("Incorrect Password"); }
+            if (user && user.password === password) {
+                res.json({ status: "Success", userId: user._id, username: user.name });
             } else { res.status(401).json("Invalid Credentials"); }
         }).catch(err => res.status(500).json(err));
+});
+
+// --- MESSAGE ROUTES (RE-ADDED) ---
+app.get("/api/messages", async (req, res) => {
+    try {
+        const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
+        res.json(messages);
+    } catch (err) { res.status(500).json({ error: "Failed to fetch messages" }); }
+});
+
+app.post("/api/messages", async (req, res) => {
+    try {
+        const newMessage = await PublicMessageModel.create(req.body);
+        res.status(201).json(newMessage);
+    } catch (err) { res.status(500).json({ error: "Failed to post message" }); }
 });
 
 // --- JOURNAL & MUSIC ROUTES ---

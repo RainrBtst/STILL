@@ -3,6 +3,9 @@ import './SendSong.css';
 import Message from './Message';
 import axios from 'axios';
 
+// Update this to your active Ngrok URL
+const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
+
 function SendSong() {
     const [messages, setMessages] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,10 +22,14 @@ function SendSong() {
         recipient: '', message: '', song: '', albumArt: '', previewUrl: ''
     });
 
+    // --- UPDATED FETCH FUNCTION ---
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const res = await axios.get('https://still-csmi.onrender.com/api/messages');
+                // Now using the Ngrok URL
+                const res = await axios.get(`${API_BASE_URL}/api/messages`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 setMessages(res.data);
             } catch (err) {
                 console.error("Error fetching messages:", err);
@@ -82,14 +89,18 @@ function SendSong() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // --- UPDATED SUBMIT FUNCTION ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('https://still-csmi.onrender.com/api/messages', formData);
+            // Now using the Ngrok URL
+            const response = await axios.post(`${API_BASE_URL}/api/messages`, formData);
             setMessages([response.data, ...messages]);
             setIsModalOpen(false);
             setFormData({ recipient: '', message: '', song: '', albumArt: '', previewUrl: '' });
-        } catch (err) { console.error(err); }
+        } catch (err) { 
+            console.error("Error posting message:", err); 
+        }
     };
 
     const filteredMessages = messages.filter(msg =>
