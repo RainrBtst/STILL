@@ -16,8 +16,12 @@ function Signup() {
         e.preventDefault();
         setLoading(true); // Start loading
 
-        // UPDATED: Using your newest active tunnel link
-        axios.post('https://warm-queens-dress.loca.lt/register', { name, email, password })
+        // UPDATED: Using your newest active tunnel link and bypass header
+        axios.post('https://bumpy-maps-cut.loca.lt/register', { name, email, password }, {
+            headers: {
+                "bypass-tunnel-reminder": "true"
+            }
+        })
             .then(result => {
                 console.log("Server Response:", result.data);
                 // Check if the backend confirms OTP was saved/sent
@@ -40,8 +44,12 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        // UPDATED: Using your newest active tunnel link
-        axios.post('https://warm-queens-dress.loca.lt/verify-otp', { email, otp })
+        // UPDATED: Using your newest active tunnel link and bypass header
+        axios.post('https://bumpy-maps-cut.loca.lt/verify-otp', { email, otp }, {
+            headers: {
+                "bypass-tunnel-reminder": "true"
+            }
+        })
             .then(result => {
                 if (result.data.status === "Success") {
                     alert("Email Verified Successfully!");
