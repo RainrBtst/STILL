@@ -20,18 +20,12 @@ app.use(cors({
     credentials: true
 }));
 
-// --- STABILIZED NODEMAILER ---
-// Updated to use specific host and port to bypass Render connection blocks
+// --- NODEMAILER ---
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, 
+    service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS 
-    },
-    tls: {
-        rejectUnauthorized: false 
     }
 });
 
@@ -40,7 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB Atlas!"))
     .catch(err => console.error("MongoDB Connection Error:", err));
 
-// --- MUSIC SEARCH (UNTOUCHED) ---
+// --- MUSIC SEARCH ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
@@ -93,25 +87,27 @@ app.get("/api/journals/user/:username", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to fetch journals" }); }
 });
 
-// --- AUTH & LOGIN ---
+// --- AUTH & LOGIN (UPDATED LOGIC) ---
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
     UsersModel.findOne({ email: email })
         .then(user => {
             if (user) {
+                // If email is correct, check password
                 if (user.password === password) {
                     res.json({ status: "Success", userId: user._id, username: user.name });
                 } else {
+                    // Password wrong, email right
                     res.json("Incorrect password");
                 }
             } else {
+                // Email wrong (no user found)
                 res.json("Invalid credential");
             }
         })
         .catch(err => res.status(500).json(err));
 });
 
-// --- STABILIZED REGISTER ROUTE ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
@@ -119,36 +115,16 @@ app.post('/register', async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ error: "Your email is already verified" });
         }
-
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        // Save OTP to DB first
         await OTPModel.create({ email, otp, userData: { name, password } });
-
-        const mailOptions = {
-            from: `"STILL Support" <${process.env.EMAIL_USER}>`,
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'STILL - Verification Code',
-            html: `<div style="font-family: sans-serif; text-align: center;">
-                    <h2>STILL</h2>
-                    <p>Your verification code is:</p>
-                    <h1 style="color: #000; background: #fbff00; display: inline-block; padding: 10px 20px; letter-spacing: 5px;">${otp}</h1>
-                   </div>`
-        };
-
-        // Use callback to ensure Render sends the response correctly
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Nodemailer Error:", error);
-                return res.status(500).json({ error: "Failed to send OTP email" });
-            }
-            res.json({ status: "OTP_SENT" });
+            html: `<b>${otp}</b>`
         });
-
-    } catch (err) { 
-        console.error("Register Error:", err);
-        res.status(500).json({ error: "Registration failed" }); 
-    }
+        res.json({ status: "OTP_SENT" });
+    } catch (err) { res.status(500).json({ error: "OTP failed" }); }
 });
 
 app.post("/verify-otp", async (req, res) => {
