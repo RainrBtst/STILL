@@ -38,18 +38,19 @@ function Home() {
     const isExpired = (createdAt) => {
         const entryDate = new Date(createdAt);
         const now = new Date();
-        return (now - entryDate) / (1000 * 60 * 60) >= 24;
+        const differenceInHours = (now - entryDate) / (1000 * 60 * 60);
+        return differenceInHours >= 24;
     };
 
     const activeEntries = entries.filter(entry => !isExpired(entry.createdAt));
     const archivedEntries = entries.filter(entry => isExpired(entry.createdAt));
 
-    // --- FETCH ENTRIES WITH NGROK FIX ---
     useEffect(() => {
         const loadEntries = async () => {
             const username = localStorage.getItem("currentUsername"); 
             if (!username) return;
             try {
+                // ADDED HEADERS HERE
                 const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
@@ -86,7 +87,6 @@ function Home() {
         setIsJournaling(true);
     };
 
-    // --- SAVE ENTRY ---
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername"); 
         const newEntryData = {
@@ -103,6 +103,7 @@ function Home() {
         };
 
         try {
+            // ADDED HEADERS HERE
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
@@ -115,11 +116,11 @@ function Home() {
         }
     };
 
-    // --- MUSIC SEARCH WITH NGROK FIX ---
     useEffect(() => {
         const fetchSongs = async () => {
             if (searchQuery.length > 2) {
                 try {
+                    // ADDED HEADERS HERE
                     const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`, {
                         headers: { 'ngrok-skip-browser-warning': 'true' }
                     });
@@ -134,36 +135,23 @@ function Home() {
     return (
         <div className="nt-container">
             {isJournaling && (
-                <Journal 
-                    selectedSong={selectedSong} 
-                    onClose={() => setIsJournaling(false)} 
-                    onSave={saveNewEntry}
-                />
+                <Journal selectedSong={selectedSong} onClose={() => setIsJournaling(false)} onSave={saveNewEntry} />
             )}
 
             {viewingEntry && (
-                <ReadJournal 
-                    selectedSong={viewingEntry} 
-                    existingData={viewingEntry}
-                    onClose={() => setViewingEntry(null)} 
-                />
+                <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />
             )}
 
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
+                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
                     <span>Send a Song</span>
                 </div>
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
                         <div className="nt-search-bar">
                             <span className="search-icon">🔍</span>
-                            <input 
-                                type="text" 
-                                placeholder="Search Songs..." 
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                         </div>
                         {results.length > 0 && (
                             <div className="nt-search-dropdown">
@@ -182,8 +170,8 @@ function Home() {
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
                         <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
                         {showProfileDropdown && (
-                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000}}>
-                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontWeight: 'bold'}}>LOGOUT</button>
+                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
+                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
                             </div>
                         )}
                     </div>
@@ -202,9 +190,7 @@ function Home() {
                                     <h3>{selectedSong.name}</h3>
                                     <p>{selectedSong.artist}</p>
                                     <audio ref={audioRef} src={selectedSong.previewUrl} onEnded={() => setIsPlaying(false)} />
-                                    <button className="nt-custom-play" onClick={togglePlay}>
-                                        {isPlaying ? "❚❚ PAUSE PREVIEW" : "▶ PLAY PREVIEW"}
-                                    </button>
+                                    <button className="nt-custom-play" onClick={togglePlay}>{isPlaying ? "❚❚ PAUSE PREVIEW" : "▶ PLAY PREVIEW"}</button>
                                 </div>
                                 <button className="nt-remove-btn" onClick={() => setSelectedSong(null)}>✕</button>
                             </div>
@@ -225,7 +211,7 @@ function Home() {
                                             <span className="nt-date">{entry.journalTitle || "Untitled Entry"}</span>
                                             {entry.mood && <span className="nt-vibe-tag">{entry.mood}</span>}
                                         </div>
-                                        <p className="nt-song-info">{new Date(entry.createdAt).toLocaleDateString()} • {entry.songDetails?.title}</p>
+                                        <p className="nt-song-info">{new Date(entry.createdAt).toLocaleDateString()} • {entry.songDetails?.title || "No Title"} - {entry.songDetails?.artist || "Unknown"}</p>
                                     </div>
                                 </div>
                             ))}

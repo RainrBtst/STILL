@@ -13,19 +13,18 @@ const OTPModel = require('./models/OTP');
 const app = express();
 app.use(express.json());
 
-// --- UPDATED: Specific CORS for Vercel + Ngrok ---
+// --- ONLY CHANGED THIS FOR SECURITY/NGROK ---
 app.use(cors({ 
     origin: ["https://still-cyan.vercel.app", "http://localhost:3000"], 
     methods: ["GET", "POST", "PUT", "DELETE"], 
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"]
+    credentials: true 
 }));
 
-// Middleware to bypass Ngrok browser warning
 app.use((req, res, next) => {
     res.setHeader('ngrok-skip-browser-warning', 'true');
     next();
 });
+// --------------------------------------------
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas!"))
@@ -69,7 +68,6 @@ app.post("/verify-otp", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Verification failed" }); }
 });
 
-// --- LOGIN ---
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
     UsersModel.findOne({ email: email })
@@ -82,7 +80,6 @@ app.post("/login", (req, res) => {
         }).catch(err => res.status(500).json(err));
 });
 
-// --- JOURNALS ---
 app.post("/api/journals", async (req, res) => {
     try {
         const newJournal = await JournalModel.create(req.body);
@@ -97,7 +94,6 @@ app.get("/api/journals/user/:username", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to fetch" }); }
 });
 
-// --- MUSIC & MESSAGES ---
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
