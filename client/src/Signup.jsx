@@ -9,35 +9,51 @@ function Signup() {
     const [password, setPassword] = useState("");
     const [otp, setOtp] = useState(""); 
     const [isVerifying, setIsVerifying] = useState(false); 
+    const [loading, setLoading] = useState(false); // New Loading State
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setLoading(true); // Start loading
+
         axios.post('https://still-csmi.onrender.com/register', { name, email, password })
             .then(result => {
-                console.log(result);
-                setIsVerifying(true);
+                console.log("Server Response:", result.data);
+                // Check if the backend confirms OTP was saved/sent
+                if (result.data.status === "OTP_SENT") {
+                    setIsVerifying(true);
+                } else {
+                    alert("Something went wrong. Please try again.");
+                }
             })
             .catch(err => {
-                console.log(err);
-                // Check for the specific "already verified" error from backend
-                if (err.response && err.response.data && err.response.data.error === "Your email is already verified") {
-                    alert("Your email is already verified");
-                } else {
-                    alert("Registration failed. Please try again.");
-                }
+                console.log("Error Detail:", err);
+                // Even if the email times out, the backend now tries to save the OTP first
+                // If you get a 500 error here, check your MongoDB Compass to see if the OTP exists
+                alert("Registration error. Check if the email is already in use.");
+            })
+            .finally(() => {
+                setLoading(false); // Stop loading
             });
     };
 
     const handleVerifyOtp = (e) => {
         e.preventDefault();
+        setLoading(true);
+
         axios.post('https://still-csmi.onrender.com/verify-otp', { email, otp })
             .then(result => {
-                alert("Email Verified Successfully!");
-                navigate('/login');
+                if (result.data.status === "Success") {
+                    alert("Email Verified Successfully!");
+                    navigate('/login');
+                }
             })
             .catch(err => {
-                alert("Invalid Verification Code. Please try again.");
+                console.log(err);
+                alert("Invalid Verification Code. Check MongoDB Compass if the email didn't arrive.");
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
@@ -60,27 +76,36 @@ function Signup() {
                                 <div className="login-input-group">
                                     <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
                                 </div>
-                                <button className="login-submit-btn" type="submit">REGISTER ➔</button>
+                                <button className="login-submit-btn" type="submit" disabled={loading}>
+                                    {loading ? "SENDING CODE..." : "REGISTER ➔"}
+                                </button>
                                 <Link to="/login" className="login-register-link">ALREADY HAVE AN ACCOUNT?</Link>
                             </form>
                         </>
                     ) : (
                         <>
                             <h2 className="login-header">VERIFY EMAIL</h2>
-                            <p className="login-sub">We sent a 6-digit code to {email}</p>
+                            <p className="login-sub">Check your Gmail for the 6-digit code.</p>
                             <form className="form" onSubmit={handleVerifyOtp}>
                                 <div className="login-input-group">
                                     <input 
                                         type="text" 
-                                        placeholder="Enter 6-digit code" 
+                                        placeholder="Enter code" 
                                         maxLength="6"
                                         onChange={(e) => setOtp(e.target.value)} 
                                         required 
                                         style={{ textAlign: 'center', letterSpacing: '5px', fontSize: '1.5rem' }}
                                     />
                                 </div>
-                                <button className="login-submit-btn" type="submit">VERIFY & LOGIN ➔</button>
-                                <button type="button" className="login-register-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsVerifying(false)}>
+                                <button className="login-submit-btn" type="submit" disabled={loading}>
+                                    {loading ? "VERIFYING..." : "VERIFY & LOGIN ➔"}
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="login-register-link" 
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '10px' }} 
+                                    onClick={() => setIsVerifying(false)}
+                                >
                                     BACK TO SIGNUP
                                 </button>
                             </form>
