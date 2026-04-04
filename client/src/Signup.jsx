@@ -16,8 +16,8 @@ function Signup() {
         e.preventDefault();
         setLoading(true); // Start loading
 
-        // CHANGED: Pointing to your Local Tunnel instead of Render
-        axios.post('https://deep-queens-peel.loca.lt/register', { name, email, password })
+        // UPDATED: Using your newest active tunnel link
+        axios.post('https://warm-queens-dress.loca.lt/register', { name, email, password })
             .then(result => {
                 console.log("Server Response:", result.data);
                 // Check if the backend confirms OTP was saved/sent
@@ -40,8 +40,8 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        // CHANGED: Pointing to your Local Tunnel instead of Render
-        axios.post('https://deep-queens-peel.loca.lt/verify-otp', { email, otp })
+        // UPDATED: Using your newest active tunnel link
+        axios.post('https://warm-queens-dress.loca.lt/verify-otp', { email, otp })
             .then(result => {
                 if (result.data.status === "Success") {
                     alert("Email Verified Successfully!");
