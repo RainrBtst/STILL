@@ -101,7 +101,7 @@ app.post("/login", (req, res) => {
                 if (user.password === password) {
                     res.json({ status: "Success", userId: user._id, username: user.name });
                 } else {
-                    res.json("Incorrect password");
+                    res.json("The password is incorrect");
                 }
             } else {
                 res.json("Invalid credential");
@@ -110,50 +110,57 @@ app.post("/login", (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-// --- REGISTER (FIXED TIMEOUT LOGIC) ---
+// --- REGISTER (INTEGRATED FROM LAST NIGHT) ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
-    try {
-        const existingUser = await UsersModel.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ error: "Your email is already verified" });
-        }
+    // 6-digit OTP generation from last night
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    try {
+        // Saving the record as we did last night
         await OTPModel.create({ email, otp, userData: { name, password } });
 
-        const mailOptions = {
-            from: `"STILL Support" <${process.env.EMAIL_USER}>`,
+        // Email layout based on your last night's code
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
             to: email,
-            subject: 'STILL - Verification Code',
-            html: `Your verification code is: <b>${otp}</b>`
-        };
-
-        // Attempt to send email
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error("Nodemailer Error:", error);
-                // Even if email fails, we send a 500 so frontend knows
-                return res.status(500).json({ error: "OTP failed to send" });
-            }
-            res.json({ status: "OTP_SENT" });
+            subject: 'STILL - Your Verification Code',
+            html: `<div style="background:#121212; color:white; padding:20px; text-align:center;">
+                    <h1 style="color:#FAEF5D;">STILL</h1>
+                    <p>Your 6-digit verification code is:</p>
+                    <h2 style="letter-spacing:5px; color:#FAEF5D;">${otp}</h2>
+                   </div>`
         });
-
-    } catch (err) { 
-        res.status(500).json({ error: "Registration crash" }); 
+        
+        res.json({ status: "OTP_SENT" });
+    } catch (err) {
+        console.error("Nodemailer Error:", err);
+        // This triggers the alert in your frontend if email fails
+        res.status(500).json({ error: "Failed to send verification email" });
     }
 });
 
+// --- OTP VERIFICATION (INTEGRATED FROM LAST NIGHT) ---
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
     try {
         const otpRecord = await OTPModel.findOne({ email, otp });
         if (otpRecord) {
-            await UsersModel.create({ name: otpRecord.userData.name, email, password: otpRecord.userData.password });
+            // Move data to Users collection
+            await UsersModel.create({
+                name: otpRecord.userData.name,
+                email: email,
+                password: otpRecord.userData.password
+            });
+            // Clean up OTP record
             await OTPModel.deleteOne({ _id: otpRecord._id });
             res.json({ status: "Success" });
-        } else { res.status(400).json({ error: "Invalid" }); }
-    } catch (err) { res.status(500).json({ error: "Failed" }); }
+        } else {
+            res.status(400).json({ error: "Invalid or expired code" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: "Verification failed" });
+    }
 });
 
 app.get("/", (req, res) => res.send("Server is alive!"));
