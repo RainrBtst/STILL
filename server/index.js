@@ -20,18 +20,22 @@ app.use(cors({
     credentials: true
 }));
 
-// --- NODEMAILER (FIXED FOR RENDER TIMEOUTS) ---
+// --- STRENGTHENED NODEMAILER CONFIG ---
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587, // Changed from 465 to 587 to avoid Render timeout
-    secure: false, // Must be false for port 587
+    port: 587,
+    secure: false, // Required for 587
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS 
     },
     tls: {
-        rejectUnauthorized: false // Prevents certificate blocks
-    }
+        rejectUnauthorized: false 
+    },
+    // Adding extra time for Render to talk to Google
+    connectionTimeout: 20000, // 20 seconds
+    greetingTimeout: 20000,
+    socketTimeout: 20000
 });
 
 // --- DATABASE ---
@@ -110,7 +114,7 @@ app.post("/login", (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-// --- REGISTER (FIXED TIMEOUT LOGIC) ---
+// --- REGISTER (FORCED RESPONSE FOR OTP UI) ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
@@ -126,16 +130,18 @@ app.post('/register', async (req, res) => {
             from: `"STILL Support" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'STILL - Verification Code',
-            html: `Your verification code is: <b>${otp}</b>`
+            html: `Your code is: <b>${otp}</b>`
         };
 
-        // Attempt to send email
+        // We use a longer timeout here
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error("Nodemailer Error:", error);
-                // Even if email fails, we send a 500 so frontend knows
+                // Even if it fails, we need to send a response so your UI 
+                // shows the OTP box
                 return res.status(500).json({ error: "OTP failed to send" });
             }
+            console.log("Email sent successfully!");
             res.json({ status: "OTP_SENT" });
         });
 
