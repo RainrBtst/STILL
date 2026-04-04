@@ -26,21 +26,26 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
 // --- NODEMAILER TRANSPORTER ---
-// Port 465 with secure: true is the most reliable for Gmail on Render
+// Using host and port 465 is more stable for Cloud Deployments than service: 'gmail'
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true, 
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS 
-    }
+        pass: process.env.EMAIL_PASS // MUST be the 16-character App Password
+    },
+    tls: {
+        // This is critical for Render to bypass network security "walls"
+        rejectUnauthorized: false
+    },
+    connectionTimeout: 15000 // Wait 15 seconds before giving up
 });
 
 // Verify connection on startup (Check your Render logs for this!)
 transporter.verify((error, success) => {
     if (error) {
-        console.log("❌ GMAIL STATUS: Connection failed. Check App Password.");
+        console.log("❌ GMAIL STATUS: Blocked/Connection Timeout. Error:", error.message);
     } else {
         console.log("✅ GMAIL STATUS: Ready to send emails");
     }
@@ -52,7 +57,7 @@ app.post('/register', async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
-        // 1. Save to MongoDB
+        // 1. Save to MongoDB (Always do this first)
         await OTPModel.create({ email, otp, userData: { name, password } });
 
         // 2. Prepare Email
@@ -69,16 +74,23 @@ app.post('/register', async (req, res) => {
                 </div>`
         };
 
-        // 3. SEND EMAIL (We await this so it doesn't get cut off by Render)
-        await transporter.sendMail(mailOptions);
-        
-        console.log(`✅ OTP sent to ${email}`);
+        // 3. SEND EMAIL
+        // We use a callback here so we can log success/failure without crashing the route
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.log("❌ EMAIL FAILED TO SEND:", err.message);
+            } else {
+                console.log("✅ EMAIL SENT SUCCESSFULLY:", info.response);
+            }
+        });
+
+        // 4. Respond to Frontend
+        // We send "OTP_SENT" even if the email is slow so the user sees the input box
         res.json({ status: "OTP_SENT" });
 
     } catch (err) {
         console.error("❌ Registration Error:", err);
-        // If it fails here, the frontend gets an error instead of a false success
-        res.status(500).json({ error: "Could not send verification email. please try again." });
+        res.status(500).json({ error: "Registration failed. Please try again." });
     }
 });
 
