@@ -16,7 +16,8 @@ function Signup() {
         e.preventDefault();
         setLoading(true); // Start loading
 
-        axios.post('https://still-csmi.onrender.com/register', { name, email, password })
+        // CHANGED: Pointing to your Local Tunnel instead of Render
+        axios.post('https://deep-queens-peel.loca.lt/register', { name, email, password })
             .then(result => {
                 console.log("Server Response:", result.data);
                 // Check if the backend confirms OTP was saved/sent
@@ -28,8 +29,6 @@ function Signup() {
             })
             .catch(err => {
                 console.log("Error Detail:", err);
-                // Even if the email times out, the backend now tries to save the OTP first
-                // If you get a 500 error here, check your MongoDB Compass to see if the OTP exists
                 alert("Registration error. Check if the email is already in use.");
             })
             .finally(() => {
@@ -41,7 +40,8 @@ function Signup() {
         e.preventDefault();
         setLoading(true);
 
-        axios.post('https://still-csmi.onrender.com/verify-otp', { email, otp })
+        // CHANGED: Pointing to your Local Tunnel instead of Render
+        axios.post('https://deep-queens-peel.loca.lt/verify-otp', { email, otp })
             .then(result => {
                 if (result.data.status === "Success") {
                     alert("Email Verified Successfully!");
