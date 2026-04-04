@@ -45,20 +45,22 @@ function Home() {
     const activeEntries = entries.filter(entry => !isExpired(entry.createdAt));
     const archivedEntries = entries.filter(entry => isExpired(entry.createdAt));
 
+    // --- FIXED LOAD LOGIC ---
     useEffect(() => {
         const loadEntries = async () => {
             const username = localStorage.getItem("currentUsername"); 
             if (!username) return;
             try {
-                // ADDED HEADERS HERE
                 const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 setEntries(res.data);
-            } catch (err) { console.error("Failed to load journals", err); }
+            } catch (err) { 
+                console.error("Failed to load journals", err); 
+            }
         };
         loadEntries();
-    }, []);
+    }, [isJournaling]); // Added isJournaling as a dependency so it refreshes after you finish a journal
 
     const handleSelectSong = (track) => {
         setSelectedSong(track);
@@ -103,11 +105,11 @@ function Home() {
         };
 
         try {
-            // ADDED HEADERS HERE
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
-            setEntries([response.data, ...entries]);
+            // Immediately add the new entry to the top of the list
+            setEntries(prev => [response.data, ...prev]);
             setIsJournaling(false);
             setSelectedSong(null);
         } catch (err) {
@@ -120,7 +122,6 @@ function Home() {
         const fetchSongs = async () => {
             if (searchQuery.length > 2) {
                 try {
-                    // ADDED HEADERS HERE
                     const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`, {
                         headers: { 'ngrok-skip-browser-warning': 'true' }
                     });
