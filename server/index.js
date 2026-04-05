@@ -7,13 +7,12 @@ const nodemailer = require("nodemailer");
 
 const UsersModel = require('./models/Users');
 const JournalModel = require('./models/Journal');
-const PublicMessageModel = require('./models/Message'); // Ensure this model exists!
+const PublicMessageModel = require('./models/Message'); 
 const OTPModel = require('./models/OTP');
 
 const app = express();
 app.use(express.json());
 
-// --- CORS & NGROK SETTINGS ---
 app.use(cors({ 
     origin: ["https://still-cyan.vercel.app", "http://localhost:3000"], 
     methods: ["GET", "POST", "PUT", "DELETE"], 
@@ -34,7 +33,6 @@ const transporter = nodemailer.createTransport({
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
-// --- REGISTER, OTP, & LOGIN ---
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
@@ -87,7 +85,6 @@ app.post("/login", (req, res) => {
         }).catch(err => res.status(500).json(err));
 });
 
-// --- MESSAGE ROUTES (RE-ADDED) ---
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
@@ -102,7 +99,6 @@ app.post("/api/messages", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to post message" }); }
 });
 
-// --- JOURNAL & MUSIC ROUTES ---
 app.post("/api/journals", async (req, res) => {
     try {
         const newJournal = await JournalModel.create(req.body);
@@ -110,9 +106,15 @@ app.post("/api/journals", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to save" }); }
 });
 
-app.get("/api/journals/user/:username", async (req, res) => {
+// --- UPDATED: Search by UserId OR Username (to bring back old data) ---
+app.get("/api/journals/user/:identifier", async (req, res) => {
     try {
-        const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
+        const journals = await JournalModel.find({
+            $or: [
+                { userId: req.params.identifier },
+                { username: req.params.identifier }
+            ]
+        }).sort({ createdAt: -1 });
         res.json(journals);
     } catch (err) { res.status(500).json({ error: "Failed to fetch" }); }
 });
