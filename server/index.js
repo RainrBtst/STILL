@@ -110,9 +110,10 @@ app.post("/api/journals", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to save" }); }
 });
 
-app.get("/api/journals/user/:username", async (req, res) => {
+// CHANGED: Querying by userId instead of username to prevent data leaks between same-named users
+app.get("/api/journals/user/:userId", async (req, res) => {
     try {
-        const journals = await JournalModel.find({ username: req.params.username }).sort({ createdAt: -1 });
+        const journals = await JournalModel.find({ userId: req.params.userId }).sort({ createdAt: -1 });
         res.json(journals);
     } catch (err) { res.status(500).json({ error: "Failed to fetch" }); }
 });

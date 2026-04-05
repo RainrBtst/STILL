@@ -45,13 +45,14 @@ function Home() {
     const activeEntries = entries.filter(entry => !isExpired(entry.createdAt));
     const archivedEntries = entries.filter(entry => isExpired(entry.createdAt));
 
-    // --- FIXED LOAD LOGIC ---
+    // --- UPDATED LOAD LOGIC (Using UserId for privacy) ---
     useEffect(() => {
         const loadEntries = async () => {
-            const username = localStorage.getItem("currentUsername"); 
-            if (!username) return;
+            const userId = localStorage.getItem("currentUserId"); 
+            if (!userId) return;
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`, {
+                // Changed from /user/${username} to /user/${userId}
+                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${userId}`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 setEntries(res.data);
@@ -60,7 +61,7 @@ function Home() {
             }
         };
         loadEntries();
-    }, [isJournaling]); // Added isJournaling as a dependency so it refreshes after you finish a journal
+    }, [isJournaling]); 
 
     const handleSelectSong = (track) => {
         setSelectedSong(track);
@@ -89,10 +90,14 @@ function Home() {
         setIsJournaling(true);
     };
 
+    // --- UPDATED SAVE LOGIC (Attaching UserId) ---
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername"); 
+        const userId = localStorage.getItem("currentUserId"); 
+
         const newEntryData = {
-            username: username,
+            userId: userId, // Added this field
+            username: username, 
             journalTitle: journalData.title,
             content: journalData.content,
             mood: journalData.mood,
@@ -108,7 +113,6 @@ function Home() {
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
-            // Immediately add the new entry to the top of the list
             setEntries(prev => [response.data, ...prev]);
             setIsJournaling(false);
             setSelectedSong(null);
