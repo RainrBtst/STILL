@@ -24,7 +24,7 @@ function Signup() {
                     setIsVerifying(true);
                 } 
                 else if (result.data.status === "ALREADY_EXISTS") {
-                    alert("Already verified.");
+                    alert("Email already used.");
                     navigate('/login');
                 }
                 else {
