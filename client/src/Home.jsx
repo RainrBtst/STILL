@@ -45,16 +45,13 @@ function Home() {
     const activeEntries = entries.filter(entry => !isExpired(entry.createdAt));
     const archivedEntries = entries.filter(entry => isExpired(entry.createdAt));
 
-    // FETCH ENTRIES: Updated to be more robust on refresh
+    // --- FIXED LOAD LOGIC ---
     useEffect(() => {
         const loadEntries = async () => {
-            const userId = localStorage.getItem("currentUserId");
-            const username = localStorage.getItem("currentUsername");
-            const identifier = userId || username; 
-
-            if (!identifier) return;
+            const username = localStorage.getItem("currentUsername"); 
+            if (!username) return;
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${identifier}`, {
+                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 setEntries(res.data);
@@ -63,7 +60,7 @@ function Home() {
             }
         };
         loadEntries();
-    }, [isJournaling]); 
+    }, [isJournaling]); // Added isJournaling as a dependency so it refreshes after you finish a journal
 
     const handleSelectSong = (track) => {
         setSelectedSong(track);
@@ -92,14 +89,10 @@ function Home() {
         setIsJournaling(true);
     };
 
-    // SAVE ENTRY: Fixed to include userId in the payload
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername"); 
-        const userId = localStorage.getItem("currentUserId"); 
-
         const newEntryData = {
-            userId: userId, // CRITICAL FIX: Links journal to user ID
-            username: username, 
+            username: username,
             journalTitle: journalData.title,
             content: journalData.content,
             mood: journalData.mood,
@@ -115,10 +108,8 @@ function Home() {
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
-            
-            // Add the new journal to state immediately
+            // Immediately add the new entry to the top of the list
             setEntries(prev => [response.data, ...prev]);
-            
             setIsJournaling(false);
             setSelectedSong(null);
         } catch (err) {
