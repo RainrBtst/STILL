@@ -45,13 +45,15 @@ function Home() {
     const activeEntries = entries.filter(entry => !isExpired(entry.createdAt));
     const archivedEntries = entries.filter(entry => isExpired(entry.createdAt));
 
-    // --- FIXED LOAD LOGIC ---
     useEffect(() => {
         const loadEntries = async () => {
-            const username = localStorage.getItem("currentUsername"); 
-            if (!username) return;
+            const userId = localStorage.getItem("currentUserId");
+            const username = localStorage.getItem("currentUsername");
+            const identifier = userId || username; 
+
+            if (!identifier) return;
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${username}`, {
+                const res = await axios.get(`${API_BASE_URL}/api/journals/user/${identifier}`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 setEntries(res.data);
@@ -60,7 +62,7 @@ function Home() {
             }
         };
         loadEntries();
-    }, [isJournaling]); // Added isJournaling as a dependency so it refreshes after you finish a journal
+    }, [isJournaling]); 
 
     const handleSelectSong = (track) => {
         setSelectedSong(track);
@@ -91,8 +93,11 @@ function Home() {
 
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername"); 
+        const userId = localStorage.getItem("currentUserId"); 
+
         const newEntryData = {
-            username: username,
+            userId: userId, 
+            username: username, 
             journalTitle: journalData.title,
             content: journalData.content,
             mood: journalData.mood,
@@ -108,8 +113,11 @@ function Home() {
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
-            // Immediately add the new entry to the top of the list
+            
+            // CRITICAL FIX: Add the response from server directly to entries state
+            // This ensures the new journal "sticks" to the UI immediately.
             setEntries(prev => [response.data, ...prev]);
+            
             setIsJournaling(false);
             setSelectedSong(null);
         } catch (err) {
