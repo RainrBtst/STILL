@@ -112,7 +112,6 @@ function Profile() {
                         
                         {showPasswordFields && (
                             <div className="password-dropdown-section">
-                                {/* Added password-input class and removed weight */}
                                 <input type="password" placeholder="Current Password" className="profile-input-edit password-input" style={{fontWeight: 'normal'}} />
                                 <input type="password" placeholder="New Password" className="profile-input-edit password-input" style={{fontWeight: 'normal'}} />
                             </div>
