@@ -22,6 +22,11 @@ function SendSong() {
         recipient: '', message: '', song: '', albumArt: '', previewUrl: ''
     });
 
+    // ADDED PROFILE HANDLER
+    const handleProfile = () => {
+        window.location.href = '/profile';
+    };
+
     // --- UPDATED FETCH FUNCTION ---
     useEffect(() => {
         const fetchMessages = async () => {
@@ -175,6 +180,8 @@ function SendSong() {
                     <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
                     {showProfileDropdown && (
                         <div className="ss-logout-dropdown">
+                            {/* ADDED PROFILE BUTTON */}
+                            <button onClick={handleProfile}>PROFILE</button>
                             <button onClick={() => window.location.href='/login'}>LOGOUT</button>
                         </div>
                     )}
