@@ -1,0 +1,212 @@
+/* --- BASE CONTAINER & NAV --- */
+.nt-container {
+    background-color: #121212;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 2rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.nt-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 3rem auto;
+    position: relative;
+}
+
+.nt-logo {
+    color: #FAEF5D;
+    font-weight: 900;
+    letter-spacing: -2px;
+    font-size: 2rem;
+}
+
+.nt-nav-note {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #FAEF5D;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* --- NAV PROFILE ICON & DROPDOWN --- */
+.nt-profile-circle-nav {
+    width: 45px;
+    height: 45px;
+    background: #282828;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.nt-profile-circle-nav img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nt-profile-dropdown {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background-color: #181818;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    z-index: 1000;
+    min-width: 120px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.nt-dropdown-btn {
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 8px;
+}
+
+/* --- PROFILE CARD LAYOUT --- */
+.profile-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 50px;
+}
+
+.profile-card {
+    background-color: #1a1a1a;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.profile-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    color: white;
+    text-align: left;
+}
+
+.profile-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #333;
+    margin: 15px 0 30px 0;
+}
+
+/* --- IMAGE SECTION --- */
+.profile-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.profile-image-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #282828;
+    border: 2px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.profile-image-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-action-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-yellow {
+    background-color: #FAEF5D;
+    color: black;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.btn-remove {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* --- INFO BOXES --- */
+.profile-info-section {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.profile-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.profile-value-box {
+    background: #121212;
+    border: 1px solid #333;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* --- SAVE BUTTON --- */
+.profile-save-btn {
+    width: 100%;
+    background-color: #FAEF5D;
+    color: black;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.profile-save-btn:hover {
+    box-shadow: 0 0 20px rgba(250, 239, 93, 0.4);
+    transform: translateY(-2px);
+}
