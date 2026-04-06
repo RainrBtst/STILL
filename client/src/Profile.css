@@ -29,7 +29,7 @@
     align-items: center;
 }
 
-/* --- SEND A SONG BUTTON (WITH RECTANGLE HOVER) --- */
+/* --- SEND A SONG BUTTON (WITH BLACK RECTANGLE HOVER) --- */
 .nt-nav-note {
     position: absolute;
     left: 50%;
@@ -39,18 +39,19 @@
     color: #FAEF5D;
     letter-spacing: 1px;
     text-transform: uppercase;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
-    /* Added padding so the rectangle has space around the text */
-    padding: 8px 16px;
-    border-radius: 4px; /* Slight roundness for the rectangle */
+    /* Spacing for the background box */
+    padding: 8px 20px;
+    border-radius: 20px; /* Makes it a pill/rounded rectangle */
+    border: 1px solid transparent; 
 }
 
 .nt-nav-note:hover {
-    /* This creates the rectangle appearance on hover */
-    background-color: rgba(250, 239, 93, 0.1); /* Very light yellow tint */
+    background-color: #000000; /* Solid Black */
+    border: 1px solid #333; /* Suble border to define the shape */
     color: #FAEF5D;
-    opacity: 1; /* Keep it bright */
+    opacity: 1;
 }
 
 /* --- NAV PROFILE ICON --- */
