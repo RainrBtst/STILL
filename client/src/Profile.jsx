@@ -67,7 +67,7 @@ function Profile() {
 
             <main className="profile-main">
                 <div className="profile-card">
-                    <h1 className="profile-title">Profile</h1>
+                    <h1 className="profile-title">PROFILE</h1>
                     <div className="profile-divider"></div>
 
                     <div className="profile-image-section">
