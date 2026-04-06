@@ -38,6 +38,14 @@
     color: #FAEF5D;
     letter-spacing: 1px;
     text-transform: uppercase;
+    /* Added transition for smooth glow */
+    transition: all 0.3s ease;
+}
+
+/* ADDED HOVER GLOW FOR SEND A SONG BUTTON */
+.nt-nav-note:hover {
+    text-shadow: 0 0 8px rgba(250, 239, 93, 0.8), 0 0 12px rgba(250, 239, 93, 0.4);
+    transform: translateX(-50%) scale(1.05);
 }
 
 /* --- NAV PROFILE ICON --- */
