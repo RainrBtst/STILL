@@ -29,23 +29,22 @@
     align-items: center;
 }
 
+/* --- SEND A SONG BUTTON --- */
 .nt-nav-note {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     font-weight: 600;
     font-size: 0.9rem;
-    color: #FAEF5D;
+    color: #FAEF5D; /* Theme Yellow */
     letter-spacing: 1px;
     text-transform: uppercase;
-    /* Added transition for smooth glow */
-    transition: all 0.3s ease;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
 }
 
-/* ADDED HOVER GLOW FOR SEND A SONG BUTTON */
 .nt-nav-note:hover {
-    text-shadow: 0 0 8px rgba(250, 239, 93, 0.8), 0 0 12px rgba(250, 239, 93, 0.4);
-    transform: translateX(-50%) scale(1.05);
+    opacity: 0.7; /* Matches the dropdown opacity behavior */
 }
 
 /* --- NAV PROFILE ICON --- */
@@ -69,7 +68,7 @@
     border-color: #FAEF5D;
 }
 
-/* --- DROPDOWN (NO YELLOW HOVER) --- */
+/* --- DROPDOWN (STAYS WHITE ON HOVER) --- */
 .nt-profile-dropdown {
     top: 55px !important; 
 }
@@ -79,8 +78,8 @@
 }
 
 .nt-logout-btn-dropdown:hover {
-    color: white !important; /* Prevents text turning yellow */
-    opacity: 0.7; /* Adds a simple subtle fade instead */
+    color: white !important; 
+    opacity: 0.7; 
 }
 
 /* --- PROFILE CARD LAYOUT --- */
