@@ -11,8 +11,8 @@ function Profile() {
         profilePic: null
     });
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-    const [showPasswordFields, setShowPasswordFields] = useState(false); // NEW: Password dropdown state
-    const [isEditingUsername, setIsEditingUsername] = useState(false); // NEW: Username edit state
+    const [showPasswordFields, setShowPasswordFields] = useState(false); 
+    const [isEditingUsername, setIsEditingUsername] = useState(false); 
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -51,7 +51,6 @@ function Profile() {
                 </div>
                 <div className="nt-nav-actions">
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        {/* UPDATED: Profile icon matches nav size logic */}
                         <div className="nt-profile-circle-nav" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                             {user.profilePic ? <img src={user.profilePic} alt="P" /> : "👤"}
                         </div>
@@ -67,7 +66,6 @@ function Profile() {
 
             <main className="profile-main">
                 <div className="profile-card">
-                    {/* UPDATED: Title changed to Profile */}
                     <h1 className="profile-title">Profile</h1>
                     <div className="profile-divider"></div>
 
@@ -88,7 +86,6 @@ function Profile() {
                     <div className="profile-info-section">
                         <div className="label-row">
                             <label className="profile-label">Username</label>
-                            {/* NEW: Edit button for username */}
                             <button className="edit-link-btn" onClick={() => setIsEditingUsername(!isEditingUsername)}>
                                 {isEditingUsername ? "Cancel" : "Edit"}
                             </button>
@@ -109,15 +106,15 @@ function Profile() {
                         <label className="profile-label">Email Address</label>
                         <div className="profile-value-box" style={{fontWeight: 'normal', color: '#a7a7a7'}}>{user.email}</div>
 
-                        {/* NEW: Change Password Button and Dropdown Inputs */}
                         <button className="change-pass-btn" onClick={() => setShowPasswordFields(!showPasswordFields)}>
                             Change Password {showPasswordFields ? "▲" : "▼"}
                         </button>
                         
                         {showPasswordFields && (
                             <div className="password-dropdown-section">
-                                <input type="password" placeholder="Current Password" className="profile-input-edit" />
-                                <input type="password" placeholder="New Password" className="profile-input-edit" />
+                                {/* Added password-input class and removed weight */}
+                                <input type="password" placeholder="Current Password" className="profile-input-edit password-input" style={{fontWeight: 'normal'}} />
+                                <input type="password" placeholder="New Password" className="profile-input-edit password-input" style={{fontWeight: 'normal'}} />
                             </div>
                         )}
                     </div>
