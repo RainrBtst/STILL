@@ -35,7 +35,7 @@
 
 /* --- NAV PROFILE ICON & DROPDOWN --- */
 .nt-profile-circle-nav {
-    width: 45px;
+    width: 45px; /* Matches Home.jsx size logic */
     height: 45px;
     background: #282828;
     border-radius: 50%;
@@ -45,6 +45,7 @@
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
+    font-size: 1.5rem; /* Larger emoji */
 }
 
 .nt-profile-circle-nav img {
@@ -172,13 +173,29 @@
     margin-bottom: 30px;
 }
 
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .profile-label {
     display: block;
     font-size: 0.75rem;
     font-weight: 800;
     color: white;
-    margin-bottom: 10px;
     text-transform: uppercase;
+}
+
+.edit-link-btn {
+    background: none;
+    border: none;
+    color: #FAEF5D;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
 }
 
 .profile-value-box {
@@ -189,6 +206,40 @@
     border-radius: 8px;
     font-weight: bold;
     margin-bottom: 20px;
+}
+
+.profile-input-edit {
+    width: 100%;
+    background: #121212;
+    border: 1px solid #FAEF5D;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.change-pass-btn {
+    background: none;
+    border: none;
+    color: #FAEF5D;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 5px;
+    display: block;
+}
+
+.password-dropdown-section {
+    margin-top: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- SAVE BUTTON --- */
