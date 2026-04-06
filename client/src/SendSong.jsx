@@ -176,13 +176,12 @@ function SendSong() {
             <nav className="nt-navbar">
                 <h1 className="nt-logo" onClick={() => window.location.href = '/home'}>STILL</h1>
                 <div className="nt-nav-note"><span>SEND A SONG</span></div>
-                <div className="nt-profile-container" ref={dropdownRef}>
-                    <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
+                <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
+                    <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
                     {showProfileDropdown && (
-                        <div className="ss-logout-dropdown">
-                            {/* ADDED PROFILE BUTTON */}
-                            <button onClick={handleProfile}>PROFILE</button>
-                            <button onClick={() => window.location.href='/login'}>LOGOUT</button>
+                        <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
+                            <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
+                            <button className="nt-logout-btn-dropdown" onClick={() => window.location.href='/login'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
                         </div>
                     )}
                 </div>
