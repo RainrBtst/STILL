@@ -15,6 +15,9 @@ function Profile() {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showPasswordFields, setShowPasswordFields] = useState(false); 
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
+    // ADDED STATE FOR SHOW PASSWORD TOGGLE
+    const [showPasswords, setShowPasswords] = useState(false);
+    
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -163,7 +166,8 @@ function Profile() {
                         {showPasswordFields && (
                             <div className="password-dropdown-section">
                                 <input 
-                                    type="password" 
+                                    // TYPE CHANGES DYNAMICALLY
+                                    type={showPasswords ? "text" : "password"} 
                                     placeholder="Current Password" 
                                     className="profile-input-edit password-input" 
                                     style={{fontWeight: 'normal'}} 
@@ -171,13 +175,24 @@ function Profile() {
                                     onChange={(e) => setPasswords({...passwords, current: e.target.value})}
                                 />
                                 <input 
-                                    type="password" 
+                                    // TYPE CHANGES DYNAMICALLY
+                                    type={showPasswords ? "text" : "password"} 
                                     placeholder="New Password" 
                                     className="profile-input-edit password-input" 
                                     style={{fontWeight: 'normal'}} 
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                                 />
+                                {/* ADDED SHOW PASSWORD TOGGLE BOX */}
+                                <div style={{display: 'flex', alignItems: 'center', marginTop: '10px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPasswords(!showPasswords)}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={showPasswords} 
+                                        onChange={() => {}} // Controlled by div click
+                                        style={{cursor: 'pointer'}}
+                                    />
+                                    <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>
+                                </div>
                             </div>
                         )}
                     </div>
