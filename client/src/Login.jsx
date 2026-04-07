@@ -17,8 +17,11 @@ function Login() {
         axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/login', { email, password })
             .then(result => {
                 if (result.data.status === "Success") {
+                    // Added keys to store the user ID and Email for the profile page
+                    localStorage.setItem("userId", result.data.userId); 
                     localStorage.setItem("currentUserId", result.data.userId);
                     localStorage.setItem("currentUsername", result.data.username);
+                    localStorage.setItem("currentUserEmail", email); // Stores the email entered
                     
                     // Alert removed for a smoother transition
                     navigate('/home');
