@@ -183,8 +183,8 @@ function Profile() {
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                                 />
-                                {/* ADDED SHOW PASSWORD TOGGLE BOX */}
-                                <div style={{display: 'flex', alignItems: 'center', marginTop: '10px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPasswords(!showPasswords)}>
+                                {/* ADDED SHOW PASSWORD TOGGLE BOX WITH LEFT MARGIN */}
+                                <div style={{display: 'flex', alignItems: 'center', marginTop: '10px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPasswords(!showPasswords)}>
                                     <input 
                                         type="checkbox" 
                                         checked={showPasswords} 
