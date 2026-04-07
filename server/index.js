@@ -80,8 +80,14 @@ app.post("/login", (req, res) => {
         .then(user => {
             if (user) {
                 if (user.password === password) {
-                    // --- UPDATED: Added email to the response ---
-                    res.json({ status: "Success", userId: user._id, username: user.name, email: user.email });
+                    // --- UPDATED: Added email and profilePic to the response ---
+                    res.json({ 
+                        status: "Success", 
+                        userId: user._id, 
+                        username: user.name, 
+                        email: user.email, 
+                        profilePic: user.profilePic 
+                    });
                 } else { 
                     res.status(401).json("Incorrect Password"); 
                 }

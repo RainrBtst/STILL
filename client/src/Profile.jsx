@@ -31,6 +31,7 @@ function Profile() {
                         });
                         localStorage.setItem("currentUsername", res.data.name);
                         localStorage.setItem("currentUserEmail", res.data.email);
+                        // FIXED: Ensure profilePic is updated in storage on load
                         localStorage.setItem("profilePic", res.data.profilePic || "");
                     }
                 }).catch(err => console.log("Error fetching user:", err));
@@ -73,6 +74,7 @@ function Profile() {
 
             if (response.data.status === "Success") {
                 localStorage.setItem("currentUsername", user.username);
+                // FIXED: Update profilePic in storage so Home and SendSong see it
                 localStorage.setItem("profilePic", user.profilePic || "");
                 
                 alert("Profile saved successfully!");
