@@ -9,6 +9,8 @@ function Login() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false); 
     const navigate = useNavigate();
+    // ADDED STATE FOR SHOW PASSWORD TOGGLE
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -58,12 +60,25 @@ function Login() {
                         </div>
                         <div className="nt-search-bar login-input-group">
                             <input 
-                                type="password" 
+                                // TYPE CHANGES DYNAMICALLY
+                                type={showPassword ? "text" : "password"} 
                                 placeholder="Password" 
                                 required 
                                 onChange={(e) => setPassword(e.target.value)} 
                             />
                         </div>
+
+                        {/* ADDED SHOW PASSWORD TOGGLE BOX WITH LEFT MARGIN */}
+                        <div style={{display: 'flex', alignItems: 'center', marginTop: '-10px', marginBottom: '20px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPassword(!showPassword)}>
+                            <input 
+                                type="checkbox" 
+                                checked={showPassword} 
+                                onChange={() => {}} // Controlled by div click
+                                style={{cursor: 'pointer'}}
+                            />
+                            <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>
+                        </div>
+
                         <button className="nt-btn-primary login-submit-btn" type="submit" disabled={loading}>
                             {loading ? "VERIFYING..." : "LOG IN ➔"}
                         </button>
