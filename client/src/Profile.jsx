@@ -8,8 +8,12 @@ function Profile() {
     const [user, setUser] = useState({
         username: localStorage.getItem("currentUsername") || "User",
         email: localStorage.getItem("currentUserEmail") || "user@example.com",
-        profilePic: null
+        profilePic: localStorage.getItem("profilePic") || null
     });
+
+    // New states for password inputs
+    const [passwords, setPasswords] = useState({ current: "", new: "" });
+
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showPasswordFields, setShowPasswordFields] = useState(false); 
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
@@ -17,6 +21,22 @@ function Profile() {
     const fileInputRef = useRef(null);
 
     useEffect(() => {
+        // Fetch fresh data on load to ensure sync
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+            axios.get(`${API_BASE_URL}/api/user/${userId}`)
+                .then(res => {
+                    if (res.data) {
+                        setUser({
+                            username: res.data.name,
+                            email: res.data.email,
+                            profilePic: res.data.profilePic
+                        });
+                        localStorage.setItem("profilePic", res.data.profilePic || "");
+                    }
+                }).catch(err => console.log(err));
+        }
+
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowProfileDropdown(false);
@@ -42,6 +62,39 @@ function Profile() {
         }
     };
 
+    // --- LOGIC TO SAVE DATA TO DATABASE ---
+    const handleSave = async () => {
+        const userId = localStorage.getItem("userId");
+        try {
+            const response = await axios.put(`${API_BASE_URL}/api/user/update/${userId}`, {
+                username: user.username,
+                profilePic: user.profilePic,
+                currentPassword: passwords.current,
+                newPassword: passwords.new
+            });
+
+            if (response.data.status === "Success") {
+                // Update LocalStorage so changes persist across all pages
+                localStorage.setItem("currentUsername", user.username);
+                localStorage.setItem("profilePic", user.profilePic || "");
+                
+                alert("Profile saved successfully!");
+                setIsEditingUsername(false);
+                setShowPasswordFields(false);
+                setPasswords({ current: "", new: "" });
+                
+                // Redirect home as per your original logic
+                window.location.href = '/home';
+            }
+        } catch (err) {
+            if (err.response && err.response.data.error) {
+                alert(err.response.data.error); // Alerts "Incorrect current password."
+            } else {
+                alert("Error saving changes.");
+            }
+        }
+    };
+
     return (
         <div className="nt-container">
             <nav className="nt-navbar">
@@ -50,7 +103,6 @@ function Profile() {
                     <span>Send a Song</span>
                 </div>
                 <div className="nt-nav-actions">
-                    {/* Search bar removed as requested */}
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
                         <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                             {user.profilePic ? <img src={user.profilePic} alt="P" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} /> : "👤"}
@@ -113,13 +165,27 @@ function Profile() {
                         
                         {showPasswordFields && (
                             <div className="password-dropdown-section">
-                                <input type="password" placeholder="Current Password" className="profile-input-edit password-input" style={{fontWeight: 'normal'}} />
-                                <input type="password" placeholder="New Password" className="profile-input-edit password-input" style={{fontWeight: 'normal'}} />
+                                <input 
+                                    type="password" 
+                                    placeholder="Current Password" 
+                                    className="profile-input-edit password-input" 
+                                    style={{fontWeight: 'normal'}} 
+                                    value={passwords.current}
+                                    onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+                                />
+                                <input 
+                                    type="password" 
+                                    placeholder="New Password" 
+                                    className="profile-input-edit password-input" 
+                                    style={{fontWeight: 'normal'}} 
+                                    value={passwords.new}
+                                    onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+                                />
                             </div>
                         )}
                     </div>
 
-                    <button className="profile-save-btn" onClick={() => window.location.href = '/home'}>Save Changes</button>
+                    <button className="profile-save-btn" onClick={handleSave}>Save Changes</button>
                 </div>
             </main>
         </div>

@@ -129,5 +129,28 @@ app.get("/music-search", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
 });
 
+// --- ADD THIS TO YOUR SERVER.JS ---
+app.put("/api/user/update/:id", async (req, res) => {
+    const { username, profilePic, currentPassword, newPassword } = req.body;
+    try {
+        const user = await UsersModel.findById(req.params.id);
+        if (!user) return res.status(404).json("User not found");
+
+        // Password logic: Only check/change if fields aren't empty
+        if (currentPassword || newPassword) {
+            if (user.password !== currentPassword) {
+                return res.status(400).json({ error: "Incorrect current password." });
+            }
+            user.password = newPassword;
+        }
+
+        if (username) user.name = username;
+        if (profilePic !== undefined) user.profilePic = profilePic;
+
+        await user.save();
+        res.json({ status: "Success", username: user.name, profilePic: user.profilePic });
+    } catch (err) { res.status(500).json(err); }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Server active on port ${PORT}`));
