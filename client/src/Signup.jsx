@@ -13,6 +13,8 @@ function Signup() {
     const [isVerifying, setIsVerifying] = useState(false); 
     const [loading, setLoading] = useState(false); 
     const navigate = useNavigate();
+    // ADDED STATE FOR SHOW PASSWORD TOGGLE
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -76,8 +78,26 @@ function Signup() {
                                     <input type="email" placeholder="Email Address" onChange={(e) => setEmail(e.target.value)} required />
                                 </div>
                                 <div className="login-input-group">
-                                    <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} required />
+                                    <input 
+                                        // TYPE CHANGES DYNAMICALLY
+                                        type={showPassword ? "text" : "password"} 
+                                        placeholder="Password" 
+                                        onChange={(e) => setPassword(e.target.value)} 
+                                        required 
+                                    />
                                 </div>
+
+                                {/* ADDED SHOW PASSWORD TOGGLE BOX WITH LEFT MARGIN */}
+                                <div style={{display: 'flex', alignItems: 'center', marginTop: '-10px', marginBottom: '20px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPassword(!showPassword)}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={showPassword} 
+                                        onChange={() => {}} // Controlled by div click
+                                        style={{cursor: 'pointer'}}
+                                    />
+                                    <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>
+                                </div>
+
                                 <button className="login-submit-btn" type="submit" disabled={loading}>
                                     {loading ? "SENDING CODE..." : "REGISTER ➔"}
                                 </button>
