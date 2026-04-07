@@ -33,6 +33,8 @@ const transporter = nodemailer.createTransport({
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
+// --- AUTHENTICATION ROUTES ---
+
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
@@ -85,6 +87,49 @@ app.post("/login", (req, res) => {
         }).catch(err => res.status(500).json(err));
 });
 
+// --- PROFILE & USER ROUTES ---
+
+// GET user by ID (Used to display Email and Profile Pic on the Profile Page)
+app.get("/api/user/:id", async (req, res) => {
+    try {
+        const user = await UsersModel.findById(req.params.id);
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json("User not found");
+        }
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+// PUT update user profile (Username, Photo, Password)
+app.put("/api/user/update/:id", async (req, res) => {
+    const { username, profilePic, currentPassword, newPassword } = req.body;
+    try {
+        const user = await UsersModel.findById(req.params.id);
+        if (!user) return res.status(404).json("User not found");
+
+        // Password change logic
+        if (currentPassword || newPassword) {
+            if (user.password !== currentPassword) {
+                return res.status(400).json({ error: "Incorrect current password." });
+            }
+            user.password = newPassword;
+        }
+
+        if (username) user.name = username;
+        if (profilePic !== undefined) user.profilePic = profilePic;
+
+        await user.save();
+        res.json({ status: "Success", username: user.name, profilePic: user.profilePic });
+    } catch (err) { 
+        res.status(500).json(err); 
+    }
+});
+
+// --- MESSAGES & JOURNAL ROUTES ---
+
 app.get("/api/messages", async (req, res) => {
     try {
         const messages = await PublicMessageModel.find().sort({ createdAt: -1 });
@@ -118,6 +163,8 @@ app.get("/api/journals/user/:identifier", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to fetch" }); }
 });
 
+// --- MUSIC SEARCH ---
+
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
     try {
@@ -127,29 +174,6 @@ app.get("/music-search", async (req, res) => {
             albumArt: track.artworkUrl100.replace('100x100', '400x400'), previewUrl: track.previewUrl
         })));
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
-});
-
-// --- ADD THIS TO YOUR SERVER.JS ---
-app.put("/api/user/update/:id", async (req, res) => {
-    const { username, profilePic, currentPassword, newPassword } = req.body;
-    try {
-        const user = await UsersModel.findById(req.params.id);
-        if (!user) return res.status(404).json("User not found");
-
-        // Password logic: Only check/change if fields aren't empty
-        if (currentPassword || newPassword) {
-            if (user.password !== currentPassword) {
-                return res.status(400).json({ error: "Incorrect current password." });
-            }
-            user.password = newPassword;
-        }
-
-        if (username) user.name = username;
-        if (profilePic !== undefined) user.profilePic = profilePic;
-
-        await user.save();
-        res.json({ status: "Success", username: user.name, profilePic: user.profilePic });
-    } catch (err) { res.status(500).json(err); }
 });
 
 const PORT = process.env.PORT || 3001;

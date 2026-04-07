@@ -11,9 +11,7 @@ function Profile() {
         profilePic: localStorage.getItem("profilePic") || null
     });
 
-    // New states for password inputs
     const [passwords, setPasswords] = useState({ current: "", new: "" });
-
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showPasswordFields, setShowPasswordFields] = useState(false); 
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
@@ -21,7 +19,6 @@ function Profile() {
     const fileInputRef = useRef(null);
 
     useEffect(() => {
-        // Fetch fresh data on load to ensure sync
         const userId = localStorage.getItem("userId");
         if (userId) {
             axios.get(`${API_BASE_URL}/api/user/${userId}`)
@@ -29,12 +26,14 @@ function Profile() {
                     if (res.data) {
                         setUser({
                             username: res.data.name,
-                            email: res.data.email,
+                            email: res.data.email, // Fetches email from DB
                             profilePic: res.data.profilePic
                         });
+                        localStorage.setItem("currentUsername", res.data.name);
+                        localStorage.setItem("currentUserEmail", res.data.email);
                         localStorage.setItem("profilePic", res.data.profilePic || "");
                     }
-                }).catch(err => console.log(err));
+                }).catch(err => console.log("Error fetching user:", err));
         }
 
         const handleClickOutside = (event) => {
@@ -62,7 +61,6 @@ function Profile() {
         }
     };
 
-    // --- LOGIC TO SAVE DATA TO DATABASE ---
     const handleSave = async () => {
         const userId = localStorage.getItem("userId");
         try {
@@ -74,7 +72,6 @@ function Profile() {
             });
 
             if (response.data.status === "Success") {
-                // Update LocalStorage so changes persist across all pages
                 localStorage.setItem("currentUsername", user.username);
                 localStorage.setItem("profilePic", user.profilePic || "");
                 
@@ -82,13 +79,11 @@ function Profile() {
                 setIsEditingUsername(false);
                 setShowPasswordFields(false);
                 setPasswords({ current: "", new: "" });
-                
-                // Redirect home as per your original logic
                 window.location.href = '/home';
             }
         } catch (err) {
             if (err.response && err.response.data.error) {
-                alert(err.response.data.error); // Alerts "Incorrect current password."
+                alert(err.response.data.error); 
             } else {
                 alert("Error saving changes.");
             }
