@@ -19,6 +19,8 @@ function Home() {
     const [entries, setEntries] = useState([]);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const dropdownRef = useRef(null);
+    // ADDED: State for profile picture
+    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
     const handleLogout = () => {
         localStorage.clear();
@@ -180,7 +182,14 @@ function Home() {
                         )}
                     </div>
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
+                        {/* UPDATED: Profile Circle logic */}
+                        <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                            {profilePic ? (
+                                <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                            ) : (
+                                "👤"
+                            )}
+                        </div>
                         {showProfileDropdown && (
                             <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
                                 {/* ADDED PROFILE BUTTON WITHOUT UNDERLINE */}

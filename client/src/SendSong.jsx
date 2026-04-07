@@ -21,6 +21,8 @@ function SendSong() {
     const [formData, setFormData] = useState({
         recipient: '', message: '', song: '', albumArt: '', previewUrl: ''
     });
+    // ADDED: State for profile picture
+    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
     // ADDED PROFILE HANDLER
     const handleProfile = () => {
@@ -177,7 +179,14 @@ function SendSong() {
                 <h1 className="nt-logo" onClick={() => window.location.href = '/home'}>STILL</h1>
                 <div className="nt-nav-note"><span>SEND A SONG</span></div>
                 <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                    <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>👤</div>
+                    {/* UPDATED: Profile Circle logic */}
+                    <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                        {profilePic ? (
+                            <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                        ) : (
+                            "👤"
+                        )}
+                    </div>
                     {showProfileDropdown && (
                         <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
                             <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
