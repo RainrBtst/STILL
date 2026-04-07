@@ -11,7 +11,10 @@ const PublicMessageModel = require('./models/Message');
 const OTPModel = require('./models/OTP');
 
 const app = express();
-app.use(express.json());
+
+// --- UPDATED: Increased limit to fix "413 Content Too Large" for Profile Pictures ---
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(cors({ 
     origin: ["https://still-cyan.vercel.app", "http://localhost:3000"], 
@@ -77,7 +80,8 @@ app.post("/login", (req, res) => {
         .then(user => {
             if (user) {
                 if (user.password === password) {
-                    res.json({ status: "Success", userId: user._id, username: user.name });
+                    // --- UPDATED: Added email to the response ---
+                    res.json({ status: "Success", userId: user._id, username: user.name, email: user.email });
                 } else { 
                     res.status(401).json("Incorrect Password"); 
                 }
