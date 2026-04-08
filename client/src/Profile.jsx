@@ -5,6 +5,7 @@ import './Profile.css';
 const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
 
 function Profile() {
+    // --- STATE ---
     const [user, setUser] = useState({
         username: localStorage.getItem("currentUsername") || "User",
         email: localStorage.getItem("currentUserEmail") || "user@example.com",
@@ -15,12 +16,13 @@ function Profile() {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showPasswordFields, setShowPasswordFields] = useState(false); 
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
-    // ADDED STATE FOR SHOW PASSWORD TOGGLE
     const [showPasswords, setShowPasswords] = useState(false);
     
+    // --- REFS ---
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
 
+    // --- EFFECTS ---
     useEffect(() => {
         const userId = localStorage.getItem("userId");
         if (userId) {
@@ -29,12 +31,11 @@ function Profile() {
                     if (res.data) {
                         setUser({
                             username: res.data.name,
-                            email: res.data.email, // Fetches email from DB
+                            email: res.data.email,
                             profilePic: res.data.profilePic
                         });
                         localStorage.setItem("currentUsername", res.data.name);
                         localStorage.setItem("currentUserEmail", res.data.email);
-                        // FIXED: Ensure profilePic is updated in storage on load
                         localStorage.setItem("profilePic", res.data.profilePic || "");
                     }
                 }).catch(err => console.log("Error fetching user:", err));
@@ -49,12 +50,12 @@ function Profile() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // --- HANDLERS ---
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/login';
     };
 
-    // ADDED ABOUT HANDLER
     const handleAbout = () => {
         window.location.href = '/about';
     };
@@ -82,7 +83,6 @@ function Profile() {
 
             if (response.data.status === "Success") {
                 localStorage.setItem("currentUsername", user.username);
-                // FIXED: Update profilePic in storage so Home and SendSong see it
                 localStorage.setItem("profilePic", user.profilePic || "");
                 
                 alert("Profile saved successfully!");
@@ -100,8 +100,10 @@ function Profile() {
         }
     };
 
+    // --- RENDER ---
     return (
         <div className="nt-container">
+            {/* Navbar Section */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/home'}>STILL</h1>
                 <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
@@ -123,11 +125,13 @@ function Profile() {
                 </div>
             </nav>
 
+            {/* Main Profile Section */}
             <main className="profile-main">
                 <div className="profile-card">
                     <h1 className="profile-title">PROFILE</h1>
                     <div className="profile-divider"></div>
 
+                    {/* Image Upload Section */}
                     <div className="profile-image-section">
                         <div className="profile-image-circle" onClick={() => fileInputRef.current.click()}>
                             {user.profilePic ? <img src={user.profilePic} alt="Profile" /> : <span style={{fontSize: '3rem'}}>👤</span>}
@@ -142,6 +146,7 @@ function Profile() {
                         <input type="file" ref={fileInputRef} style={{display: 'none'}} accept="image/*" onChange={handleImageChange} />
                     </div>
 
+                    {/* Info Section */}
                     <div className="profile-info-section">
                         <div className="label-row">
                             <label className="profile-label">Username</label>
@@ -165,6 +170,7 @@ function Profile() {
                         <label className="profile-label">Email Address</label>
                         <div className="profile-value-box" style={{fontWeight: 'normal', color: '#a7a7a7'}}>{user.email}</div>
 
+                        {/* Password Section */}
                         <button className="change-pass-btn" onClick={() => setShowPasswordFields(!showPasswordFields)}>
                             Change Password {showPasswordFields ? "▲" : "▼"}
                         </button>
@@ -172,7 +178,6 @@ function Profile() {
                         {showPasswordFields && (
                             <div className="password-dropdown-section">
                                 <input 
-                                    // TYPE CHANGES DYNAMICALLY
                                     type={showPasswords ? "text" : "password"} 
                                     placeholder="Current Password" 
                                     className="profile-input-edit password-input" 
@@ -181,7 +186,6 @@ function Profile() {
                                     onChange={(e) => setPasswords({...passwords, current: e.target.value})}
                                 />
                                 <input 
-                                    // TYPE CHANGES DYNAMICALLY
                                     type={showPasswords ? "text" : "password"} 
                                     placeholder="New Password" 
                                     className="profile-input-edit password-input" 
@@ -189,12 +193,12 @@ function Profile() {
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                                 />
-                                {/* ADDED SHOW PASSWORD TOGGLE BOX WITH LEFT MARGIN */}
+                                
                                 <div style={{display: 'flex', alignItems: 'center', marginTop: '10px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPasswords(!showPasswords)}>
                                     <input 
                                         type="checkbox" 
                                         checked={showPasswords} 
-                                        onChange={() => {}} // Controlled by div click
+                                        onChange={() => {}} 
                                         style={{cursor: 'pointer'}}
                                     />
                                     <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>
