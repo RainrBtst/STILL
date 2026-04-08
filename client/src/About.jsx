@@ -22,14 +22,26 @@ function About() {
         window.location.href = '/login';
     };
 
+    // --- ADDED: Navigation Handlers ---
+    const handleSendSong = () => {
+        window.location.href = '/send-song';
+    };
+
+    const handleAbout = () => {
+        window.location.href = '/about';
+    };
+
     return (
         <div className="nt-container">
             {/* Consistent Navbar */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/home'}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'}>
+                
+                {/* Updated: Added onClick to the Send a Song container */}
+                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleSendSong}>
                     <span>Send a Song</span>
                 </div>
+
                 <div className="nt-nav-actions">
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
                         <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
@@ -39,6 +51,10 @@ function About() {
                             <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
                                 <button className="nt-logout-btn-dropdown" onClick={() => window.location.href = '/home'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
                                 <button className="nt-logout-btn-dropdown" onClick={() => window.location.href = '/profile'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
+                                
+                                {/* ADDED: About button in dropdown */}
+                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
+                                
                                 <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
                             </div>
                         )}
