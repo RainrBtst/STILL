@@ -88,16 +88,51 @@ function About() {
                         </p>
                     </div>
 
+                    <h2 className="about-title" style={{ marginTop: '60px', fontSize: '1.5rem' }}>FEATURES</h2>
+                    <div className="about-underline" style={{ marginBottom: '30px' }}></div>
+
                     <div className="about-features-grid">
+                        {/* Music Journal Card */}
                         <div className="feature-card">
-                            <h3>🎵 Rhythm Journaling</h3>
-                            <p>Connect your daily writing with the music that defines your current mood.</p>
+                            <h3>🎵 Music Journal</h3>
+                            <p>
+                                At the heart of <strong>STILL</strong> lies the Music Journal—a digital canvas where 
+                                your reflections find their melody. More than just a diary, it allows you to write 
+                                your deepest thoughts and pair them with the exact song that defines your mood in that moment. 
+                                By synchronizing your narrative with a specific track, you create a living record of your 
+                                life’s rhythm, turning simple words into a sensory experience that resonates every time you look back.
+                            </p>
                         </div>
+
+                        {/* Send a Song Card */}
                         <div className="feature-card">
-                            <h3>🔒 Pure Privacy</h3>
-                            <p>Your thoughts and your tracks are yours alone. We provide a secure sanctuary for your reflections.</p>
+                            <h3>✉️ Send a Song</h3>
+                            <p>
+                                Sometimes, the best way to say something is through a song. <strong>STILL</strong> offers 
+                                a unique way to connect, allowing you to share a message and a melody anonymously with someone special. 
+                                Whether it’s a hidden sentiment or a shared memory, this feature lets you bridge the gap between 
+                                words and sound, delivering your heartfelt intentions through the timeless language of music.
+                            </p>
                         </div>
                     </div>
+
+                    {/* --- PRIVACY SECTION START --- */}
+                    <h2 className="about-title" style={{ marginTop: '60px', fontSize: '1.5rem' }}>PRIVACY</h2>
+                    <div className="about-underline" style={{ marginBottom: '30px' }}></div>
+
+                    <div className="about-features-grid">
+                        <div className="feature-card" style={{ flex: 'none', width: '100%' }}>
+                            <h3>🔒 Your Secure Sanctuary</h3>
+                            <p>
+                                Your journals, messages, and your tracks are yours alone. We provide a 
+                                <strong> secure sanctuary</strong> for your reflections, ensuring that the 
+                                rhythm of your life stays private. We believe that true expression 
+                                requires a safe space, and we are committed to protecting the intimacy 
+                                of your musical journey.
+                            </p>
+                        </div>
+                    </div>
+                    {/* --- PRIVACY SECTION END --- */}
                 </div>
             </main>
         </div>
