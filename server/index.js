@@ -16,8 +16,13 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+// --- UPDATED CORS: Added Render URL to allow cross-origin requests ---
 app.use(cors({ 
-    origin: ["https://still-cyan.vercel.app", "http://localhost:3000"], 
+    origin: [
+        "https://still-cyan.vercel.app", 
+        "http://localhost:3000",
+        "https://still-csmi.onrender.com" // Added your Render URL
+    ], 
     methods: ["GET", "POST", "PUT", "DELETE"], 
     credentials: true 
 }));
@@ -25,6 +30,12 @@ app.use(cors({
 app.use((req, res, next) => {
     res.setHeader('ngrok-skip-browser-warning', 'true');
     next();
+});
+
+// --- ADDED: Keep-Alive Route ---
+// Use this with cron-job.org to ping your server every 14 mins to stop Render from sleeping
+app.get("/ping", (req, res) => {
+    res.send("Server is awake!");
 });
 
 mongoose.connect(process.env.MONGO_URI)
@@ -80,7 +91,6 @@ app.post("/login", (req, res) => {
         .then(user => {
             if (user) {
                 if (user.password === password) {
-                    // --- UPDATED: Added email and profilePic to the response ---
                     res.json({ 
                         status: "Success", 
                         userId: user._id, 
@@ -99,7 +109,6 @@ app.post("/login", (req, res) => {
 
 // --- PROFILE & USER ROUTES ---
 
-// GET user by ID (Used to display Email and Profile Pic on the Profile Page)
 app.get("/api/user/:id", async (req, res) => {
     try {
         const user = await UsersModel.findById(req.params.id);
@@ -113,14 +122,12 @@ app.get("/api/user/:id", async (req, res) => {
     }
 });
 
-// PUT update user profile (Username, Photo, Password)
 app.put("/api/user/update/:id", async (req, res) => {
     const { username, profilePic, currentPassword, newPassword } = req.body;
     try {
         const user = await UsersModel.findById(req.params.id);
         if (!user) return res.status(404).json("User not found");
 
-        // Password change logic
         if (currentPassword || newPassword) {
             if (user.password !== currentPassword) {
                 return res.status(400).json({ error: "Incorrect current password." });
