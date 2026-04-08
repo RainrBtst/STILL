@@ -184,11 +184,33 @@ app.get("/api/journals/user/:identifier", async (req, res) => {
 
 app.get("/music-search", async (req, res) => {
     const { query } = req.query;
+    if (!query) return res.json([]);
     try {
         const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
-        res.json(response.data.results.map(track => ({
-            id: track.trackId, name: track.trackName, artist: track.artistName,
-            albumArt: track.artworkUrl100.replace('100x100', '400x400'), previewUrl: track.previewUrl
+        const results = response.data.results || [];
+        res.json(results.map(track => ({
+            id: track.trackId, 
+            name: track.trackName, 
+            artist: track.artistName,
+            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '', 
+            previewUrl: track.previewUrl
+        })));
+    } catch (err) { res.status(500).json({ error: "Search failed" }); }
+});
+
+// ADDED: Additional route to match frontend calls to /api/search with safety checks
+app.get("/api/search", async (req, res) => {
+    const { query } = req.query;
+    if (!query) return res.json([]);
+    try {
+        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
+        const results = response.data.results || [];
+        res.json(results.map(track => ({
+            id: track.trackId, 
+            name: track.trackName, 
+            artist: track.artistName,
+            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '', 
+            previewUrl: track.previewUrl
         })));
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
 });
