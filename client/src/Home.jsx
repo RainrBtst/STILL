@@ -27,6 +27,11 @@ function Home() {
         window.location.href = '/login';
     };
 
+    // ADDED HOME HANDLER
+    const handleHome = () => {
+        window.location.href = '/home';
+    };
+
     // ADDED PROFILE HANDLER
     const handleProfile = () => {
         window.location.href = '/profile';
@@ -197,6 +202,8 @@ function Home() {
                         </div>
                         {showProfileDropdown && (
                             <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
+                                {/* ADDED HOME BUTTON */}
+                                <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
                                 {/* ADDED PROFILE BUTTON WITHOUT UNDERLINE */}
                                 <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
                                 {/* ADDED ABOUT BUTTON */}
