@@ -1,0 +1,56 @@
+.about-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 40px 20px;
+    color: white;
+}
+
+.about-content {
+    max-width: 800px;
+    text-align: center;
+}
+
+.about-header {
+    font-size: 2.5rem;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+
+.about-divider {
+    height: 4px;
+    width: 60px;
+    background-color: #ffcc00; /* Your yellow accent color */
+    margin: 0 auto 30px;
+}
+
+.about-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #a7a7a7;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+.about-description strong {
+    color: white;
+}
+
+.about-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.section-item h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #ffcc00;
+}
+
+.section-item p {
+    font-size: 0.9rem;
+    color: #888;
+}
