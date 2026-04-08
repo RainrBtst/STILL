@@ -193,5 +193,17 @@ app.get("/music-search", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
 });
 
+// ADDED: Additional route to match frontend calls to /api/search
+app.get("/api/search", async (req, res) => {
+    const { query } = req.query;
+    try {
+        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
+        res.json(response.data.results.map(track => ({
+            id: track.trackId, name: track.trackName, artist: track.artistName,
+            albumArt: track.artworkUrl100.replace('100x100', '400x400'), previewUrl: track.previewUrl
+        })));
+    } catch (err) { res.status(500).json({ error: "Search failed" }); }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Server active on port ${PORT}`));
