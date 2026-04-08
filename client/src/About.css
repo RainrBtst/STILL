@@ -1,74 +1,59 @@
-/* Base Colors & Layout Matching Home.jsx */
-.nt-container {
-    background-color: #121212;
-    color: #ffffff;
-    min-height: 100vh;
-    padding: 2rem;
-    font-family: 'Inter', sans-serif;
+.about-section-container {
+    max-width: 700px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 20px;
 }
 
-/* Navbar Alignment */
-.nt-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto 3rem auto;
-    position: relative;
-}
-
-.nt-logo {
-    color: #FAEF5D; /* YELLOW THEME */
-    font-weight: 900;
-    letter-spacing: -2px;
+.about-title {
     font-size: 2rem;
-    margin: 0;
+    color: #f0f0f0;
+    letter-spacing: 3px;
+    font-weight: 800;
 }
 
-.nt-nav-actions {
+.about-underline {
+    width: 50px;
+    height: 4px;
+    background-color: #f2e411; /* Matching your yellow logo color */
+    margin: 10px auto 40px;
+}
+
+.about-text-content p {
+    color: #cccccc;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 25px;
+    text-align: justify; /* Keeps the paragraph looking professional */
+}
+
+.about-text-content strong {
+    color: #f2e411;
+}
+
+.about-features-grid {
     display: flex;
-    gap: 1.5rem;
-    align-items: center;
+    gap: 20px;
+    margin-top: 50px;
 }
 
-/* Central Nav Note */
-.nt-nav-note {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-weight: 600;
+.feature-card {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    flex: 1;
+}
+
+.feature-card h3 {
+    color: #f0f0f0;
     font-size: 0.9rem;
-    color: #FAEF5D;
-    letter-spacing: 1px;
+    margin-bottom: 10px;
     text-transform: uppercase;
 }
 
-/* Profile Icon & Dropdown */
-.nt-profile-circle {
-    width: 45px;
-    height: 45px;
-    background: #282828;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.nt-profile-circle:hover {
-    background: #333;
-    transform: scale(1.1);
-    border-color: #FAEF5D;
-}
-
-.nt-logout-btn-dropdown:hover {
-    color: #FAEF5D !important;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.nt-main {
-    max-width: 1200px;
-    margin: 0 auto;
+.feature-card p {
+    color: #888;
+    font-size: 0.85rem;
+    line-height: 1.5;
 }

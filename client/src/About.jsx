@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './About.css'; // Make sure to update the CSS file as well
+import './About.css'; 
 
 function About() {
     // --- NAVBAR STATE & LOGIC ---
@@ -67,7 +67,38 @@ function About() {
             {/* --- MATCHING NAVBAR END --- */}
 
             <main className="nt-main">
-                {/* Your About Page Content goes here */}
+                <div className="about-section-container">
+                    <h2 className="about-title">ABOUT STILL</h2>
+                    <div className="about-underline"></div>
+                    
+                    <div className="about-text-content">
+                        <p>
+                            Music has the power to capture what words alone cannot. 
+                            <strong> STILL</strong> is an immersive music-journaling platform where your 
+                            personal stories meet their perfect soundtrack. Whether you are navigating 
+                            a quiet moment of peace or a loud burst of joy, STILL allows you to anchor 
+                            your journal entries to the music that matches your soul.
+                        </p>
+
+                        <p>
+                            We believe that <strong>"Everyday has a rhythm,"</strong> and our mission 
+                            is to help you preserve the melody of your life in a safe, private environment. 
+                            Here, your moods are translated into playlists, and your memories are kept 
+                            <strong> STILL</strong>—forever synchronized with the songs that moved you.
+                        </p>
+                    </div>
+
+                    <div className="about-features-grid">
+                        <div className="feature-card">
+                            <h3>🎵 Rhythm Journaling</h3>
+                            <p>Connect your daily writing with the music that defines your current mood.</p>
+                        </div>
+                        <div className="feature-card">
+                            <h3>🔒 Pure Privacy</h3>
+                            <p>Your thoughts and your tracks are yours alone. We provide a secure sanctuary for your reflections.</p>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     );
