@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './Login'
 import Home from './Home'
 import SendSong from './SendSong' 
-import Profile from './Profile' // 1. IMPORT THE PROFILE COMPONENT
+import Profile from './Profile'
+import About from './About' // 1. IMPORT THE ABOUT COMPONENT
 
 function App() {
   return (
@@ -17,9 +18,10 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/home' element={<Home />} />
         <Route path="/send-song" element={<SendSong />} />
-        
-        {/* 2. ADD THE PROFILE ROUTE HERE */}
         <Route path='/profile' element={<Profile />} />
+        
+        {/* 2. ADD THE ABOUT ROUTE HERE */}
+        <Route path='/about' element={<About />} />
 
         <Route path='*' element={<div>404 - Page Not Found</div>} />
       </Routes>
