@@ -3,8 +3,9 @@ import './SendSong.css';
 import Message from './Message';
 import axios from 'axios';
 
-// Update this to your active Ngrok URL
-const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
+const API_BASE_URL = window.location.hostname === "localhost" 
+    ? "http://localhost:3001" 
+    : "https://still-csmi.onrender.com";
 
 function SendSong() {
     const [messages, setMessages] = useState([]);
@@ -43,7 +44,6 @@ function SendSong() {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                // Now using the Ngrok URL
                 const res = await axios.get(`${API_BASE_URL}/api/messages`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
@@ -110,7 +110,6 @@ function SendSong() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Now using the Ngrok URL
             const response = await axios.post(`${API_BASE_URL}/api/messages`, formData);
             setMessages([response.data, ...messages]);
             setIsModalOpen(false);

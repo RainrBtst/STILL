@@ -5,7 +5,9 @@ import Journal from './Journal';
 import ReadJournal from './ReadJournal';
 import Archive from './Archive';
 
-const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
+const API_BASE_URL = window.location.hostname === "localhost" 
+    ? "http://localhost:3001" 
+    : "https://still-csmi.onrender.com";
 
 function Home() {
     const [searchQuery, setSearchQuery] = useState('');

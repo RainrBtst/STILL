@@ -20,7 +20,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors({ 
     origin: [
         "https://still-cyan.vercel.app", 
-        "http://localhost:3000",
+        "http://localhost:3001",
         "https://still-csmi.onrender.com" // Added your Render URL
     ], 
     methods: ["GET", "POST", "PUT", "DELETE"], 
