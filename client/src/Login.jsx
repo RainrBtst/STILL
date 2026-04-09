@@ -8,6 +8,7 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false); 
+    const [error, setError] = useState(""); // ADDED: State for custom alert
     const navigate = useNavigate();
     // ADDED STATE FOR SHOW PASSWORD TOGGLE
     const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,7 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(""); // ADDED: Clear error on new attempt
 
         axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/login', { email, password })
             .then(result => {
@@ -32,9 +34,9 @@ function Login() {
             .catch(err => {
                 console.log("Login Error:", err);
                 if (err.response && err.response.status === 401) {
-                    alert(err.response.data); 
+                    setError(err.response.data); // UPDATED: Set custom error
                 } else {
-                    alert("Server Error: Please make sure your local server and Ngrok are running.");
+                    setError("Server Error: Please make sure your local server and Ngrok are running."); // UPDATED: Set custom error
                 }
             })
             .finally(() => {
@@ -46,6 +48,16 @@ function Login() {
         <div className="nt-container login-full-page">
             <div className="login-content-wrapper">
                 <h1 className="nt-logo login-logo-large">STILL</h1>
+
+                {/* ADDED: CUSTOM ALERT UI BOX */}
+                {error && (
+                    <div className="still-alert-box">
+                        <span className="alert-icon">⚠️</span>
+                        <p>{error}</p>
+                        <button className="alert-close" onClick={() => setError("")}>✕</button>
+                    </div>
+                )}
+
                 <div className="nt-card login-wide-card">
                     <h2 className="nt-welcome login-header">WELCOME BACK</h2>
                     <p className="nt-subtitle login-sub">Sign in to continue your rhythm.</p>

@@ -123,3 +123,63 @@
 .login-register-link:hover {
     color: #fff !important;
 }
+
+/* ADDED: CUSTOM ALERT BOX STYLES */
+.still-alert-box {
+    background: #282828;
+    border-left: 4px solid #FAEF5D; /* Signature Yellow */
+    color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    border: 1px solid #333;
+    border-left: 4px solid #FAEF5D; /* Ensure border-left persists */
+}
+
+.alert-icon {
+    color: #FAEF5D;
+    font-size: 1.2rem;
+}
+
+.still-alert-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: 0.2s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert-close:hover {
+    color: #FAEF5D;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
