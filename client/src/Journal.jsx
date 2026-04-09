@@ -12,6 +12,9 @@ function Journal({ selectedSong, onClose, onSave, isReadOnly, existingData }) {
     // NEW: State for the toggleable "Other Vibes" menu
     const [showOtherVibes, setShowOtherVibes] = useState(false);
     
+    // --- ADDED: MODAL STATE ---
+    const [showModal, setShowModal] = useState(false);
+    
     const audioRef = useRef(null);
 
     const otherVibesList = [
@@ -54,7 +57,8 @@ function Journal({ selectedSong, onClose, onSave, isReadOnly, existingData }) {
     // --- NEW: HANDLE SAVE ACTION ---
     const handleSaveAction = () => {
         if (!journalTitle || !content) {
-            alert("Please add a title and some thoughts before saving!");
+            // UPDATED: Use themed modal instead of alert
+            setShowModal(true);
             return;
         }
         onSave({ title: journalTitle, content, mood });
@@ -62,6 +66,24 @@ function Journal({ selectedSong, onClose, onSave, isReadOnly, existingData }) {
 
     return (
         <div className="nt-journal-overlay" style={{ backgroundImage: `url(${selectedSong?.albumArt})` }}>
+            
+            {/* --- ADDED: THEMED MODAL JSX --- */}
+            {showModal && (
+                <div className="still-modal-overlay">
+                    <div className="still-modal-card">
+                        <h2 className="modal-title">Missing Info</h2>
+                        <p className="modal-message">
+                            Please add a title and some thoughts before saving your journey.
+                        </p>
+                        <div className="modal-actions">
+                            <button className="modal-btn-primary" onClick={() => setShowModal(false)}>
+                                OKAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="nt-overlay-blur">
                 <nav className="nt-modal-nav">
                     <button className="nt-back-btn" onClick={onClose}>← BACK</button>

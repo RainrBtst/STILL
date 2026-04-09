@@ -313,3 +313,68 @@
 .nt-save-link:hover {
     text-decoration: underline;
 }
+
+/* --- THEMED MODAL STYLES --- */
+.still-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Deep dark overlay */
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.still-modal-card {
+    background: #121212; /* Matches your home.css black background */
+    padding: 2.5rem;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid #333;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+    animation: modalScaleUp 0.3s ease-out;
+}
+
+.modal-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.modal-message {
+    color: #a7a7a7;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+.modal-btn-primary {
+    background: #FAEF5D; /* STILL Yellow */
+    color: #000;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s ease;
+}
+
+.modal-btn-primary:hover {
+    transform: scale(1.03);
+}
+
+@keyframes modalScaleUp {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
