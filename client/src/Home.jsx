@@ -24,6 +24,9 @@ function Home() {
     // ADDED: State for profile picture
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
+    // ADDED: STATE FOR CUSTOM MODAL
+    const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/login';
@@ -101,7 +104,16 @@ function Home() {
     };
 
     const handleStartEntry = () => {
-        if (!selectedSong) { alert("Search and choose a song first"); return; }
+        // UPDATED: Using custom modal instead of alert
+        if (!selectedSong) { 
+            setModal({
+                show: true,
+                title: "No Song Selected",
+                message: "Please search and choose a song before starting your journey.",
+                type: "alert"
+            });
+            return; 
+        }
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -139,7 +151,13 @@ function Home() {
             setSelectedSong(null);
         } catch (err) {
             console.error("Error saving entry:", err);
-            alert("Could not save your entry.");
+            // UPDATED: Using custom modal
+            setModal({
+                show: true,
+                title: "Error",
+                message: "Could not save your entry. Please try again.",
+                type: "alert"
+            });
         }
     };
 
@@ -160,6 +178,26 @@ function Home() {
 
     return (
         <div className="nt-container">
+            {/* ADDED: CUSTOM CONFIRMATION MODAL UI */}
+            {modal.show && (
+                <div className="still-modal-overlay">
+                    <div className="still-modal-card">
+                        <h2 className="modal-title">{modal.title}</h2>
+                        <p className="modal-message">{modal.message}</p>
+                        <div className="modal-actions">
+                            <button className="modal-btn-primary" onClick={() => setModal({ ...modal, show: false })}>
+                                {modal.type === "confirm" ? "KEEP EDITING" : "OKAY"}
+                            </button>
+                            {modal.type === "confirm" && (
+                                <button className="modal-btn-secondary" onClick={() => setModal({ ...modal, show: false })}>
+                                    DISCARD
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {isJournaling && (
                 <Journal selectedSong={selectedSong} onClose={() => setIsJournaling(false)} onSave={saveNewEntry} />
             )}

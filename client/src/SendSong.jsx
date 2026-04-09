@@ -209,7 +209,7 @@ function SendSong() {
             </nav>
 
             <header className="nt-hero">
-                <p className="ss-hero-subtitle">Express your untold message through the song. Anonymously</p>
+                <p className="ss-hero-subtitle">Express your untold message to someone through the song. Anonymously.</p>
                 <button className="nt-btn-primary ss-main-btn" onClick={() => setIsModalOpen(true)}>+ TELL YOUR MESSAGE</button>
                 <div className="ss-alignment-wrapper">
                     <div className="ss-search-input-box">
