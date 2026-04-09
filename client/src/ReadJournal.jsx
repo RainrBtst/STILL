@@ -16,11 +16,31 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
 
     const getPages = (text) => {
         if (!text) return [""];
-        const chunks = [];
-        for (let i = 0; i < text.length; i += 800) {
-            chunks.push(text.substring(i, i + 800));
+
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = "";
+        const maxCharsPerLine = 65; // Estimated characters per line for the card width
+        const maxLinesPerPage = 18; // Estimated lines that fit before overlapping the footer
+
+        // Group words into lines based on character length
+        words.forEach(word => {
+            if ((currentLine + word).length > maxCharsPerLine) {
+                lines.push(currentLine.trim());
+                currentLine = word + " ";
+            } else {
+                currentLine += word + " ";
+            }
+        });
+        if (currentLine) lines.push(currentLine.trim());
+
+        // Group lines into pages
+        const pages = [];
+        for (let i = 0; i < lines.length; i += maxLinesPerPage) {
+            pages.push(lines.slice(i, i + maxLinesPerPage).join("\n"));
         }
-        return chunks;
+
+        return pages;
     };
 
     const pages = getPages(existingData?.content);
@@ -65,7 +85,6 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
                 <div className="read-paper-card">
                     {currentPage === 0 && (
                         <div className="read-music-section">
-                            {/* FIX: Use songInfo for the Image */}
                             <img src={songInfo.albumArt} alt="Album Art" className="read-modal-art" />
                             <div className="read-music-info">
                                 <p className="read-label">SONG TITLE:</p>
@@ -73,7 +92,6 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
                                 <p className="read-label">by</p>
                                 <p className="read-artist-name">{songInfo.artist}</p>
                                 
-                                {/* FIX: Use songInfo for the Audio Source */}
                                 <audio 
                                     ref={audioRef} 
                                     src={songInfo.previewUrl} 
