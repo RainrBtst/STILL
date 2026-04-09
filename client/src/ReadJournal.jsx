@@ -44,7 +44,7 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
         let lineIndex = 0;
 
         while (lineIndex < lines.length) {
-            const limit = paginated.length === 0 ? 10 : 16;
+            const limit = paginated.length === 0 ? 10 : 18;
             const content = lines.slice(lineIndex, lineIndex + limit).join('\n');
             if (content.trim() !== "" || paginated.length === 0) {
                 paginated.push(content);
