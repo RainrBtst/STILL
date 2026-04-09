@@ -12,6 +12,7 @@ function Signup() {
     const [otp, setOtp] = useState(""); 
     const [isVerifying, setIsVerifying] = useState(false); 
     const [loading, setLoading] = useState(false); 
+    const [error, setError] = useState(""); // ADDED: Error state
     const navigate = useNavigate();
     // ADDED STATE FOR SHOW PASSWORD TOGGLE
     const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +20,7 @@ function Signup() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(""); // Clear previous errors
 
         axios.post(`${API_BASE_URL}/register`, { name, email, password })
             .then(result => {
@@ -26,16 +28,15 @@ function Signup() {
                     setIsVerifying(true);
                 } 
                 else if (result.data.status === "ALREADY_EXISTS") {
-                    alert("Email already used.");
-                    navigate('/login');
+                    setError("Email already used."); // Updated to custom error
                 }
                 else {
-                    alert("Something went wrong. Please try again.");
+                    setError("Something went wrong. Please try again.");
                 }
             })
             .catch(err => {
                 console.log("Error Detail:", err);
-                alert("Registration error.");
+                setError("Registration error.");
             })
             .finally(() => {
                 setLoading(false);
@@ -45,16 +46,16 @@ function Signup() {
     const handleVerifyOtp = (e) => {
         e.preventDefault();
         setLoading(true);
+        setError(""); // Clear previous errors
 
         axios.post(`${API_BASE_URL}/verify-otp`, { email, otp })
             .then(result => {
                 if (result.data.status === "Success") {
-                    alert("Email Verified Successfully!");
                     navigate('/login');
                 }
             })
             .catch(err => {
-                alert("Invalid Verification Code.");
+                setError("Invalid Verification Code."); // Updated to custom error
             })
             .finally(() => {
                 setLoading(false);
@@ -65,6 +66,16 @@ function Signup() {
         <div className="login-full-page">
             <div className="login-content-wrapper">
                 <h1 className="login-logo-large">STILL</h1>
+
+                {/* ADDED: CUSTOM ALERT UI BOX */}
+                {error && (
+                    <div className="still-alert-box">
+                        <span className="alert-icon">⚠️</span>
+                        <p>{error}</p>
+                        <button className="alert-close" onClick={() => setError("")}>✕</button>
+                    </div>
+                )}
+
                 <div className="login-wide-card">
                     {!isVerifying ? (
                         <>
@@ -127,7 +138,7 @@ function Signup() {
                                     type="button" 
                                     className="login-register-link" 
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '10px' }} 
-                                    onClick={() => { setIsVerifying(false); setOtp(""); }}
+                                    onClick={() => { setIsVerifying(false); setOtp(""); setError(""); }}
                                 >
                                     BACK TO SIGNUP
                                 </button>
