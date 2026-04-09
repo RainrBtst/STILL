@@ -106,9 +106,13 @@ function SendSong() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // --- UPDATED SUBMIT FUNCTION ---
+    // --- UPDATED SUBMIT FUNCTION (Removed Alert, relies on HTML5 validation) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Final safety check to prevent empty posts if HTML validation is bypassed
+        if (!formData.song) return;
+
         try {
             const response = await axios.post(`${API_BASE_URL}/api/messages`, formData);
             setMessages([response.data, ...messages]);
