@@ -65,7 +65,7 @@
     display: flex;
     gap: 30px;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .read-modal-art {
@@ -124,7 +124,10 @@
     line-height: 1.8;
     color: #222;
     white-space: pre-wrap;
-    text-align: justify; /* Keeps text fitted and justified */
+    /* JUSTIFICATION SETTINGS */
+    text-align: justify;
+    word-break: keep-all; 
+    overflow-wrap: break-word;
 }
 
 /* --- PAGINATION (Now pinned inside) --- */

@@ -17,31 +17,39 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
     const getPages = (text) => {
         if (!text) return [""];
         
-        const words = text.split(' ');
+        const maxCharsPerLine = 62; // Safety limit to ensure clean justification
         const lines = [];
-        let currentLine = "";
-        const maxCharsPerLine = 65; // Matches the width of the card
+        
+        // Split by existing newlines to respect paragraph breaks
+        const paragraphs = text.split('\n');
 
-        // Group words into lines based on character width
-        words.forEach(word => {
-            if ((currentLine + word).length > maxCharsPerLine) {
-                lines.push(currentLine.trim());
-                currentLine = word + " ";
-            } else {
-                currentLine += word + " ";
-            }
+        paragraphs.forEach(para => {
+            const words = para.split(' ');
+            let currentLine = "";
+
+            words.forEach(word => {
+                // If adding the word exceeds the line length, push and wrap
+                if ((currentLine + word).length > maxCharsPerLine) {
+                    lines.push(currentLine.trim());
+                    currentLine = word + " ";
+                } else {
+                    currentLine += word + " ";
+                }
+            });
+            lines.push(currentLine.trim());
         });
-        if (currentLine) lines.push(currentLine.trim());
 
-        // Group lines into pages: 10 lines for Page 1, 16 lines for others
+        // Group lines into pages: 10 lines for Page 1, 16 lines for Page 2+
         const paginated = [];
         let lineIndex = 0;
 
         while (lineIndex < lines.length) {
-            const linesForThisPage = paginated.length === 0 ? 10 : 16;
-            const pageContent = lines.slice(lineIndex, lineIndex + linesForThisPage).join("\n");
-            paginated.push(pageContent);
-            lineIndex += linesForThisPage;
+            const limit = paginated.length === 0 ? 10 : 16;
+            const content = lines.slice(lineIndex, lineIndex + limit).join('\n');
+            if (content.trim() !== "" || paginated.length === 0) {
+                paginated.push(content);
+            }
+            lineIndex += limit;
         }
         
         return paginated;
@@ -126,7 +134,7 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
                         )}
                         
                         <div className="read-page-footer">
-                            PAGE {currentPage + 1}/{totalPages}
+                            {totalPages > 1 ? `PAGE ${currentPage + 1}/${totalPages}` : ""}
                         </div>
 
                         {totalPages > 1 && (
