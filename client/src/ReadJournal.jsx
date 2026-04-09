@@ -17,8 +17,8 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
     const getPages = (text) => {
         if (!text) return [""];
         const chunks = [];
-        for (let i = 0; i < text.length; i += 900) {
-            chunks.push(text.substring(i, i + 900));
+        for (let i = 0; i < text.length; i += 800) {
+            chunks.push(text.substring(i, i + 800));
         }
         return chunks;
     };
