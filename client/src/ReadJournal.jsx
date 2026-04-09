@@ -16,11 +16,31 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
 
     const getPages = (text) => {
         if (!text) return [""];
-        const chunks = [];
-        for (let i = 0; i < text.length; i += 800) {
-            chunks.push(text.substring(i, i + 800));
+
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = "";
+        const maxCharsPerLine = 60; // Adjust based on your card width
+        const linesPerPage = 13; // Strict limit: 13 lines per page
+
+        // 1. Convert long text into individual lines
+        words.forEach(word => {
+            if ((currentLine + word).length > maxCharsPerLine) {
+                lines.push(currentLine.trim());
+                currentLine = word + " ";
+            } else {
+                currentLine += word + " ";
+            }
+        });
+        if (currentLine) lines.push(currentLine.trim());
+
+        // 2. Group those lines into pages of 13
+        const pages = [];
+        for (let i = 0; i < lines.length; i += linesPerPage) {
+            pages.push(lines.slice(i, i + linesPerPage).join("\n"));
         }
-        return chunks;
+
+        return pages;
     };
 
     const pages = getPages(existingData?.content);
