@@ -148,8 +148,7 @@ function About() {
                             <div className="dev-layout">
                                 <div className="dev-photo-col">
                                     <div className="dev-large-circle">
-                                        {/* PUT YOUR PHOTO FILENAME HERE IN PUBLIC FOLDER */}
-                                        <img src="/your-photo.png" alt="Rainier Bautista" />
+                                        <img src="/rain.png" alt="Rainier Bautista" />
                                     </div>
                                 </div>
 
@@ -167,8 +166,7 @@ function About() {
                                             Whether it’s an connection to the prettiest thing you’ve ever seen or a way to navigate through the tears, it is for those who truly mean it.
                                         </p>
                                         <p>
-                                            I created this because I like me better when I’m connected to the sounds that define my world. 
-                                            In a life that’s always moving, I built this so we can finally stay <strong>STILL</strong>.
+                                            I created this because I like me better when I’m connected to the people and the sounds that move me. In a world that never stops, I wanted to build something that stays <strong>STILL</strong>.
                                         </p>
                                         <div className="bubble-pointer"></div>
                                     </div>

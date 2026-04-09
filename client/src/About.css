@@ -15,7 +15,7 @@
 .about-underline {
     width: 50px;
     height: 4px;
-    background-color: #f2e411; /* Matching your yellow logo color */
+    background-color: #f2e411; 
     margin: 10px auto 40px;
 }
 
@@ -24,7 +24,7 @@
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 25px;
-    text-align: justify; /* Keeps the paragraph looking professional */
+    text-align: justify; 
 }
 
 .about-text-content strong {
@@ -65,7 +65,7 @@
     justify-content: center;
     margin-top: 50px;
     cursor: pointer;
-    color: #ffffff; /* Matching ABOUT font color as requested */
+    color: #ffffff;
     transition: opacity 0.3s;
 }
 
@@ -91,8 +91,8 @@
 
 .dev-layout {
     display: flex;
-    align-items: flex-start;
-    gap: 30px;
+    align-items: center; /* Aligned vertically to the logo of STILL on the left */
+    gap: 35px;
 }
 
 .dev-photo-col {
@@ -100,11 +100,11 @@
 }
 
 .dev-large-circle {
-    width: 150px; 
-    height: 150px;
+    width: 140px; 
+    height: 140px;
     border-radius: 50%;
     background: #282828;
-    border: 3px solid #f2e411;
+    border: 4px solid #FAEF55; /* Updated color border */
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
@@ -129,12 +129,13 @@
     position: relative;
     font-size: 0.95rem;
     line-height: 1.6;
-    box-shadow: 8px 8px 0px rgba(242, 228, 17, 0.4);
+    /* Updated color behind the white background */
+    box-shadow: 8px 8px 0px #FAEF55; 
 }
 
 .speech-bubble p {
     margin-bottom: 12px;
-    color: #121212 !important; /* Overriding general p color */
+    color: #121212 !important;
 }
 
 .speech-bubble strong {
@@ -146,7 +147,8 @@
     content: '';
     position: absolute;
     left: -15px;
-    top: 30px;
+    top: 50%; /* Centered vertically to look less crowded */
+    transform: translateY(-50%);
     width: 0;
     height: 0;
     border-top: 10px solid transparent;
