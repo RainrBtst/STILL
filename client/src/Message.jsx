@@ -6,6 +6,9 @@ const Message = ({ isOpen, onClose, formData, handleInputChange, handleSubmit })
     const [query, setQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    
+    // --- ADDED: MODAL STATE FOR ERROR ---
+    const [showErrorModal, setShowErrorModal] = useState(false);
 
     // Fetch songs from your backend proxy
     useEffect(() => {
@@ -29,14 +32,12 @@ const Message = ({ isOpen, onClose, formData, handleInputChange, handleSubmit })
     }, [query]);
 
    const handleSelectSong = (song) => {
-    // This matches the keys you defined in index.js (/music-search)
     handleInputChange({
         target: { name: 'song', value: song.name }
     });
     handleInputChange({
         target: { name: 'albumArt', value: song.albumArt }
     });
-    // This is the critical line to make it play!
     handleInputChange({
         target: { name: 'previewUrl', value: song.previewUrl } 
     });
@@ -45,13 +46,41 @@ const Message = ({ isOpen, onClose, formData, handleInputChange, handleSubmit })
     setSearchResults([]);
 };
 
+    // --- ADDED: VALIDATION LOGIC ---
+    const onFormSubmit = (e) => {
+        e.preventDefault();
+        if (!formData.recipient || !formData.message || !formData.song) {
+            setShowErrorModal(true);
+            return;
+        }
+        handleSubmit(e);
+    };
+
     if (!isOpen) return null;
 
     return (
         <div className="ss-modal-overlay">
+            
+            {/* --- ADDED: THEMED MISSING INFO MODAL --- */}
+            {showErrorModal && (
+                <div className="still-modal-overlay">
+                    <div className="still-modal-card">
+                        <h2 className="modal-title">MISSING INFO</h2>
+                        <p className="modal-message">
+                            Please add a recipient name, message, and song before submitting.
+                        </p>
+                        <div className="modal-actions">
+                            <button className="modal-btn-primary" onClick={() => setShowErrorModal(false)}>
+                                OKAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="ss-modal-content">
                 <button className="ss-modal-close" onClick={onClose}>&times;</button>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={onFormSubmit}>
                     <div className="ss-form-group">
                         <label>Recipient</label>
                         <input 
@@ -59,7 +88,7 @@ const Message = ({ isOpen, onClose, formData, handleInputChange, handleSubmit })
                             placeholder="Input recipient" 
                             value={formData.recipient} 
                             onChange={handleInputChange} 
-                            required 
+                            // removed required
                         />
                     </div>
                     <div className="ss-form-group">
@@ -69,11 +98,10 @@ const Message = ({ isOpen, onClose, formData, handleInputChange, handleSubmit })
                             placeholder="Input message" 
                             value={formData.message} 
                             onChange={handleInputChange} 
-                            required 
+                            // removed required
                         />
                     </div>
                     
-                    {/* The relative positioning is handled in CSS for this group */}
                     <div className="ss-form-group ss-search-container">
                         <label>Song</label>
                         <div className="ss-search-wrapper">
