@@ -176,3 +176,26 @@
         border-top: none;
     }
 }
+
+/* --- ADDED OVERRIDES FOR LOGO ALIGNMENT AND CENTERED ARROW --- */
+
+.dev-section-container {
+    max-width: 100%;         /* Stretch to allow left alignment */
+    margin: 40px 0;          /* Remove auto-centering margin */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Force content to the left edge */
+}
+
+.dev-layout {
+    width: 100%;
+    padding-left: 20px;      /* Matches the gutter of your STILL logo */
+    justify-content: flex-start;
+}
+
+.dev-dropdown-trigger {
+    width: 100%;             /* Occupy full width to allow internal centering */
+    display: flex;
+    justify-content: center; /* Keep the trigger arrow in the exact middle */
+    margin-top: 50px;
+}
