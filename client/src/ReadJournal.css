@@ -55,10 +55,6 @@
     box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     position: relative;
     transition: transform 0.3s ease;
-    /* Added alignment to keep pagination at the bottom */
-    display: flex;
-    flex-direction: column;
-    min-height: 800px; 
 }
 
 .read-music-section {
@@ -96,6 +92,7 @@
     margin-bottom: 15px;
 }
 
+/* PLAY PREVIEW BUTTON - Match Journal.jsx style but for Paper Mode */
 .read-play-preview-btn {
     background: #1a1a1a;
     color: #fff;
@@ -110,7 +107,6 @@
 
 .read-body-content {
     margin-top: 30px;
-    flex-grow: 1; /* Pushes pagination to the bottom */
 }
 
 .read-entry-title {
@@ -123,11 +119,7 @@
     font-size: 1.2rem;
     line-height: 1.8;
     color: #222;
-    white-space: pre-wrap;
-    /* Prevents words from breaking in the middle */
-    overflow-wrap: break-word;
-    word-break: keep-all; 
-    text-align: left;
+    white-space: pre-wrap; /* Keeps paragraphs preserved */
 }
 
 .read-page-footer {
@@ -147,6 +139,7 @@
     font-size: 2rem;
 }
 
+/* Container for the footer and arrows */
 .read-pagination-controls {
     display: flex;
     justify-content: space-between;
@@ -177,7 +170,7 @@
 }
 
 .read-nav-arrow.hidden {
-    visibility: hidden;
+    visibility: hidden; /* Keeps spacing consistent but hides the button */
 }
 
 .read-page-footer {
@@ -186,4 +179,9 @@
     letter-spacing: 2px;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+/* Ensure the text area has a consistent height for long entries */
+.read-body-content {
+    min-height: 300px;
 }
