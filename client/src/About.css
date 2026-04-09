@@ -177,25 +177,34 @@
     }
 }
 
-/* --- ADDED OVERRIDES FOR LOGO ALIGNMENT AND CENTERED ARROW --- */
+/* --- FINAL ALIGNMENT OVERRIDES BASED ON HOME.JSX --- */
 
 .dev-section-container {
-    max-width: 100%;         /* Stretch to allow left alignment */
-    margin: 40px 0;          /* Remove auto-centering margin */
+    max-width: none;            /* Break out of the 700px parent */
+    width: 100vw;               /* Full screen width */
+    margin: 40px 0;             /* Remove auto-center */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;         /* Pull to far left edge of screen */
+    margin-right: -50vw;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Force content to the left edge */
+    justify-content: center;
 }
 
 .dev-layout {
     width: 100%;
-    padding-left: 20px;      /* Matches the gutter of your STILL logo */
+    max-width: 1200px;          /* Match nt-navbar max-width */
+    margin: 0 auto;
+    padding-left: 2rem;         /* Match nt-container padding (Home.jsx) */
+    padding-right: 2rem;
     justify-content: flex-start;
 }
 
 .dev-dropdown-trigger {
-    width: 100%;             /* Occupy full width to allow internal centering */
+    width: 100%;
+    max-width: 700px;           /* Back to standard text width for centering */
+    margin: 50px auto 0 auto;
     display: flex;
-    justify-content: center; /* Keep the trigger arrow in the exact middle */
-    margin-top: 50px;
+    justify-content: center;    /* Arrow stays in the middle */
 }
