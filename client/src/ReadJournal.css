@@ -52,9 +52,13 @@
     padding: 60px;
     width: 100%;
     max-width: 700px;
+    min-height: 850px; 
     box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     position: relative;
     transition: transform 0.3s ease;
+    /* Keeps pagination inside and at the bottom */
+    display: flex;
+    flex-direction: column;
 }
 
 .read-music-section {
@@ -92,7 +96,6 @@
     margin-bottom: 15px;
 }
 
-/* PLAY PREVIEW BUTTON - Match Journal.jsx style but for Paper Mode */
 .read-play-preview-btn {
     background: #1a1a1a;
     color: #fff;
@@ -106,7 +109,8 @@
 }
 
 .read-body-content {
-    margin-top: 30px;
+    margin-top: 10px;
+    flex-grow: 1; /* Pushes pagination to the bottom */
 }
 
 .read-entry-title {
@@ -119,32 +123,16 @@
     font-size: 1.2rem;
     line-height: 1.8;
     color: #222;
-    white-space: pre-wrap; /* Keeps paragraphs preserved */
+    white-space: pre-wrap;
+    text-align: justify; /* Keeps text fitted and justified */
 }
 
-.read-page-footer {
-    text-align: center;
-    margin-top: 60px;
-    font-size: 0.7rem;
-    color: #aaa;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.read-sparkle {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    color: rgba(255,255,255,0.2);
-    font-size: 2rem;
-}
-
-/* Container for the footer and arrows */
+/* --- PAGINATION (Now pinned inside) --- */
 .read-pagination-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 40px;
+    margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid rgba(0,0,0,0.05);
 }
@@ -170,7 +158,7 @@
 }
 
 .read-nav-arrow.hidden {
-    visibility: hidden; /* Keeps spacing consistent but hides the button */
+    visibility: hidden;
 }
 
 .read-page-footer {
@@ -181,7 +169,10 @@
     text-transform: uppercase;
 }
 
-/* Ensure the text area has a consistent height for long entries */
-.read-body-content {
-    min-height: 300px;
+.read-sparkle {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    color: rgba(255,255,255,0.2);
+    font-size: 2rem;
 }
