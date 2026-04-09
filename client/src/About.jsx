@@ -7,6 +7,9 @@ function About() {
     const dropdownRef = useRef(null);
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
+    // --- ADDED: DEVELOPER SECTION STATE ---
+    const [showDevInfo, setShowDevInfo] = useState(false);
+
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/login';
@@ -133,6 +136,46 @@ function About() {
                         </div>
                     </div>
                     {/* --- PRIVACY SECTION END --- */}
+
+                    {/* --- ADDED: DEVELOPER DROPDOWN TRIGGER --- */}
+                    <div className="dev-dropdown-trigger" onClick={() => setShowDevInfo(!showDevInfo)}>
+                        <span className={`arrow-icon ${showDevInfo ? 'open' : ''}`}>▼</span>
+                    </div>
+
+                    {/* --- ADDED: DEVELOPER DROPDOWN CONTENT --- */}
+                    {showDevInfo && (
+                        <div className="dev-section-container">
+                            <div className="dev-layout">
+                                <div className="dev-photo-col">
+                                    <div className="dev-large-circle">
+                                        {/* PUT YOUR PHOTO FILENAME HERE IN PUBLIC FOLDER */}
+                                        <img src="/your-photo.png" alt="Rainier Bautista" />
+                                    </div>
+                                </div>
+
+                                <div className="dev-content-col">
+                                    <div className="speech-bubble">
+                                        <p>
+                                            <strong>STILL</strong> was designed and developed by me (Rainier Bautista). 
+                                            This project started with a simple idea: that music is the best way to say what words can't. 
+                                            Every line of code was written to ensure that the moment you share a song, 
+                                            the technology gets out of the way of the message.
+                                        </p>
+                                        <p>
+                                            This platform is a tribute to those backseat secrets we keep—the ones that are too heavy for words but fit perfectly within a melody. 
+                                            I built this for the times when you feel super far from where you want to be, using music as the bridge to close that distance. 
+                                            Whether it’s an connection to the prettiest thing you’ve ever seen or a way to navigate through the tears, it is for those who truly mean it.
+                                        </p>
+                                        <p>
+                                            I created this because I like me better when I’m connected to the sounds that define my world. 
+                                            In a life that’s always moving, I built this so we can finally stay <strong>STILL</strong>.
+                                        </p>
+                                        <div className="bubble-pointer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

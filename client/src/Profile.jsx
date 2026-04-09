@@ -18,9 +18,6 @@ function Profile() {
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
     const [showPasswords, setShowPasswords] = useState(false);
     
-    // --- ADDED: DROPDOWN STATE ---
-    const [showDevInfo, setShowDevInfo] = useState(false);
-
     // --- ADDED: MODAL STATE ---
     const [modalConfig, setModalConfig] = useState({ show: false, title: "", message: "", type: "info" });
 
@@ -91,6 +88,7 @@ function Profile() {
                 localStorage.setItem("currentUsername", user.username);
                 localStorage.setItem("profilePic", user.profilePic || "");
                 
+                // UPDATED: Use themed modal for success
                 setModalConfig({
                     show: true,
                     title: "SUCCESS",
@@ -107,6 +105,7 @@ function Profile() {
             if (err.response && err.response.data.error) {
                 errorMsg = err.response.data.error;
             }
+            // UPDATED: Use themed modal for errors
             setModalConfig({
                 show: true,
                 title: "SAVE ERROR",
@@ -169,6 +168,7 @@ function Profile() {
                     <h1 className="profile-title">PROFILE</h1>
                     <div className="profile-divider"></div>
 
+                    {/* Image Upload Section */}
                     <div className="profile-image-section">
                         <div className="profile-image-circle" onClick={() => fileInputRef.current.click()}>
                             {user.profilePic ? <img src={user.profilePic} alt="Profile" /> : <span style={{fontSize: '3rem'}}>👤</span>}
@@ -183,6 +183,7 @@ function Profile() {
                         <input type="file" ref={fileInputRef} style={{display: 'none'}} accept="image/*" onChange={handleImageChange} />
                     </div>
 
+                    {/* Info Section */}
                     <div className="profile-info-section">
                         <div className="label-row">
                             <label className="profile-label">Username</label>
@@ -206,6 +207,7 @@ function Profile() {
                         <label className="profile-label">Email Address</label>
                         <div className="profile-value-box" style={{fontWeight: 'normal', color: '#a7a7a7'}}>{user.email}</div>
 
+                        {/* Password Section */}
                         <button className="change-pass-btn" onClick={() => setShowPasswordFields(!showPasswordFields)}>
                             Change Password {showPasswordFields ? "▲" : "▼"}
                         </button>
@@ -228,6 +230,7 @@ function Profile() {
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                                 />
+                                
                                 <div style={{display: 'flex', alignItems: 'center', marginTop: '10px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPasswords(!showPasswords)}>
                                     <input 
                                         type="checkbox" 
@@ -242,50 +245,18 @@ function Profile() {
                     </div>
 
                     <button className="profile-save-btn" onClick={handleSave}>Save Changes</button>
-                    
-                    {/* DROPDOWN ARROW FOR ABOUT SECTION */}
-                    <div className="dev-dropdown-trigger" onClick={() => setShowDevInfo(!showDevInfo)}>
-                        <span className={`arrow-icon ${showDevInfo ? 'open' : ''}`}>▼</span>
-                    </div>
                 </div>
             </main>
-
-            {/* DEVELOPER DROPDOWN CONTENT */}
-            {showDevInfo && (
-                <div className="dev-section-container">
-                    <div className="dev-layout">
-                        <div className="dev-photo-col">
-                            <div className="dev-large-circle">
-                                {/* PUT YOUR PHOTO FILENAME HERE */}
-                                <img src="/your-photo.png" alt="Rainier Bautista" />
-                            </div>
-                        </div>
-
-                        <div className="dev-content-col">
-                            <div className="speech-bubble">
-                                <p>
-                                    <strong>STILL</strong> was designed and developed by me (Rainier Bautista). 
-                                    This project started with a simple idea: that music is the best way to say what words can't. 
-                                    Every line of code was written to ensure that the moment you share a song, 
-                                    the technology gets out of the way of the message.
-                                </p>
-                                <p>
-                                    This platform is a tribute to those backseat secrets we keep—the ones that are too heavy for words but fit perfectly within a melody. 
-                                    I built this for the times when you feel super far from where you want to be, using music as the bridge to close that distance. 
-                                    Whether it’s an connection to the prettiest thing you’ve ever seen or a way to navigate through the tears, it is for those who truly mean it.
-                                </p>
-                                <p>
-                                    I created this because I like me better when I’m connected to the sounds that define my world. 
-                                    In a life that’s always moving, I built this so we can finally stay <strong>STILL</strong>.
-                                </p>
-                                <div className="bubble-pointer"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
+
+        
     );
+
+
+    
 }
+
+
+
 
 export default Profile;
