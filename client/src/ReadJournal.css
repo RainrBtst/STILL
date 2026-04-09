@@ -55,6 +55,10 @@
     box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     position: relative;
     transition: transform 0.3s ease;
+    /* Added alignment for internal pagination */
+    display: flex;
+    flex-direction: column;
+    min-height: 850px; 
 }
 
 .read-music-section {
@@ -107,6 +111,9 @@
 
 .read-body-content {
     margin-top: 30px;
+    /* Allows content to push footer to the bottom */
+    flex-grow: 1; 
+    min-height: 300px;
 }
 
 .read-entry-title {
@@ -120,6 +127,10 @@
     line-height: 1.8;
     color: #222;
     white-space: pre-wrap; /* Keeps paragraphs preserved */
+    /* Added to fix word cutting */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: left;
 }
 
 .read-page-footer {
@@ -181,7 +192,19 @@
     text-transform: uppercase;
 }
 
-/* Ensure the text area has a consistent height for long entries */
-.read-body-content {
-    min-height: 300px;
+/* --- ADDED FOR MOBILE RESPONSIVENESS --- */
+@media (max-width: 600px) {
+    .read-paper-card {
+        padding: 30px;
+        border-radius: 20px;
+    }
+    .read-music-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    .read-modal-art {
+        width: 120px;
+        height: 120px;
+    }
 }

@@ -16,10 +16,24 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
 
     const getPages = (text) => {
         if (!text) return [""];
+        
+        // Split text into words to prevent cutting words in half
+        const words = text.split(' ');
         const chunks = [];
-        for (let i = 0; i < text.length; i += 800) {
-            chunks.push(text.substring(i, i + 800));
-        }
+        let currentChunk = "";
+        const maxCharsPerPage = 1200; // Increased limit to fill the paper better
+
+        words.forEach(word => {
+            // If adding the next word exceeds the limit, push current chunk and start new one
+            if ((currentChunk + word).length > maxCharsPerPage) {
+                chunks.push(currentChunk.trim());
+                currentChunk = word + " ";
+            } else {
+                currentChunk += word + " ";
+            }
+        });
+
+        if (currentChunk) chunks.push(currentChunk.trim());
         return chunks;
     };
 
