@@ -18,6 +18,9 @@ function Profile() {
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
     const [showPasswords, setShowPasswords] = useState(false);
     
+    // --- ADDED: MODAL STATE ---
+    const [modalConfig, setModalConfig] = useState({ show: false, title: "", message: "", type: "info" });
+
     // --- REFS ---
     const dropdownRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -85,24 +88,57 @@ function Profile() {
                 localStorage.setItem("currentUsername", user.username);
                 localStorage.setItem("profilePic", user.profilePic || "");
                 
-                alert("Profile saved successfully!");
+                // UPDATED: Use themed modal for success
+                setModalConfig({
+                    show: true,
+                    title: "SUCCESS",
+                    message: "Profile saved successfully!",
+                    type: "success"
+                });
+                
                 setIsEditingUsername(false);
                 setShowPasswordFields(false);
                 setPasswords({ current: "", new: "" });
-                window.location.href = '/home';
             }
         } catch (err) {
+            let errorMsg = "Error saving changes.";
             if (err.response && err.response.data.error) {
-                alert(err.response.data.error); 
-            } else {
-                alert("Error saving changes.");
+                errorMsg = err.response.data.error;
             }
+            // UPDATED: Use themed modal for errors
+            setModalConfig({
+                show: true,
+                title: "SAVE ERROR",
+                message: errorMsg,
+                type: "error"
+            });
         }
+    };
+
+    const closeAndRedirect = () => {
+        const isSuccess = modalConfig.type === "success";
+        setModalConfig({ ...modalConfig, show: false });
+        if (isSuccess) window.location.href = '/home';
     };
 
     // --- RENDER ---
     return (
         <div className="nt-container">
+            {/* --- ADDED: THEMED MODAL JSX --- */}
+            {modalConfig.show && (
+                <div className="still-modal-overlay">
+                    <div className="still-modal-card">
+                        <h2 className="modal-title">{modalConfig.title}</h2>
+                        <p className="modal-message">{modalConfig.message}</p>
+                        <div className="modal-actions">
+                            <button className="modal-btn-primary" onClick={closeAndRedirect}>
+                                OKAY
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Navbar Section */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/home'}>STILL</h1>
@@ -117,7 +153,6 @@ function Profile() {
                         {showProfileDropdown && (
                             <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
                                 <button className="nt-logout-btn-dropdown" onClick={() => window.location.href = '/home'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
-                                {/* ADDED PROFILE BUTTON */}
                                 <button className="nt-logout-btn-dropdown" onClick={() => window.location.href = '/profile'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
                                 <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
                                 <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
