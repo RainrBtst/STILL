@@ -52,11 +52,8 @@
     padding: 60px;
     width: 100%;
     max-width: 700px;
-    min-height: 850px; /* Fixed height to keep arrows at the bottom */
     box-shadow: 0 30px 60px rgba(0,0,0,0.5);
     position: relative;
-    display: flex;
-    flex-direction: column;
     transition: transform 0.3s ease;
 }
 
@@ -95,6 +92,7 @@
     margin-bottom: 15px;
 }
 
+/* PLAY PREVIEW BUTTON - Match Journal.jsx style but for Paper Mode */
 .read-play-preview-btn {
     background: #1a1a1a;
     color: #fff;
@@ -109,7 +107,6 @@
 
 .read-body-content {
     margin-top: 30px;
-    flex-grow: 1; /* This pushes the pagination controls to the bottom */
 }
 
 .read-entry-title {
@@ -122,16 +119,32 @@
     font-size: 1.2rem;
     line-height: 1.8;
     color: #222;
-    white-space: pre-wrap; 
-    text-align: left;
+    white-space: pre-wrap; /* Keeps paragraphs preserved */
 }
 
-/* --- PAGINATION CONTROLS --- */
+.read-page-footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 0.7rem;
+    color: #aaa;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.read-sparkle {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    color: rgba(255,255,255,0.2);
+    font-size: 2rem;
+}
+
+/* Container for the footer and arrows */
 .read-pagination-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: auto; /* Force to bottom of flex container */
+    margin-top: 40px;
     padding-top: 20px;
     border-top: 1px solid rgba(0,0,0,0.05);
 }
@@ -140,16 +153,15 @@
     background: #1a1a1a;
     color: white;
     border: none;
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: 0.2s;
-    z-index: 10;
 }
 
 .read-nav-arrow:hover {
@@ -158,7 +170,7 @@
 }
 
 .read-nav-arrow.hidden {
-    visibility: hidden;
+    visibility: hidden; /* Keeps spacing consistent but hides the button */
 }
 
 .read-page-footer {
@@ -169,10 +181,7 @@
     text-transform: uppercase;
 }
 
-.read-sparkle {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    color: rgba(255,255,255,0.2);
-    font-size: 2rem;
+/* Ensure the text area has a consistent height for long entries */
+.read-body-content {
+    min-height: 300px;
 }
