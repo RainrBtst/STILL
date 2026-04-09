@@ -16,30 +16,11 @@ function ReadJournal({ selectedSong, onClose, existingData }) {
 
     const getPages = (text) => {
         if (!text) return [""];
-        
-        const words = text.split(' ');
-        const lines = [];
-        let currentLine = "";
-        const maxCharsPerLine = 65; // Matches the width of the card
-        const linesPerPage = 13; // Per your request
-
-        // Group words into lines
-        words.forEach(word => {
-            if ((currentLine + word).length > maxCharsPerLine) {
-                lines.push(currentLine.trim());
-                currentLine = word + " ";
-            } else {
-                currentLine += word + " ";
-            }
-        });
-        if (currentLine) lines.push(currentLine.trim());
-
-        // Group lines into pages (13 lines per page)
-        const paginated = [];
-        for (let i = 0; i < lines.length; i += linesPerPage) {
-            paginated.push(lines.slice(i, i + linesPerPage).join("\n"));
+        const chunks = [];
+        for (let i = 0; i < text.length; i += 800) {
+            chunks.push(text.substring(i, i + 800));
         }
-        return paginated;
+        return chunks;
     };
 
     const pages = getPages(existingData?.content);
