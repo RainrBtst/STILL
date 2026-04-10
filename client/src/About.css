@@ -66,24 +66,36 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     color: #888; /* Subtle grey to match other labels */
+    margin: 0;
+    text-align: center;
 }
 
 .dev-dropdown-trigger {
     display: flex;
+    flex-direction: column; /* Stacks "More" and "Arrow" vertically */
+    align-items: center;    /* Centers items horizontally */
     justify-content: center;
-    margin-top: 50px;
+    gap: 5px;               /* Space between text and arrow */
+    margin: 50px auto 0 auto;
     cursor: pointer;
     color: #ffffff;
     transition: opacity 0.3s;
+    width: fit-content;     /* Ensures container is only as wide as content */
 }
 
 .dev-dropdown-trigger:hover {
     opacity: 0.7;
 }
 
+.dev-dropdown-trigger:hover .dev-more-text {
+    color: #FAEF55;
+}
+
 .arrow-icon {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
+    display: block;
+    line-height: 1;
 }
 
 .arrow-icon.open {
@@ -99,7 +111,7 @@
 
 .dev-layout {
     display: flex;
-    align-items: center; /* Aligned vertically to the logo of STILL on the left */
+    align-items: center; 
     gap: 35px;
 }
 
@@ -112,7 +124,7 @@
     height: 140px;
     border-radius: 50%;
     background: #282828;
-    border: 4px solid #FAEF55; /* Updated color border */
+    border: 4px solid #FAEF55; 
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
@@ -137,7 +149,6 @@
     position: relative;
     font-size: 0.95rem;
     line-height: 1.6;
-    /* Updated color behind the white background */
     box-shadow: 8px 8px 0px #FAEF55; 
 }
 
@@ -155,7 +166,7 @@
     content: '';
     position: absolute;
     left: -15px;
-    top: 50%; /* Centered vertically to look less crowded */
+    top: 50%; 
     transform: translateY(-50%);
     width: 0;
     height: 0;
@@ -187,7 +198,6 @@
 
 /* --- FINAL ALIGNMENT & SCROLLBAR OVERRIDES --- */
 
-/* Fix horizontal scroll bar globally for this page */
 body {
     overflow-x: hidden;
 }
@@ -202,28 +212,31 @@ body {
     margin-right: -50vw;
     display: flex;
     justify-content: center;
-    overflow: hidden; /* Prevents internal items from pushing the width */
+    overflow: hidden; 
 }
 
 .dev-layout {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding-left: 2rem; /* Matches Home.jsx padding */
+    padding-left: 2rem; 
     padding-right: 2rem;
     justify-content: flex-start;
 }
 
 /* MAKING THE PROFILE PICTURE BIGGER */
 .dev-large-circle {
-    width: 180px;  /* Increased from 140px */
-    height: 180px; /* Increased from 140px */
+    width: 180px; 
+    height: 180px; 
 }
 
+/* Trigger reset for centering */
 .dev-dropdown-trigger {
-    width: 100%;
-    max-width: 700px;
+    width: fit-content;
+    max-width: none;
     margin: 50px auto 0 auto;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
