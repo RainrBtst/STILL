@@ -83,9 +83,7 @@
     width: fit-content;     /* Ensures container is only as wide as content */
 }
 
-.dev-dropdown-trigger:hover {
-    opacity: 0.7;
-}
+
 
 .dev-dropdown-trigger:hover .dev-more-text {
     color: #FAEF55;
