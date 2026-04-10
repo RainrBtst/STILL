@@ -60,6 +60,14 @@
 
 /* --- DEVELOPER DROPDOWN ADDITIONS --- */
 
+.dev-more-text {
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #888; /* Subtle grey to match other labels */
+}
+
 .dev-dropdown-trigger {
     display: flex;
     justify-content: center;

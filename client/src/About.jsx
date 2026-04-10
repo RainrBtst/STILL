@@ -139,6 +139,7 @@ function About() {
 
                     {/* --- ADDED: DEVELOPER DROPDOWN TRIGGER --- */}
                     <div className="dev-dropdown-trigger" onClick={() => setShowDevInfo(!showDevInfo)}>
+                        <span className="dev-more-text">MORE</span>
                         <span className={`arrow-icon ${showDevInfo ? 'open' : ''}`}>▼</span>
                     </div>
 
