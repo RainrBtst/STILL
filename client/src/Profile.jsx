@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 
-// --- FIXED: Use Environment Variable instead of hardcoded ngrok ---
+// Use Environment Variable or fallback to localhost
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function Profile() {
+    const navigate = useNavigate();
+
     // --- STATE ---
     const [user, setUser] = useState({
         username: localStorage.getItem("currentUsername") || "User",
@@ -57,11 +60,7 @@ function Profile() {
     // --- HANDLERS ---
     const handleLogout = () => {
         localStorage.clear();
-        window.location.href = '/login';
-    };
-
-    const handleAbout = () => {
-        window.location.href = '/about';
+        navigate('/login');
     };
 
     const handleImageChange = (e) => {
@@ -78,7 +77,6 @@ function Profile() {
     const handleSave = async () => {
         const userId = localStorage.getItem("userId");
         try {
-            // FIXED: Added check to make sure userId exists before calling API
             if(!userId) throw new Error("User session expired.");
 
             const response = await axios.put(`${API_BASE_URL}/api/user/update/${userId}`, {
@@ -104,35 +102,25 @@ function Profile() {
                 setPasswords({ current: "", new: "" });
             }
         } catch (err) {
-            let errorMsg = "Error saving changes.";
-            if (err.response && err.response.data.error) {
-                errorMsg = err.response.data.error;
-            }
             setModalConfig({
                 show: true,
                 title: "SAVE ERROR",
-                message: errorMsg,
+                message: err.response?.data?.error || "Error saving changes.",
                 type: "error"
             });
         }
     };
 
-    const closeAndRedirect = () => {
-        const isSuccess = modalConfig.type === "success";
-        setModalConfig({ ...modalConfig, show: false });
-        // Optional: Redirecting to home on success
-        if (isSuccess) window.location.href = '/home';
-    };
-
     return (
         <div className="nt-container">
+            {/* ALERT MODAL */}
             {modalConfig.show && (
                 <div className="still-modal-overlay">
                     <div className="still-modal-card">
                         <h2 className="modal-title">{modalConfig.title}</h2>
                         <p className="modal-message">{modalConfig.message}</p>
                         <div className="modal-actions">
-                            <button className="modal-btn-primary" onClick={closeAndRedirect}>
+                            <button className="modal-btn-primary" onClick={() => setModalConfig({ ...modalConfig, show: false })}>
                                 OKAY
                             </button>
                         </div>
@@ -140,28 +128,32 @@ function Profile() {
                 </div>
             )}
 
+            {/* NAVIGATION BAR */}
             <nav className="nt-navbar">
-                <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/home'}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
+                <h1 className="nt-logo" onClick={() => navigate('/home')}>STILL</h1>
+                
+                <div className="nt-nav-note" onClick={() => navigate('/send-song')} >
                     <span>Send a Song</span>
                 </div>
+
                 <div className="nt-nav-actions">
-                    <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                            {user.profilePic ? <img src={user.profilePic} alt="P" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} /> : "👤"}
+                    <div className="nt-profile-container" ref={dropdownRef}>
+                        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                            {user.profilePic ? <img src={user.profilePic} alt="P" /> : "👤"}
                         </div>
                         {showProfileDropdown && (
                             <div className="nt-profile-dropdown">
-                                <button onClick={() => window.location.href = '/home'}>HOME</button>
-                                <button onClick={() => window.location.href = '/profile'}>PROFILE</button>
-                                <button onClick={handleAbout}>ABOUT</button>
-                                <button onClick={handleLogout}>LOGOUT</button>
+                                <button onClick={() => navigate('/home')}>HOME</button>
+                                <button onClick={() => setShowProfileDropdown(false)}>PROFILE</button>
+                                <button onClick={() => navigate('/about')}>ABOUT</button>
+                                <button className="logout-item" onClick={handleLogout}>LOGOUT</button>
                             </div>
                         )}
                     </div>
                 </div>
             </nav>
 
+            {/* MAIN CONTENT */}
             <main className="profile-main">
                 <div className="profile-card">
                     <h1 className="profile-title">PROFILE</h1>
@@ -171,7 +163,6 @@ function Profile() {
                         <div className="profile-image-circle" onClick={() => fileInputRef.current.click()}>
                             {user.profilePic ? <img src={user.profilePic} alt="Profile" /> : <span style={{fontSize: '3rem'}}>👤</span>}
                         </div>
-                        
                         <div className="profile-action-group">
                             <button className="btn-yellow" onClick={() => fileInputRef.current.click()}>Change Photo</button>
                             {user.profilePic && (
@@ -224,7 +215,6 @@ function Profile() {
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                                 />
-                                
                                 <div className="show-pass-toggle" onClick={() => setShowPasswords(!showPasswords)}>
                                     <input type="checkbox" checked={showPasswords} readOnly />
                                     <span>Show Password</span>
@@ -232,7 +222,6 @@ function Profile() {
                             </div>
                         )}
                     </div>
-
                     <button className="profile-save-btn" onClick={handleSave}>Save Changes</button>
                 </div>
             </main>
