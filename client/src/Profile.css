@@ -29,7 +29,84 @@
     align-items: center;
 }
 
-/* --- SEND A SONG BUTTON (WITH BLACK RECTANGLE HOVER) --- */
+/* --- SEARCH STYLES FROM HOME --- */
+.nt-search-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.nt-search-bar {
+    background: #282828;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nt-search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+}
+
+.nt-search-dropdown {
+    position: absolute;
+    top: 55px;
+    left: 0;
+    width: 300px;
+    background: #282828;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    z-index: 1000;
+    overflow: hidden;
+    border: 1px solid #444;
+}
+
+.nt-search-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nt-search-item:hover {
+    background: #3e3e3e;
+}
+
+.nt-search-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.nt-search-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nt-search-name {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nt-search-artist {
+    font-size: 0.75rem;
+    color: #b3b3b3;
+    margin: 0;
+}
+
+/* --- SEND A SONG BUTTON --- */
 .nt-nav-note {
     position: absolute;
     left: 50%;
@@ -41,15 +118,14 @@
     text-transform: uppercase;
     transition: all 0.3s ease;
     cursor: pointer;
-    /* Spacing for the background box */
     padding: 8px 20px;
-    border-radius: 20px; /* Makes it a pill/rounded rectangle */
+    border-radius: 20px;
     border: 1px solid transparent; 
 }
 
 .nt-nav-note:hover {
-    background-color: #000000; /* Solid Black */
-    border: 1px solid #333; /* Suble border to define the shape */
+    background-color: #000000;
+    border: 1px solid #333;
     color: #FAEF5D;
     opacity: 1;
 }
@@ -75,7 +151,7 @@
     border-color: #FAEF5D;
 }
 
-/* --- DROPDOWN (STAYS WHITE ON HOVER) --- */
+/* --- DROPDOWN --- */
 .nt-profile-dropdown {
     top: 55px !important; 
 }
@@ -85,8 +161,8 @@
 }
 
 .nt-logout-btn-dropdown:hover {
-    color: white !important; 
-    opacity: 0.7; 
+    color: #FAEF5D !important; /* Spotify style highlight */
+    background: #252525 !important;
 }
 
 /* --- PROFILE CARD LAYOUT --- */
@@ -345,4 +421,3 @@
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
 }
-

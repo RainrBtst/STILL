@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './Profile.css';
 
-// --- FIXED: Use Environment Variable instead of hardcoded ngrok ---
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+// --- API CONFIG FROM HOME ---
+const API_BASE_URL = window.location.hostname === "localhost" 
+    ? "http://localhost:3001" 
+    : "https://still-csmi.onrender.com";
 
 function Profile() {
     // --- STATE ---
@@ -19,6 +21,10 @@ function Profile() {
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
     const [showPasswords, setShowPasswords] = useState(false);
     
+    // --- NAV SEARCH STATE FROM HOME ---
+    const [searchQuery, setSearchQuery] = useState('');
+    const [results, setResults] = useState([]);
+
     // --- MODAL STATE ---
     const [modalConfig, setModalConfig] = useState({ show: false, title: "", message: "", type: "info" });
 
@@ -54,14 +60,45 @@ function Profile() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // --- SEARCH LOGIC FROM HOME ---
+    useEffect(() => {
+        const fetchSongs = async () => {
+            if (searchQuery.length > 2) {
+                try {
+                    const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`, {
+                        headers: { 'ngrok-skip-browser-warning': 'true' }
+                    });
+                    setResults(res.data);
+                } catch (err) { console.error("Search failed", err); }
+            } else { setResults([]); }
+        };
+        const debounce = setTimeout(fetchSongs, 500); 
+        return () => clearTimeout(debounce);
+    }, [searchQuery]);
+
     // --- HANDLERS ---
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/login';
     };
 
+    const handleHome = () => {
+        window.location.href = '/home';
+    };
+
+    const handleProfile = () => {
+        window.location.href = '/profile';
+    };
+
     const handleAbout = () => {
         window.location.href = '/about';
+    };
+
+    const handleSelectSong = (track) => {
+        // Since we are on Profile, you might want to redirect to home 
+        // with this song or just clear the search.
+        setSearchQuery(''); 
+        setResults([]); 
     };
 
     const handleImageChange = (e) => {
@@ -78,7 +115,6 @@ function Profile() {
     const handleSave = async () => {
         const userId = localStorage.getItem("userId");
         try {
-            // FIXED: Added check to make sure userId exists before calling API
             if(!userId) throw new Error("User session expired.");
 
             const response = await axios.put(`${API_BASE_URL}/api/user/update/${userId}`, {
@@ -120,7 +156,6 @@ function Profile() {
     const closeAndRedirect = () => {
         const isSuccess = modalConfig.type === "success";
         setModalConfig({ ...modalConfig, show: false });
-        // Optional: Redirecting to home on success
         if (isSuccess) window.location.href = '/home';
     };
 
@@ -140,22 +175,46 @@ function Profile() {
                 </div>
             )}
 
+            {/* --- NAV BAR COPIED EXACTLY FROM HOME --- */}
             <nav className="nt-navbar">
-                <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/home'}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
+                <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
+                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
                     <span>Send a Song</span>
                 </div>
                 <div className="nt-nav-actions">
+                    <div className="nt-search-container">
+                        <div className="nt-search-bar">
+                            <span className="search-icon">🔍</span>
+                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                        </div>
+                        {results.length > 0 && (
+                            <div className="nt-search-dropdown">
+                                {results.map((track) => (
+                                    <div key={track.id} className="nt-search-item" onClick={() => handleSelectSong(track)}>
+                                        <img src={track.albumArt} alt="art" />
+                                        <div className="nt-search-info">
+                                            <p className="nt-search-name">{track.name}</p>
+                                            <p className="nt-search-artist">{track.artist}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        <div className="nt-profile-circle" style={{cursor: 'pointer'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                            {user.profilePic ? <img src={user.profilePic} alt="P" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} /> : "👤"}
+                        <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                            {user.profilePic ? (
+                                <img src={user.profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                            ) : (
+                                "👤"
+                            )}
                         </div>
                         {showProfileDropdown && (
-                            <div className="nt-profile-dropdown">
-                                <button onClick={() => window.location.href = '/home'}>HOME</button>
-                                <button onClick={() => window.location.href = '/profile'}>PROFILE</button>
-                                <button onClick={handleAbout}>ABOUT</button>
-                                <button onClick={handleLogout}>LOGOUT</button>
+                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
+                                <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
                             </div>
                         )}
                     </div>
