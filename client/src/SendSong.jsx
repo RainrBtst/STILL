@@ -185,24 +185,33 @@ function SendSong() {
 
             {/* NAVBAR SECTION */}
             <nav className="nt-navbar">
-                <h1 className="nt-logo" onClick={() => window.location.href = '/home'}>STILL</h1>
-                <div className="nt-nav-note"><span>SEND A SONG</span></div>
-                <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                    <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                        {profilePic ? (
-                            <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                        ) : (
-                            "👤"
+                <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
+                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+                    <span>Send a Song</span>
+                </div>
+                <div className="nt-nav-actions">
+                    
+                    <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
+                        {/* UPDATED: Profile Circle logic */}
+                        <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                            {profilePic ? (
+                                <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                            ) : (
+                                "👤"
+                            )}
+                        </div>
+                        {showProfileDropdown && (
+                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
+                                {/* ADDED HOME BUTTON */}
+                                <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
+                                {/* ADDED PROFILE BUTTON WITHOUT UNDERLINE */}
+                                <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
+                                {/* ADDED ABOUT BUTTON */}
+                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
+                            </div>
                         )}
                     </div>
-                    {showProfileDropdown && (
-                        <div className="nt-profile-dropdown">
-                            <button className="nt-logout-btn-dropdown" onClick={handleHome}>HOME</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleProfile}>PROFILE</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleAbout}>ABOUT</button>
-                            <button className="nt-logout-btn-dropdown" onClick={() => window.location.href='/login'}>LOGOUT</button>
-                        </div>
-                    )}
                 </div>
             </nav>
 

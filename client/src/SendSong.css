@@ -431,3 +431,53 @@
 .ss-mini-play, .ss-close-letter, .ss-custom-input {
     pointer-events: auto !important;
 }
+
+.nt-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 3rem auto;
+    position: relative;
+}
+
+.nt-logo {
+    color: #FAEF5D;
+    font-weight: 900;
+    letter-spacing: -2px;
+    font-size: 2rem;
+}
+
+.nt-profile-circle {
+    width: 45px;
+    height: 45px;
+    background: #282828;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.nt-profile-circle:hover {
+    background: #333;
+    transform: scale(1.1);
+    border-color: #FAEF5D;
+}
+
+/* --- DROPDOWN --- */
+.nt-profile-dropdown {
+    top: 55px !important; 
+}
+
+.nt-logout-btn-dropdown {
+    transition: opacity 0.2s ease;
+}
+
+.nt-logout-btn-dropdown:hover {
+    color: #FAEF5D !important; /* Spotify style highlight */
+    background: #252525 !important;
+}
