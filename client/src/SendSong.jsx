@@ -27,6 +27,17 @@ function SendSong() {
     const handleProfile = () => { window.location.href = '/profile'; };
     const handleAbout = () => { window.location.href = '/about'; };
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowProfileDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     // --- UPDATED FETCH FUNCTION (Removed ngrok headers) ---
     useEffect(() => {
         const fetchMessages = async () => {
@@ -172,6 +183,7 @@ function SendSong() {
                 </div>
             )}
 
+            {/* NAVBAR SECTION */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" onClick={() => window.location.href = '/home'}>STILL</h1>
                 <div className="nt-nav-note"><span>SEND A SONG</span></div>
