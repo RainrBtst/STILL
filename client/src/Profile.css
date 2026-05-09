@@ -1,10 +1,9 @@
-/* Restoring the look from image_afa2f2.png */
-
+/* --- BASE CONTAINER & NAV --- */
 .nt-container {
     background-color: #121212;
     color: #ffffff;
     min-height: 100vh;
-    padding: 20px;
+    padding: 2rem;
     font-family: 'Inter', sans-serif;
 }
 
@@ -15,137 +14,335 @@
     max-width: 1200px;
     margin: 0 auto 3rem auto;
     position: relative;
-    padding: 10px 0;
 }
 
 .nt-logo {
     color: #FAEF5D;
     font-weight: 900;
-    font-size: 1.8rem;
-    cursor: pointer;
+    letter-spacing: -2px;
+    font-size: 2rem;
 }
 
-/* Nav Button Center */
+.nt-nav-actions {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+/* --- SEND A SONG BUTTON (WITH BLACK RECTANGLE HOVER) --- */
 .nt-nav-note {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    font-weight: 600;
+    font-size: 0.9rem;
     color: #FAEF5D;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.8rem;
     letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
     cursor: pointer;
-    padding: 8px 15px;
-    transition: 0.2s;
+    /* Spacing for the background box */
+    padding: 8px 20px;
+    border-radius: 20px; /* Makes it a pill/rounded rectangle */
+    border: 1px solid transparent; 
 }
 
 .nt-nav-note:hover {
-    background: #000;
-    border-radius: 20px;
+    background-color: #000000; /* Solid Black */
+    border: 1px solid #333; /* Suble border to define the shape */
+    color: #FAEF5D;
+    opacity: 1;
 }
 
-/* Updated Dropdown to match image_afa2f2.png */
-.nt-profile-container {
-    position: relative;
-}
-
+/* --- NAV PROFILE ICON --- */
 .nt-profile-circle {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
+    background: #282828;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     overflow: hidden;
-    background: #222;
-    cursor: pointer;
-    border: 1px solid #333;
 }
 
-.nt-profile-circle img {
+.nt-profile-circle:hover {
+    background: #333;
+    transform: scale(1.1);
+    border-color: #FAEF5D;
+}
+
+/* --- DROPDOWN (STAYS WHITE ON HOVER) --- */
+.nt-profile-dropdown {
+    top: 55px !important; 
+}
+
+.nt-logout-btn-dropdown {
+    transition: opacity 0.2s ease;
+}
+
+.nt-logout-btn-dropdown:hover {
+    color: white !important; 
+    opacity: 0.7; 
+}
+
+/* --- PROFILE CARD LAYOUT --- */
+.profile-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 50px;
+}
+
+.profile-card {
+    background-color: #1a1a1a;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+.profile-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    color: white;
+    text-align: left;
+}
+
+.profile-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #333;
+    margin: 15px 0 30px 0;
+}
+
+/* --- IMAGE SECTION --- */
+.profile-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.profile-image-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #282828;
+    border: 2px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.profile-image-circle img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.nt-profile-dropdown {
-    position: absolute;
-    right: 0;
-    top: 50px;
-    background: #181818; /* Dark solid background from image */
-    border: 1px solid #333;
-    border-radius: 12px;
-    width: 160px;
+.profile-action-group {
     display: flex;
-    flex-direction: column;
-    padding: 10px;
-    z-index: 1000;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    gap: 10px;
 }
 
-.nt-profile-dropdown button {
-    background: none;
+.btn-yellow {
+    background-color: #FAEF5D;
+    color: black;
     border: none;
-    color: white;
-    text-align: left;
-    padding: 12px 15px;
+    padding: 8px 18px;
+    border-radius: 8px;
     font-weight: bold;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
-    border-radius: 6px;
+}
+
+.btn-remove {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* --- INFO BOXES --- */
+.profile-info-section {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: white;
     text-transform: uppercase;
 }
 
-.nt-profile-dropdown button:hover {
-    background: #252525;
-}
-
-.logout-item {
-    border-top: 1px solid #333 !important;
-    margin-top: 5px;
-    padding-top: 15px !important;
-}
-
-/* Profile Card Styling */
-.profile-main {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-}
-
-.profile-card {
-    background-color: #181818;
-    padding: 40px;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 420px;
-    border: 1px solid #282828;
-}
-
-.profile-divider {
-    height: 1px;
-    background: #333;
-    margin: 20px 0;
+.edit-link-btn {
+    background: none;
+    border: none;
+    color: #FAEF5D;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
 }
 
 .profile-value-box {
     background: #121212;
-    padding: 15px;
+    border: 1px solid #333;
+    color: white;
+    padding: 12px 15px;
     border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #222;
-    font-size: 0.9rem;
-}
-
-.btn-yellow, .profile-save-btn {
-    background: #FAEF5D;
-    color: black;
     font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
+    margin-bottom: 20px;
 }
 
+.profile-input-edit {
+    width: 100%;
+    background: #121212;
+    border: 1px solid #FAEF5D;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.password-input {
+    border: 1px solid #333; 
+    font-weight: normal; 
+}
+
+.password-input:focus {
+    border: 1px solid #FAEF5D; 
+}
+
+.change-pass-btn {
+    background: none;
+    border: none;
+    color: #FAEF5D;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 5px;
+    display: block;
+}
+
+.password-dropdown-section {
+    margin-top: 15px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- SAVE BUTTON --- */
 .profile-save-btn {
     width: 100%;
+    background-color: #FAEF5D;
+    color: black;
+    border: none;
     padding: 15px;
-    margin-top: 10px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
 }
+
+.profile-save-btn:hover {
+    box-shadow: 0 0 20px rgba(250, 239, 93, 0.4);
+    transform: translateY(-2px);
+}
+
+/* --- THEMED MODAL STYLES --- */
+.still-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.still-modal-card {
+    background: #121212;
+    padding: 2.5rem;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid #333;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+    animation: modalPopUp 0.3s ease-out;
+}
+
+.modal-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.modal-message {
+    color: #a7a7a7;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+.modal-btn-primary {
+    background: #FAEF5D;
+    color: #000;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s ease;
+}
+
+.modal-btn-primary:hover {
+    transform: scale(1.03);
+}
+
+@keyframes modalPopUp {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
