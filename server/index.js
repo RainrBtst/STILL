@@ -21,7 +21,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors({ 
     origin: [
         "https://still-cyan.vercel.app", 
-        "http://localhost:5173", // Standard Vite local port
+        "http://localhost:5173", 
         "http://localhost:3000",
         "https://still-csmi.onrender.com" 
     ], 
@@ -191,8 +191,8 @@ app.get("/api/journals/user/:identifier", async (req, res) => {
 });
 
 // --- 9. MUSIC SEARCH (iTunes API) ---
-
-app.get("/api/search", async (req, res) => {
+// We support both path names to prevent 404 errors on the frontend
+const handleMusicSearch = async (req, res) => {
     const { query } = req.query;
     if (!query) return res.json([]);
     try {
@@ -206,7 +206,10 @@ app.get("/api/search", async (req, res) => {
             previewUrl: track.previewUrl
         })));
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
-});
+};
+
+app.get("/music-search", handleMusicSearch);
+app.get("/api/search", handleMusicSearch);
 
 // --- 10. SERVER START ---
 const PORT = process.env.PORT || 3001;
