@@ -12,42 +12,50 @@ const OTPModel = require('./models/OTP');
 
 const app = express();
 
-// --- UPDATED: Increased limit to fix "413 Content Too Large" for Profile Pictures ---
+// --- 1. PAYLOAD LIMITS ---
+// Fixed "413 Content Too Large" for Base64 profile pictures
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// --- UPDATED CORS: Added Render URL to allow cross-origin requests ---
+// --- 2. CORS CONFIGURATION ---
 app.use(cors({ 
     origin: [
         "https://still-cyan.vercel.app", 
-        "http://localhost:3001",
-        "https://still-csmi.onrender.com" // Added your Render URL
+        "http://localhost:5173", // Standard Vite local port
+        "http://localhost:3000",
+        "https://still-csmi.onrender.com" 
     ], 
     methods: ["GET", "POST", "PUT", "DELETE"], 
     credentials: true 
 }));
 
-app.use((req, res, next) => {
-    res.setHeader('ngrok-skip-browser-warning', 'true');
-    next();
-});
-
-// --- ADDED: Keep-Alive Route ---
-// Use this with cron-job.org to ping your server every 14 mins to stop Render from sleeping
-app.get("/ping", (req, res) => {
-    res.send("Server is awake!");
-});
-
+// --- 3. DATABASE CONNECTION ---
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("✅ Connected to MongoDB Atlas!"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
+// --- 4. EMAIL CONFIGURATION ---
 const transporter = nodemailer.createTransport({
     service: 'gmail',
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    auth: { 
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS 
+    }
 });
 
-// --- AUTHENTICATION ROUTES ---
+// --- 5. SYSTEM ROUTES (Ping & Health Check) ---
+
+// Root route to confirm deployment success
+app.get("/", (req, res) => {
+    res.status(200).send("STILL Backend API is running.");
+});
+
+// Keep-Alive Route for cron-job.org
+app.get("/ping", (req, res) => {
+    res.status(200).send("Server is awake!");
+});
+
+// --- 6. AUTHENTICATION ROUTES ---
 
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -70,7 +78,10 @@ app.post('/register', async (req, res) => {
         };
         await transporter.sendMail(mailOptions);
         res.json({ status: "OTP_SENT" });
-    } catch (err) { res.status(500).json({ error: "Registration failed" }); }
+    } catch (err) { 
+        console.error(err);
+        res.status(500).json({ error: "Registration failed" }); 
+    }
 });
 
 app.post("/verify-otp", async (req, res) => {
@@ -78,10 +89,16 @@ app.post("/verify-otp", async (req, res) => {
     try {
         const otpRecord = await OTPModel.findOne({ email, otp });
         if (otpRecord) {
-            await UsersModel.create({ name: otpRecord.userData.name, email, password: otpRecord.userData.password });
+            await UsersModel.create({ 
+                name: otpRecord.userData.name, 
+                email, 
+                password: otpRecord.userData.password 
+            });
             await OTPModel.deleteOne({ _id: otpRecord._id });
             res.json({ status: "Success" });
-        } else { res.status(400).json({ error: "Invalid or expired code" }); }
+        } else { 
+            res.status(400).json({ error: "Invalid or expired code" }); 
+        }
     } catch (err) { res.status(500).json({ error: "Verification failed" }); }
 });
 
@@ -107,19 +124,14 @@ app.post("/login", (req, res) => {
         }).catch(err => res.status(500).json(err));
 });
 
-// --- PROFILE & USER ROUTES ---
+// --- 7. PROFILE & USER ROUTES ---
 
 app.get("/api/user/:id", async (req, res) => {
     try {
         const user = await UsersModel.findById(req.params.id);
-        if (user) {
-            res.json(user);
-        } else {
-            res.status(404).json("User not found");
-        }
-    } catch (err) {
-        res.status(500).json(err);
-    }
+        if (user) res.json(user);
+        else res.status(404).json("User not found");
+    } catch (err) { res.status(500).json(err); }
 });
 
 app.put("/api/user/update/:id", async (req, res) => {
@@ -140,12 +152,10 @@ app.put("/api/user/update/:id", async (req, res) => {
 
         await user.save();
         res.json({ status: "Success", username: user.name, profilePic: user.profilePic });
-    } catch (err) { 
-        res.status(500).json(err); 
-    }
+    } catch (err) { res.status(500).json(err); }
 });
 
-// --- MESSAGES & JOURNAL ROUTES ---
+// --- 8. MESSAGES & JOURNAL ROUTES ---
 
 app.get("/api/messages", async (req, res) => {
     try {
@@ -180,25 +190,8 @@ app.get("/api/journals/user/:identifier", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Failed to fetch" }); }
 });
 
-// --- MUSIC SEARCH ---
+// --- 9. MUSIC SEARCH (iTunes API) ---
 
-app.get("/music-search", async (req, res) => {
-    const { query } = req.query;
-    if (!query) return res.json([]);
-    try {
-        const response = await axios.get(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=6&entity=song`);
-        const results = response.data.results || [];
-        res.json(results.map(track => ({
-            id: track.trackId, 
-            name: track.trackName, 
-            artist: track.artistName,
-            albumArt: track.artworkUrl100 ? track.artworkUrl100.replace('100x100', '400x400') : '', 
-            previewUrl: track.previewUrl
-        })));
-    } catch (err) { res.status(500).json({ error: "Search failed" }); }
-});
-
-// ADDED: Additional route to match frontend calls to /api/search with safety checks
 app.get("/api/search", async (req, res) => {
     const { query } = req.query;
     if (!query) return res.json([]);
@@ -215,5 +208,6 @@ app.get("/api/search", async (req, res) => {
     } catch (err) { res.status(500).json({ error: "Search failed" }); }
 });
 
+// --- 10. SERVER START ---
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Server active on port ${PORT}`));
