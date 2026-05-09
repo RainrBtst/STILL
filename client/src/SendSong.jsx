@@ -127,23 +127,17 @@ function SendSong() {
         chunkedRows.push(filteredMessages.slice(i, i + 8));
     }
 
-     const handleLogout = () => {
-        localStorage.clear();
-        window.location.href = '/login';
-    };
+    // --- ADD THIS BLOCK ---
+const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("profilePic");
+    window.location.href = "/login"; // Or wherever your login route is
+};
+// ----------------------
 
-    const handleHome = () => {
-        window.location.href = '/home';
-    };
-
-    const handleProfile = () => {
-        window.location.href = '/profile';
-    };
-
-    const handleAbout = () => {
-        window.location.href = '/about';
-    };
-
+const handleHome = () => { window.location.href = '/home'; };
+const handleProfile = () => { window.location.href = '/profile'; };
+const handleAbout = () => { window.location.href = '/about'; };
 
     return (
         <div className="nt-container">
