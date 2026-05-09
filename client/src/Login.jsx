@@ -8,24 +8,26 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false); 
-    const [error, setError] = useState(""); // ADDED: State for custom alert
+    const [error, setError] = useState("");
     const navigate = useNavigate();
-    // ADDED STATE FOR SHOW PASSWORD TOGGLE
     const [showPassword, setShowPassword] = useState(false);
+
+    // --- UPDATED: Use the Vercel Environment Variable ---
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(""); // ADDED: Clear error on new attempt
+        setError(""); 
 
-        axios.post('https://unwinning-unscourging-johnie.ngrok-free.dev/login', { email, password })
+        // --- UPDATED: Use dynamic URL instead of hardcoded ngrok ---
+        axios.post(`${API_BASE_URL}/login`, { email, password })
             .then(result => {
                 if (result.data.status === "Success") {
                     localStorage.setItem("userId", result.data.userId); 
                     localStorage.setItem("currentUserId", result.data.userId);
                     localStorage.setItem("currentUsername", result.data.username);
                     localStorage.setItem("currentUserEmail", email);
-                    // FIXED: Save the photo from DB to storage upon login
                     localStorage.setItem("profilePic", result.data.profilePic || "");
                     
                     navigate('/home');
@@ -34,9 +36,10 @@ function Login() {
             .catch(err => {
                 console.log("Login Error:", err);
                 if (err.response && err.response.status === 401) {
-                    setError(err.response.data); // UPDATED: Set custom error
+                    setError(err.response.data);
                 } else {
-                    setError("Server Error: Please make sure your local server and Ngrok are running."); // UPDATED: Set custom error
+                    // --- UPDATED: Updated error message for Cloud environment ---
+                    setError("Unable to connect to the server. Please check your internet or try again later.");
                 }
             })
             .finally(() => {
@@ -49,7 +52,6 @@ function Login() {
             <div className="login-content-wrapper">
                 <h1 className="nt-logo login-logo-large">STILL</h1>
 
-                {/* ADDED: CUSTOM ALERT UI BOX */}
                 {error && (
                     <div className="still-alert-box">
                         <span className="alert-icon">⚠️</span>
@@ -72,7 +74,6 @@ function Login() {
                         </div>
                         <div className="nt-search-bar login-input-group">
                             <input 
-                                // TYPE CHANGES DYNAMICALLY
                                 type={showPassword ? "text" : "password"} 
                                 placeholder="Password" 
                                 required 
@@ -80,12 +81,11 @@ function Login() {
                             />
                         </div>
 
-                        {/* ADDED SHOW PASSWORD TOGGLE BOX WITH LEFT MARGIN */}
                         <div style={{display: 'flex', alignItems: 'center', marginTop: '-10px', marginBottom: '20px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPassword(!showPassword)}>
                             <input 
                                 type="checkbox" 
                                 checked={showPassword} 
-                                onChange={() => {}} // Controlled by div click
+                                readOnly // Controlled by parent div
                                 style={{cursor: 'pointer'}}
                             />
                             <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>

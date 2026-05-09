@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './Profile.css';
 
-const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
+// --- FIXED: Use Environment Variable instead of hardcoded ngrok ---
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function Profile() {
     // --- STATE ---
@@ -18,7 +19,7 @@ function Profile() {
     const [isEditingUsername, setIsEditingUsername] = useState(false); 
     const [showPasswords, setShowPasswords] = useState(false);
     
-    // --- ADDED: MODAL STATE ---
+    // --- MODAL STATE ---
     const [modalConfig, setModalConfig] = useState({ show: false, title: "", message: "", type: "info" });
 
     // --- REFS ---
@@ -77,6 +78,9 @@ function Profile() {
     const handleSave = async () => {
         const userId = localStorage.getItem("userId");
         try {
+            // FIXED: Added check to make sure userId exists before calling API
+            if(!userId) throw new Error("User session expired.");
+
             const response = await axios.put(`${API_BASE_URL}/api/user/update/${userId}`, {
                 username: user.username,
                 profilePic: user.profilePic,
@@ -88,7 +92,6 @@ function Profile() {
                 localStorage.setItem("currentUsername", user.username);
                 localStorage.setItem("profilePic", user.profilePic || "");
                 
-                // UPDATED: Use themed modal for success
                 setModalConfig({
                     show: true,
                     title: "SUCCESS",
@@ -105,7 +108,6 @@ function Profile() {
             if (err.response && err.response.data.error) {
                 errorMsg = err.response.data.error;
             }
-            // UPDATED: Use themed modal for errors
             setModalConfig({
                 show: true,
                 title: "SAVE ERROR",
@@ -118,13 +120,12 @@ function Profile() {
     const closeAndRedirect = () => {
         const isSuccess = modalConfig.type === "success";
         setModalConfig({ ...modalConfig, show: false });
+        // Optional: Redirecting to home on success
         if (isSuccess) window.location.href = '/home';
     };
 
-    // --- RENDER ---
     return (
         <div className="nt-container">
-            {/* --- ADDED: THEMED MODAL JSX --- */}
             {modalConfig.show && (
                 <div className="still-modal-overlay">
                     <div className="still-modal-card">
@@ -139,10 +140,9 @@ function Profile() {
                 </div>
             )}
 
-            {/* Navbar Section */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/home'}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+                <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
                     <span>Send a Song</span>
                 </div>
                 <div className="nt-nav-actions">
@@ -151,24 +151,22 @@ function Profile() {
                             {user.profilePic ? <img src={user.profilePic} alt="P" style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} /> : "👤"}
                         </div>
                         {showProfileDropdown && (
-                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
-                                <button className="nt-logout-btn-dropdown" onClick={() => window.location.href = '/home'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
-                                <button className="nt-logout-btn-dropdown" onClick={() => window.location.href = '/profile'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
+                            <div className="nt-profile-dropdown">
+                                <button onClick={() => window.location.href = '/home'}>HOME</button>
+                                <button onClick={() => window.location.href = '/profile'}>PROFILE</button>
+                                <button onClick={handleAbout}>ABOUT</button>
+                                <button onClick={handleLogout}>LOGOUT</button>
                             </div>
                         )}
                     </div>
                 </div>
             </nav>
 
-            {/* Main Profile Section */}
             <main className="profile-main">
                 <div className="profile-card">
                     <h1 className="profile-title">PROFILE</h1>
                     <div className="profile-divider"></div>
 
-                    {/* Image Upload Section */}
                     <div className="profile-image-section">
                         <div className="profile-image-circle" onClick={() => fileInputRef.current.click()}>
                             {user.profilePic ? <img src={user.profilePic} alt="Profile" /> : <span style={{fontSize: '3rem'}}>👤</span>}
@@ -183,7 +181,6 @@ function Profile() {
                         <input type="file" ref={fileInputRef} style={{display: 'none'}} accept="image/*" onChange={handleImageChange} />
                     </div>
 
-                    {/* Info Section */}
                     <div className="profile-info-section">
                         <div className="label-row">
                             <label className="profile-label">Username</label>
@@ -207,7 +204,6 @@ function Profile() {
                         <label className="profile-label">Email Address</label>
                         <div className="profile-value-box" style={{fontWeight: 'normal', color: '#a7a7a7'}}>{user.email}</div>
 
-                        {/* Password Section */}
                         <button className="change-pass-btn" onClick={() => setShowPasswordFields(!showPasswordFields)}>
                             Change Password {showPasswordFields ? "▲" : "▼"}
                         </button>
@@ -218,7 +214,6 @@ function Profile() {
                                     type={showPasswords ? "text" : "password"} 
                                     placeholder="Current Password" 
                                     className="profile-input-edit password-input" 
-                                    style={{fontWeight: 'normal'}} 
                                     value={passwords.current}
                                     onChange={(e) => setPasswords({...passwords, current: e.target.value})}
                                 />
@@ -226,19 +221,13 @@ function Profile() {
                                     type={showPasswords ? "text" : "password"} 
                                     placeholder="New Password" 
                                     className="profile-input-edit password-input" 
-                                    style={{fontWeight: 'normal'}} 
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
                                 />
                                 
-                                <div style={{display: 'flex', alignItems: 'center', marginTop: '10px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPasswords(!showPasswords)}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={showPasswords} 
-                                        onChange={() => {}} 
-                                        style={{cursor: 'pointer'}}
-                                    />
-                                    <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>
+                                <div className="show-pass-toggle" onClick={() => setShowPasswords(!showPasswords)}>
+                                    <input type="checkbox" checked={showPasswords} readOnly />
+                                    <span>Show Password</span>
                                 </div>
                             </div>
                         )}
@@ -248,15 +237,7 @@ function Profile() {
                 </div>
             </main>
         </div>
-
-        
     );
-
-
-    
 }
-
-
-
 
 export default Profile;

@@ -3,7 +3,8 @@ import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-const API_BASE_URL = "https://unwinning-unscourging-johnie.ngrok-free.dev";
+// --- FIXED: Use Environment Variable instead of hardcoded ngrok ---
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function Signup() {
     const [name, setName] = useState("");
@@ -12,15 +13,14 @@ function Signup() {
     const [otp, setOtp] = useState(""); 
     const [isVerifying, setIsVerifying] = useState(false); 
     const [loading, setLoading] = useState(false); 
-    const [error, setError] = useState(""); // ADDED: Error state
+    const [error, setError] = useState(""); 
     const navigate = useNavigate();
-    // ADDED STATE FOR SHOW PASSWORD TOGGLE
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(""); // Clear previous errors
+        setError(""); 
 
         axios.post(`${API_BASE_URL}/register`, { name, email, password })
             .then(result => {
@@ -28,7 +28,7 @@ function Signup() {
                     setIsVerifying(true);
                 } 
                 else if (result.data.status === "ALREADY_EXISTS") {
-                    setError("Email already used."); // Updated to custom error
+                    setError("Email already used."); 
                 }
                 else {
                     setError("Something went wrong. Please try again.");
@@ -36,7 +36,9 @@ function Signup() {
             })
             .catch(err => {
                 console.log("Error Detail:", err);
-                setError("Registration error.");
+                // Check if the server sent a specific error message
+                const msg = err.response?.data?.error || "Registration error.";
+                setError(msg);
             })
             .finally(() => {
                 setLoading(false);
@@ -46,7 +48,7 @@ function Signup() {
     const handleVerifyOtp = (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(""); // Clear previous errors
+        setError(""); 
 
         axios.post(`${API_BASE_URL}/verify-otp`, { email, otp })
             .then(result => {
@@ -55,7 +57,7 @@ function Signup() {
                 }
             })
             .catch(err => {
-                setError("Invalid Verification Code."); // Updated to custom error
+                setError("Invalid Verification Code."); 
             })
             .finally(() => {
                 setLoading(false);
@@ -67,7 +69,6 @@ function Signup() {
             <div className="login-content-wrapper">
                 <h1 className="login-logo-large">STILL</h1>
 
-                {/* ADDED: CUSTOM ALERT UI BOX */}
                 {error && (
                     <div className="still-alert-box">
                         <span className="alert-icon">⚠️</span>
@@ -90,7 +91,6 @@ function Signup() {
                                 </div>
                                 <div className="login-input-group">
                                     <input 
-                                        // TYPE CHANGES DYNAMICALLY
                                         type={showPassword ? "text" : "password"} 
                                         placeholder="Password" 
                                         onChange={(e) => setPassword(e.target.value)} 
@@ -98,12 +98,11 @@ function Signup() {
                                     />
                                 </div>
 
-                                {/* ADDED SHOW PASSWORD TOGGLE BOX WITH LEFT MARGIN */}
-                                <div style={{display: 'flex', alignItems: 'center', marginTop: '-10px', marginBottom: '20px', marginLeft: '5px', gap: '8px', cursor: 'pointer'}} onClick={() => setShowPassword(!showPassword)}>
+                                <div className="show-pass-container" onClick={() => setShowPassword(!showPassword)}>
                                     <input 
                                         type="checkbox" 
                                         checked={showPassword} 
-                                        onChange={() => {}} // Controlled by div click
+                                        readOnly 
                                         style={{cursor: 'pointer'}}
                                     />
                                     <span style={{color: '#a7a7a7', fontSize: '0.8rem'}}>Show Password</span>

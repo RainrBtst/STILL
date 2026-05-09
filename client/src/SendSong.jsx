@@ -3,9 +3,8 @@ import './SendSong.css';
 import Message from './Message';
 import axios from 'axios';
 
-const API_BASE_URL = window.location.hostname === "localhost" 
-    ? "http://localhost:3001" 
-    : "https://still-csmi.onrender.com";
+// --- UPDATED: Use Vite Environment Variable for Cloud Deployment ---
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 function SendSong() {
     const [messages, setMessages] = useState([]);
@@ -22,31 +21,18 @@ function SendSong() {
     const [formData, setFormData] = useState({
         recipient: '', message: '', song: '', albumArt: '', previewUrl: ''
     });
-    // ADDED: State for profile picture
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
-    // ADDED HOME HANDLER
-    const handleHome = () => {
-        window.location.href = '/home';
-    };
+    const handleHome = () => { window.location.href = '/home'; };
+    const handleProfile = () => { window.location.href = '/profile'; };
+    const handleAbout = () => { window.location.href = '/about'; };
 
-    // ADDED PROFILE HANDLER
-    const handleProfile = () => {
-        window.location.href = '/profile';
-    };
-
-    // ADDED ABOUT HANDLER
-    const handleAbout = () => {
-        window.location.href = '/about';
-    };
-
-    // --- UPDATED FETCH FUNCTION ---
+    // --- UPDATED FETCH FUNCTION (Removed ngrok headers) ---
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/api/messages`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
+                // Removed the ngrok-skip-browser-warning header as it's no longer needed for Render
+                const res = await axios.get(`${API_BASE_URL}/api/messages`);
                 setMessages(res.data);
             } catch (err) {
                 console.error("Error fetching messages:", err);
@@ -106,14 +92,12 @@ function SendSong() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // --- UPDATED SUBMIT FUNCTION (Removed Alert, relies on HTML5 validation) ---
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Final safety check to prevent empty posts if HTML validation is bypassed
         if (!formData.song) return;
 
         try {
+            // FIXED: Ensuring we use the dynamic base URL here too
             const response = await axios.post(`${API_BASE_URL}/api/messages`, formData);
             setMessages([response.data, ...messages]);
             setIsModalOpen(false);
@@ -192,7 +176,6 @@ function SendSong() {
                 <h1 className="nt-logo" onClick={() => window.location.href = '/home'}>STILL</h1>
                 <div className="nt-nav-note"><span>SEND A SONG</span></div>
                 <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                    {/* UPDATED: Profile Circle logic */}
                     <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                         {profilePic ? (
                             <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
@@ -201,12 +184,11 @@ function SendSong() {
                         )}
                     </div>
                     {showProfileDropdown && (
-                        <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
-                            {/* ADDED HOME BUTTON */}
-                            <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
-                            <button className="nt-logout-btn-dropdown" onClick={() => window.location.href='/login'} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
+                        <div className="nt-profile-dropdown">
+                            <button className="nt-logout-btn-dropdown" onClick={handleHome}>HOME</button>
+                            <button className="nt-logout-btn-dropdown" onClick={handleProfile}>PROFILE</button>
+                            <button className="nt-logout-btn-dropdown" onClick={handleAbout}>ABOUT</button>
+                            <button className="nt-logout-btn-dropdown" onClick={() => window.location.href='/login'}>LOGOUT</button>
                         </div>
                     )}
                 </div>

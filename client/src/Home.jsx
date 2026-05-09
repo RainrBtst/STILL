@@ -141,9 +141,7 @@ function Home() {
         };
 
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-            });
+            const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData,); 
             
             setEntries(prev => [response.data, ...prev]);
             
