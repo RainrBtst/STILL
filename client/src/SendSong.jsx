@@ -127,6 +127,24 @@ function SendSong() {
         chunkedRows.push(filteredMessages.slice(i, i + 8));
     }
 
+     const handleLogout = () => {
+        localStorage.clear();
+        window.location.href = '/login';
+    };
+
+    const handleHome = () => {
+        window.location.href = '/home';
+    };
+
+    const handleProfile = () => {
+        window.location.href = '/profile';
+    };
+
+    const handleAbout = () => {
+        window.location.href = '/about';
+    };
+
+
     return (
         <div className="nt-container">
             <audio
