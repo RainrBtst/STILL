@@ -496,3 +496,22 @@
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* ADDED: Wrapper to handle multiple center links */
+.nt-nav-links-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px; /* Adjust spacing between the two buttons */
+    pointer-events: none;
+}
+
+/* Ensure individual buttons can be clicked within the wrapper */
+.nt-nav-links-wrapper .nt-nav-note {
+    position: relative; /* Overriding the absolute position from the previous class */
+    left: auto;
+    transform: none;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
+
