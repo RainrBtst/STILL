@@ -14,7 +14,7 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto 2rem auto; 
-    padding-top: 1rem; /* FIXED: Controls exact spacing from top viewport frame */
+    padding-top: 0.5rem; /* FIXED: Controls exact spacing from top viewport frame */
     width: 100%;
 }
 
