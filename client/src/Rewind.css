@@ -3,24 +3,23 @@ html, body {
     margin: 0;
     padding: 0;
     background-color: #121212;
-    overflow-x: hidden; /* Prevent horizontal scroll from wide layout */
+    overflow-x: hidden; 
 }
 
 .nt-container {
     background-color: #121212;
     color: #ffffff;
     min-height: 100vh;
-    padding: 0 2rem 2rem 2rem; 
+    padding: 0 1rem 2rem 1rem; /* Reduced padding to let grid breathe */
     font-family: 'Inter', sans-serif;
 }
 
 /* --- NAVBAR STYLES --- */
-/* Kept at 1200px so the logo stays in its specific inward position */
 .nt-navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
+    max-width: 1200px; /* Logo stays inward */
     margin: 0 auto 2rem auto; 
     padding-top: 0.8rem; 
     width: 100%;
@@ -33,39 +32,47 @@ html, body {
     font-size: 2.2rem;
 }
 
-/* --- REWIND PAGE LAYOUT (The "Ultra-Wide" Change) --- */
+/* --- REWIND PAGE LAYOUT (Ultra-Wide) --- */
 .rewind-page {
     font-family: 'Inter', sans-serif;
-    /* Changed to 95% width to push past the navbar alignment */
-    width: 95%; 
-    max-width: 1800px; 
+    width: 98%; /* Pushed to the extreme edges */
+    max-width: 2000px; 
     margin: 0 auto;
 }
 
 .rewind-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
 }
 
 .rewind-header h1 {
     font-weight: 900;
-    font-size: 4rem; 
+    font-size: 4.5rem; 
     margin: 0;
+    letter-spacing: -1px;
+}
+
+/* Matches Home.css Subheader Styling */
+.rewind-header p {
+    font-size: 1.2rem;
+    color: #b3b3b3;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    letter-spacing: 0.5px;
 }
 
 .week-subtitle h2 {
-    font-size: 1.6rem;
-    margin-bottom: 25px;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
     color: #fff;
     text-align: left;
-    /* Aligns "Week 19" slightly inward relative to the wide grid */
-    padding-left: 2%; 
+    padding-left: 1%; 
 }
 
-/* 7-Column Grid - Ultra Wide */
+/* 7-Column Grid - Maximized */
 .week-grid {
     display: flex;
-    gap: 20px; /* Increased gap to prevent crowding */
+    gap: 15px; 
     justify-content: center;
     align-items: flex-start;
     width: 100%;
@@ -73,10 +80,9 @@ html, body {
 
 .day-column {
     flex: 1;
-    /* Increased min-width significantly for wider internal cards */
-    min-width: 200px; 
+    min-width: 220px; /* Even wider boxes for content clarity */
     opacity: 0.4;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.4s ease;
 }
 
 .day-column.active {
@@ -85,53 +91,50 @@ html, body {
 
 .day-label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
     margin-bottom: 15px;
     text-align: center;
-    color: #888;
+    color: #666;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 /* The Box Styling */
 .song-stack {
-    background: rgba(25, 25, 25, 0.8);
-    border-radius: 16px;
+    background: rgba(20, 20, 20, 0.9);
+    border-radius: 18px;
     padding: 20px; 
-    height: 550px; 
+    height: 580px; 
     overflow-y: auto;
-    border: 1.5px solid #2a2a2a;
+    border: 1px solid #252525;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    transition: border 0.3s ease;
+    gap: 12px;
 }
 
-/* Updated Glow to STILL Yellow */
+/* Active Yellow Border */
 .active .song-stack {
-    border: 1.5px solid #FAEF5D;
-    box-shadow: 0 0 35px rgba(250, 239, 93, 0.15);
-    transform: scale(1.02); /* Subtle pop effect */
+    border: 1px solid #FAEF5D;
+    box-shadow: 0 0 30px rgba(250, 239, 93, 0.1);
 }
 
-/* Song Card Content - Expanded */
+/* Song Card Content */
 .song-card {
     display: flex;
-    gap: 15px; 
-    background: #1e1e1e;
+    gap: 12px; 
+    background: #1a1a1a;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 12px;
     align-items: center;
-    width: 100%; /* Spans full width of the wider box */
+    width: 100%;
     box-sizing: border-box;
 }
 
 .album-thumb {
-    width: 48px; /* Larger thumbnails for the wider layout */
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background: #333;
-    border-radius: 6px;
+    border-radius: 8px;
     flex-shrink: 0;
 }
 
@@ -146,11 +149,10 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
 }
 
 .song-title {
-    font-size: 0.9rem; 
+    font-size: 0.85rem; 
     font-weight: bold;
     margin: 0;
     white-space: nowrap;
@@ -159,55 +161,32 @@ html, body {
 }
 
 .song-artist {
-    font-size: 0.75rem;
-    color: #777;
+    font-size: 0.7rem;
+    color: #666;
     margin-top: 2px;
 }
 
-/* Mood Tags Styling */
+/* Mood Tags */
 .mood-tag {
-    font-size: 0.55rem;
-    padding: 3px 8px;
+    font-size: 0.5rem;
+    padding: 2px 6px;
     border-radius: 4px;
     font-weight: 900;
     text-transform: uppercase;
 }
 
-/* Mood Colors */
 .mood-tag.happy { background: #FAEF5D; color: #000; }
 .mood-tag.calm { background: #4caf50; color: #fff; }
 .mood-tag.energetic { background: #ff5252; color: #fff; }
 .mood-tag.melancholic { background: #00bcd4; color: #fff; }
 
-/* Custom Scrollbar for the song stacks */
+/* Custom Scrollbar */
 .song-stack::-webkit-scrollbar {
-    width: 4px;
+    width: 3px;
 }
 .song-stack::-webkit-scrollbar-thumb {
     background: #333;
     border-radius: 10px;
 }
 
-/* Mood Map Footer */
-.mood-map {
-    margin-top: 50px;
-    text-align: center;
-    padding-bottom: 40px;
-}
-
-.mood-dots {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    margin-top: 15px;
-    font-size: 0.9rem;
-    color: #aaa;
-}
-
-.dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 5px;
-}
+/* --- MOOD MAP REMOVED --- */
