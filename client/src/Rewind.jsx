@@ -73,7 +73,8 @@ const Rewind = () => {
   return (
     <div className="nt-container">
       <nav className="nt-navbar">
-        <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
+        {/* LOGO UPDATED TO NAVIGATE HOME */}
+        <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
         <div className="nt-nav-links-wrapper">
             <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={handleRewind} >
                 <span>Rhythm Rewind</span>
