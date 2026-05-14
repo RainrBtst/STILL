@@ -84,10 +84,7 @@ const Rewind = () => {
         </div>
         <div className="nt-nav-actions">
             <div className="nt-search-container">
-                <div className="nt-search-bar">
-                    <span className="search-icon">🔍</span>
-                    <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                </div>
+                
                 {results.length > 0 && (
                     <div className="nt-search-dropdown">
                         {results.map((track) => (
