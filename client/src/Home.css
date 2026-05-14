@@ -3,7 +3,7 @@
     background-color: #121212;
     color: #ffffff;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 0.8rem 2rem 2rem 2rem; /* FIXED: Reduced top padding from 2rem to 0.8rem */
     font-family: 'Inter', sans-serif;
 }
 
@@ -13,7 +13,7 @@
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
-    margin: 0 auto 3rem auto;
+    margin: 0 auto 2rem auto; /* FIXED: Reduced bottom margin from 3rem to 2rem to keep it compact */
 }
 
 .nt-logo {
@@ -514,4 +514,3 @@
     pointer-events: auto;
     transition: opacity 0.3s ease;
 }
-
