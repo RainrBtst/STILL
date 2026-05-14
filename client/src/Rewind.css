@@ -1,0 +1,104 @@
+.rewind-page {
+  background-color: #000;
+  color: white;
+  min-height: 100vh;
+  padding: 40px;
+  font-family: 'Inter', sans-serif;
+}
+
+.rewind-header h1 {
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.week-grid {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.day-column {
+  flex: 1;
+  max-width: 200px;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+
+.day-column.active {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+.day-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #888;
+}
+
+.song-stack {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 10px;
+  height: 450px;
+  overflow-y: auto;
+  border: 1px solid #333;
+}
+
+/* The Neon Glow Effect */
+.active .song-stack {
+  border: 2px solid #00f2ff;
+  box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
+}
+
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #252525;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.album-thumb {
+  width: 35px;
+  height: 35px;
+  background: #444;
+  border-radius: 4px;
+}
+
+.song-title {
+  font-size: 0.75rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.mood-tag {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* Mood Colors */
+.happy .mood-tag { background: #e2f35e; color: black; }
+.melancholic .mood-tag { background: #00bcd4; color: white; }
+.energetic .mood-tag { background: #ff5252; color: white; }
+.calm .mood-tag { background: #4caf50; color: white; }
+
+.mood-map {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.9rem;
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.energetic { background: #ff5252; }
+.happy { background: #e2f35e; }
+.melancholic { background: #00bcd4; }
+.calm { background: #4caf50; }

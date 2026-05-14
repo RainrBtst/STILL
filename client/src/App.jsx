@@ -8,6 +8,7 @@ import Home from './Home'
 import SendSong from './SendSong' 
 import Profile from './Profile'
 import About from './About' // 1. IMPORT THE ABOUT COMPONENT
+import Rewind from './Rewind' // Import the new file
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path='/home' element={<Home />} />
         <Route path="/send-song" element={<SendSong />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/rewind' element={<Rewind />} />
         
         {/* 2. ADD THE ABOUT ROUTE HERE */}
         <Route path='/about' element={<About />} />

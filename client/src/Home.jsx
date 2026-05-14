@@ -4,6 +4,7 @@ import './Home.css';
 import Journal from './Journal';
 import ReadJournal from './ReadJournal';
 import Archive from './Archive';
+import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = window.location.hostname === "localhost" 
     ? "http://localhost:3001" 
@@ -21,6 +22,11 @@ function Home() {
     const [entries, setEntries] = useState([]);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate(); // Add this line
+
+    const handleRewind = () => {
+    navigate('/rewind');
+    };
     // ADDED: State for profile picture
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
@@ -206,9 +212,14 @@ function Home() {
 
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
-                    <span>Send a Song</span>
-                </div>
+                <div className="nt-nav-links-wrapper">
+        <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={handleRewind} >
+            <span>Rhythm Rewind</span>
+        </div>
+        <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+            <span>Send a Song</span>
+        </div>
+    </div>
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
                         <div className="nt-search-bar">
