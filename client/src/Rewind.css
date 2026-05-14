@@ -80,7 +80,6 @@ html, body {
 .day-column {
     flex: 1;
     min-width: 220px;
-    /* 1. Visibility of dates: Changed from 0.4 to 0.85 for clear visibility */
     opacity: 0.9; 
     transition: all 0.2s ease-in-out;
 }
@@ -91,7 +90,6 @@ html, body {
     font-weight: 800;
     margin-bottom: 15px;
     text-align: center;
-    /* Increased brightness of date text */
     color: #999; 
     text-transform: uppercase;
 }
@@ -103,80 +101,91 @@ html, body {
     padding: 20px; 
     height: 580px; 
     overflow-y: auto;
-    /* 3. Border line visibility: Lightened the border from #252525 to #3a3a3a */
+    /* FIX: Reserves space so scrollbar doesn't overlap cards */
+    scrollbar-gutter: stable; 
     border: 1.5px solid #3a3a3a; 
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 2. HOVER LOGIC: Pure CSS hover that disappears immediately on mouse-out */
+/* HOVER LOGIC: Disappears immediately on mouse-out */
 .day-column:hover .song-stack {
     border: 1.5px solid #FAEF5D;
     box-shadow: 0 0 25px rgba(250, 239, 93, 0.15);
 }
 
-/* 4. CONTENT VISIBILITY: Song cards are now more defined */
+/* CONTENT VISIBILITY */
 .song-card {
     display: flex;
     gap: 12px; 
-    /* Slightly lighter background than the box for contrast */
     background: #222222; 
     padding: 12px;
     border-radius: 12px;
     align-items: center;
     width: 100%;
     box-sizing: border-box;
-    /* Added a subtle inner border to card */
     border: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
 .album-thumb {
     width: 44px;
     height: 44px;
-    background: #444; /* Brighter placeholder */
+    background: #444; 
     border-radius: 8px;
     flex-shrink: 0;
 }
 
+.song-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
 .song-title {
-    font-size: 0.85rem; 
-    font-weight: bold;
+    font-size: 0.9rem; 
+    font-weight: 800;
+    color: #ffffff;
     margin: 0;
-    /* Solid white for maximum visibility */
-    color: #ffffff; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .song-artist {
-    font-size: 0.7rem;
-    /* Brighter gray for visibility */
-    color: #aaaaaa; 
-    margin-top: 2px;
+    font-size: 0.75rem;
+    color: #888;
+    margin: 0;
 }
 
-/* Mood Tags */
+/* MOOD TAGS: Forced Yellow Styling */
 .mood-tag {
-    font-size: 0.5rem;
-    padding: 2px 6px;
+    font-size: 0.55rem;
+    padding: 2px 8px;
     border-radius: 4px;
     font-weight: 900;
     text-transform: uppercase;
+    background-color: #FAEF5D !important;
+    color: #000 !important;
+    display: inline-block;
+    margin: 4px 0;
 }
-
-.mood-tag.happy { background: #FAEF5D; color: #000; }
-.mood-tag.calm { background: #4caf50; color: #fff; }
-.mood-tag.energetic { background: #ff5252; color: #fff; }
-.mood-tag.melancholic { background: #00bcd4; color: #fff; }
 
 /* Custom Scrollbar */
 .song-stack::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
 }
+
+.song-stack::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .song-stack::-webkit-scrollbar-thumb {
     background: #444;
     border-radius: 10px;
+}
+
+.song-stack::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

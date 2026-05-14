@@ -135,17 +135,22 @@ const Rewind = () => {
 
         <div className="week-grid">
   {weeklyData.map((day, index) => (
-    <div key={index} className="day-column"> {/* Removed state-based 'active' class */}
+    <div key={index} className="day-column">
       <span className="day-label">{day.date}</span>
       <div className="song-stack">
         {day.entries.map((song, sIndex) => (
           <div key={sIndex} className="song-card">
             <div className="album-thumb"></div>
             <div className="song-meta">
-              <div className="title-mood-row">
-                 <p className="song-title">{song.title}</p>
-                 <span className={`mood-tag ${song.mood.toLowerCase()}`}>{song.mood}</span>
+              {/* Journal Title */}
+              <p className="song-title">{song.title}</p>
+              
+              {/* Mood (All will be yellow via CSS) */}
+              <div className="mood-container">
+                <span className="mood-tag">{song.mood}</span>
               </div>
+              
+              {/* Song Title (Using the artist field as a placeholder for song name per your request) */}
               <p className="song-artist">{song.artist}</p>
             </div>
           </div>
