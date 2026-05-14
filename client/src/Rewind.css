@@ -1,133 +1,19 @@
-.rewind-page {
-  /* Changed background from #000 to #121212 to match main background */
-  background-color: #121212; 
-  color: white;
-  min-height: 100vh;
-  padding: 40px;
-  font-family: 'Inter', sans-serif;
-}
-
-.rewind-header {
-  /* Center the header content */
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.rewind-header h1 {
-  font-weight: 900;
-  letter-spacing: -1px;
-  /* Sync with Welcome Back font size */
-  font-size: 3rem; 
-  margin: 0;
-}
-
-.rewind-header p {
-  /* Sync with "Everyday has a rhythm..." font size */
-  font-size: 1.2rem;
-  color: #b3b3b3;
-  margin-top: 0.5rem;
-}
-
-.week-grid {
-  display: flex;
-  gap: 12px;
-  margin-top: 40px;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.day-column {
-  flex: 1;
-  max-width: 200px;
-  transition: all 0.3s ease;
-  opacity: 0.6;
-}
-
-.day-column.active {
-  opacity: 1;
-  transform: translateY(-10px);
-}
-
-.day-label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #888;
-}
-
-.song-stack {
-  background: #1a1a1a;
-  border-radius: 12px;
-  padding: 10px;
-  height: 450px;
-  overflow-y: auto;
-  border: 1px solid #333;
-}
-
-/* The Neon Glow Effect */
-.active .song-stack {
-  border: 2px solid #00f2ff;
-  box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
-}
-
-.song-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #252525;
-  padding: 8px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-}
-
-.album-thumb {
-  width: 35px;
-  height: 35px;
-  background: #444;
-  border-radius: 4px;
-}
-
-.song-title {
-  font-size: 0.75rem;
-  margin: 0;
-  font-weight: bold;
-}
-
-.mood-tag {
-  font-size: 0.6rem;
-  padding: 2px 6px;
-  border-radius: 10px;
-}
-
-/* Mood Colors */
-.happy .mood-tag { background: #e2f35e; color: black; }
-.melancholic .mood-tag { background: #00bcd4; color: white; }
-.energetic .mood-tag { background: #ff5252; color: white; }
-.calm .mood-tag { background: #4caf50; color: white; }
-
-.mood-map {
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  font-size: 0.9rem;
-}
-
-.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.energetic { background: #ff5252; }
-.happy { background: #e2f35e; }
-.melancholic { background: #00bcd4; }
-.calm { background: #4caf50; }
-
-/* --- GLOBAL BROWSER RESET --- */
+/* --- GLOBAL BROWSER RESET & CONTAINER --- */
 html, body {
     margin: 0;
     padding: 0;
     background-color: #121212; 
 }
 
-/* Navbar */
+.nt-container {
+    background-color: #121212;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 0 2rem 2rem 2rem; 
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- NAVBAR STYLES --- */
 .nt-navbar {
     display: flex;
     justify-content: space-between;
@@ -143,6 +29,23 @@ html, body {
     font-weight: 900;
     letter-spacing: -2px;
     font-size: 2rem;
+}
+
+.nt-nav-links-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px; 
+    align-self: center;
+}
+
+.nt-nav-note {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #FAEF5D; 
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .nt-nav-actions {
@@ -167,52 +70,128 @@ html, body {
     outline: none;
 }
 
-/* Search Dropdown Styles */
-.nt-search-container {
-    position: relative;
-}
-
-.nt-search-dropdown {
-    position: absolute;
-    top: 55px;
-    right: 0;
-    width: 300px;
+.nt-profile-circle {
+    width: 45px;
+    height: 45px;
     background: #282828;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    z-index: 1000;
-    overflow: hidden;
-    border: 1px solid #444;
-}
-
-.nt-search-item {
+    border-radius: 50%;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 12px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.nt-search-item:hover {
-    background: #3e3e3e;
+/* --- REWIND PAGE LAYOUT (Matched to image_a378bf.jpg) --- */
+.rewind-page {
+    font-family: 'Inter', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.nt-search-item img {
-    width: 40px;
-    height: 40px;
+.rewind-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.rewind-header h1 {
+    font-weight: 900;
+    font-size: 3rem; 
+    margin: 0;
+}
+
+.rewind-header p {
+    font-size: 1.1rem;
+    color: #b3b3b3;
+}
+
+.week-subtitle h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: #fff;
+    text-align: left;
+}
+
+/* 7-Column Grid */
+.week-grid {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.day-column {
+    flex: 1;
+    min-width: 140px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.day-column.active {
+    opacity: 1;
+}
+
+.day-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #aaa;
+}
+
+/* The Box Styling */
+.song-stack {
+    background: rgba(30, 30, 30, 0.6);
+    border-radius: 12px;
+    padding: 10px;
+    height: 480px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Cyan Glow Effect */
+.active .song-stack {
+    border: 1px solid #00f2ff;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+/* Song Card Content */
+.song-card {
+    display: flex;
+    gap: 8px;
+    background: #252525;
+    padding: 8px;
+    border-radius: 6px;
+    align-items: center;
+}
+
+.album-thumb {
+    width: 32px;
+    height: 32px;
+    background: #444;
     border-radius: 4px;
-    object-fit: cover;
+    flex-shrink: 0;
 }
 
-.nt-search-info {
+.song-meta {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    width: 100%;
 }
 
-.nt-search-name {
-    font-size: 0.9rem;
+.title-mood-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.song-title {
+    font-size: 0.7rem;
     font-weight: bold;
     margin: 0;
     white-space: nowrap;
@@ -220,86 +199,48 @@ html, body {
     text-overflow: ellipsis;
 }
 
-.nt-search-artist {
-    font-size: 0.75rem;
-    color: #b3b3b3;
+.song-artist {
+    font-size: 0.6rem;
+    color: #777;
     margin: 0;
 }
 
-.nt-search-container {
-    display: flex;
-    flex-direction: column;
+/* Mood Tags Styling */
+.mood-tag {
+    font-size: 0.45rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 800;
 }
 
-.nt-search-dropdown {
-    left: 0 !important; 
-    right: auto !important;
+.mood-tag.happy { background: #FAEF5D; color: #000; }
+.mood-tag.calm { background: #4caf50; color: #fff; }
+.mood-tag.energetic { background: #ff5252; color: #fff; }
+.mood-tag.melancholic { background: #00bcd4; color: #fff; }
+
+/* Mood Map Footer */
+.mood-map {
+    margin-top: 30px;
+    text-align: center;
+    color: #888;
 }
 
-/* Profile Icon Styling */
-.nt-profile-circle {
-    width: 45px;          
-    height: 45px;         
-    background: #282828;  
-    border-radius: 50%;
+.mood-dots {
     display: flex;
     justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;    
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 15px;
+    margin-top: 5px;
+    font-size: 0.8rem;
 }
 
-.nt-profile-circle:hover {
-    background: #333;
-    transform: scale(1.1);
-    border-color: #FAEF5D; 
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
-.nt-profile-dropdown {
-    top: 55px !important; 
-}
-
-.nt-nav-note {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #FAEF5D; 
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-/* Center Links Navigation Wrapper */
-.nt-nav-links-wrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 40px; 
-    pointer-events: none;
-    top: inherit; 
-    align-self: center;
-}
-
-.nt-nav-links-wrapper .nt-nav-note {
-    position: relative; 
-    left: auto;
-    transform: none;
-    pointer-events: auto;
-    transition: opacity 0.3s ease;
-}
-
-/* Inherit fonts and structural layout configurations exactly from Home styles */
-.nt-container {
-    background-color: #121212;
-    color: #ffffff;
-    min-height: 100vh;
-    padding: 0 2rem 2rem 2rem; 
-    font-family: 'Inter', sans-serif;
-}
-
-/* Enforce font synchronization down across the custom interior layout modules */
-.rewind-page {
-    font-family: 'Inter', sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+.dot.energetic { background: #ff5252; }
+.dot.happy { background: #FAEF5D; }
+.dot.melancholic { background: #00bcd4; }
+.dot.calm { background: #4caf50; }
