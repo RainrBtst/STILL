@@ -217,7 +217,7 @@ function Home() {
             <span>Rhythm Rewind</span>
         </div>
         <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
-            <span>Send a Song</span>
+            <span>Send a SonG</span>
         </div>
     </div>
                 <div className="nt-nav-actions">
