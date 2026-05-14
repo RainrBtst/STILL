@@ -88,7 +88,7 @@ const Rewind = () => {
   }, [searchQuery]);
 
   return (
-    <>
+    <div className="nt-container">
       <nav className="nt-navbar">
         <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
         <div className="nt-nav-links-wrapper">
@@ -178,7 +178,7 @@ const Rewind = () => {
            <span className="dot calm"></span> Calm
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

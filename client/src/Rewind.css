@@ -270,3 +270,19 @@ html, body {
     pointer-events: auto;
     transition: opacity 0.3s ease;
 }
+
+/* Inherit fonts and structural layout configurations exactly from Home styles */
+.nt-container {
+    background-color: #121212;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 0 2rem 2rem 2rem; 
+    font-family: 'Inter', sans-serif;
+}
+
+/* Enforce font synchronization down across the custom interior layout modules */
+.rewind-page {
+    font-family: 'Inter', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+}
