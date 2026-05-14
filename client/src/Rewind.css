@@ -10,7 +10,7 @@ html, body {
     background-color: #121212;
     color: #ffffff;
     min-height: 100vh;
-    padding: 0 1rem 2rem 1rem; /* Reduced padding to let grid breathe */
+    padding: 0 1rem 2rem 1rem;
     font-family: 'Inter', sans-serif;
 }
 
@@ -19,7 +19,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px; /* Logo stays inward */
+    max-width: 1200px;
     margin: 0 auto 2rem auto; 
     padding-top: 0.8rem; 
     width: 100%;
@@ -32,10 +32,10 @@ html, body {
     font-size: 2.2rem;
 }
 
-/* --- REWIND PAGE LAYOUT (Ultra-Wide) --- */
+/* --- REWIND PAGE LAYOUT --- */
 .rewind-page {
     font-family: 'Inter', sans-serif;
-    width: 98%; /* Pushed to the extreme edges */
+    width: 98%; 
     max-width: 2000px; 
     margin: 0 auto;
 }
@@ -52,7 +52,6 @@ html, body {
     letter-spacing: -1px;
 }
 
-/* Matches Home.css Subheader Styling */
 .rewind-header p {
     font-size: 1.2rem;
     color: #b3b3b3;
@@ -61,16 +60,15 @@ html, body {
     letter-spacing: 0.5px;
 }
 
-.week-subtitle h3 {
+.week-subtitle h2 {
     font-size: 1.8rem;
     margin-bottom: 30px;
     color: #fff;
     text-align: left;
     padding-left: 1%; 
-    
 }
 
-/* 7-Column Grid - Maximized */
+/* 7-Column Grid */
 .week-grid {
     display: flex;
     gap: 15px; 
@@ -81,13 +79,10 @@ html, body {
 
 .day-column {
     flex: 1;
-    min-width: 220px; /* Even wider boxes for content clarity */
-    opacity: 0.4;
-    transition: all 0.4s ease;
-}
-
-.day-column.active {
-    opacity: 1;
+    min-width: 220px;
+    /* 1. Visibility of dates: Changed from 0.4 to 0.85 for clear visibility */
+    opacity: 0.9; 
+    transition: all 0.2s ease-in-out;
 }
 
 .day-label {
@@ -96,7 +91,8 @@ html, body {
     font-weight: 800;
     margin-bottom: 15px;
     text-align: center;
-    color: #666;
+    /* Increased brightness of date text */
+    color: #999; 
     text-transform: uppercase;
 }
 
@@ -107,55 +103,49 @@ html, body {
     padding: 20px; 
     height: 580px; 
     overflow-y: auto;
-    border: 1px solid #252525;
+    /* 3. Border line visibility: Lightened the border from #252525 to #3a3a3a */
+    border: 1.5px solid #3a3a3a; 
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Active Yellow Border */
-.active .song-stack {
-    border: 1px solid #FAEF5D;
-    box-shadow: 0 0 30px rgba(250, 239, 93, 0.1);
+/* 2. HOVER LOGIC: Pure CSS hover that disappears immediately on mouse-out */
+.day-column:hover .song-stack {
+    border: 1.5px solid #FAEF5D;
+    box-shadow: 0 0 25px rgba(250, 239, 93, 0.15);
 }
 
-/* Song Card Content */
+/* 4. CONTENT VISIBILITY: Song cards are now more defined */
 .song-card {
     display: flex;
     gap: 12px; 
-    background: #1a1a1a;
+    /* Slightly lighter background than the box for contrast */
+    background: #222222; 
     padding: 12px;
     border-radius: 12px;
     align-items: center;
     width: 100%;
     box-sizing: border-box;
+    /* Added a subtle inner border to card */
+    border: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
 .album-thumb {
     width: 44px;
     height: 44px;
-    background: #333;
+    background: #444; /* Brighter placeholder */
     border-radius: 8px;
     flex-shrink: 0;
-}
-
-.song-meta {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    width: 100%;
-}
-
-.title-mood-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .song-title {
     font-size: 0.85rem; 
     font-weight: bold;
     margin: 0;
+    /* Solid white for maximum visibility */
+    color: #ffffff; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -163,7 +153,8 @@ html, body {
 
 .song-artist {
     font-size: 0.7rem;
-    color: #666;
+    /* Brighter gray for visibility */
+    color: #aaaaaa; 
     margin-top: 2px;
 }
 
@@ -183,11 +174,9 @@ html, body {
 
 /* Custom Scrollbar */
 .song-stack::-webkit-scrollbar {
-    width: 3px;
+    width: 4px;
 }
 .song-stack::-webkit-scrollbar-thumb {
-    background: #333;
+    background: #444;
     border-radius: 10px;
 }
-
-/* --- MOOD MAP REMOVED --- */
