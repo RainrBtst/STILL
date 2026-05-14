@@ -142,7 +142,7 @@ const Rewind = () => {
       <div className="rewind-page">
         <header className="rewind-header">
           <h1>WEEKLY RHYTHM REWIND</h1>
-          <p>Your musical journey is complex; view all your daily expressions.</p>
+          <p>Your days, tracked in rhythm.</p>
         </header>
 
         <div className="week-grid">

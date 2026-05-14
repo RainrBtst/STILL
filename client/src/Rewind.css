@@ -1,14 +1,31 @@
 .rewind-page {
-  background-color: #000;
+  /* Changed background from #000 to #121212 to match main background */
+  background-color: #121212; 
   color: white;
   min-height: 100vh;
   padding: 40px;
   font-family: 'Inter', sans-serif;
 }
 
+.rewind-header {
+  /* Center the header content */
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
 .rewind-header h1 {
   font-weight: 900;
   letter-spacing: -1px;
+  /* Sync with Welcome Back font size */
+  font-size: 3rem; 
+  margin: 0;
+}
+
+.rewind-header p {
+  /* Sync with "Everyday has a rhythm..." font size */
+  font-size: 1.2rem;
+  color: #b3b3b3;
+  margin-top: 0.5rem;
 }
 
 .week-grid {
