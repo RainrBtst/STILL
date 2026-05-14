@@ -102,3 +102,171 @@
 .happy { background: #e2f35e; }
 .melancholic { background: #00bcd4; }
 .calm { background: #4caf50; }
+
+/* --- GLOBAL BROWSER RESET --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #121212; 
+}
+
+/* Navbar */
+.nt-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 2rem auto; 
+    padding-top: 0.8rem; 
+    width: 100%;
+}
+
+.nt-logo {
+    color: #FAEF5D; 
+    font-weight: 900;
+    letter-spacing: -2px;
+    font-size: 2rem;
+}
+
+.nt-nav-actions {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.nt-search-bar {
+    background: #282828;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nt-search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+}
+
+/* Search Dropdown Styles */
+.nt-search-container {
+    position: relative;
+}
+
+.nt-search-dropdown {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 300px;
+    background: #282828;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    z-index: 1000;
+    overflow: hidden;
+    border: 1px solid #444;
+}
+
+.nt-search-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nt-search-item:hover {
+    background: #3e3e3e;
+}
+
+.nt-search-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.nt-search-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nt-search-name {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nt-search-artist {
+    font-size: 0.75rem;
+    color: #b3b3b3;
+    margin: 0;
+}
+
+.nt-search-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.nt-search-dropdown {
+    left: 0 !important; 
+    right: auto !important;
+}
+
+/* Profile Icon Styling */
+.nt-profile-circle {
+    width: 45px;          
+    height: 45px;         
+    background: #282828;  
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;    
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nt-profile-circle:hover {
+    background: #333;
+    transform: scale(1.1);
+    border-color: #FAEF5D; 
+}
+
+.nt-profile-dropdown {
+    top: 55px !important; 
+}
+
+.nt-nav-note {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #FAEF5D; 
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Center Links Navigation Wrapper */
+.nt-nav-links-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px; 
+    pointer-events: none;
+    top: inherit; 
+    align-self: center;
+}
+
+.nt-nav-links-wrapper .nt-nav-note {
+    position: relative; 
+    left: auto;
+    transform: none;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
