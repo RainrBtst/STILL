@@ -130,7 +130,7 @@ const Rewind = () => {
 
         {/* Added Week Number display */}
         <div className="week-subtitle">
-            <h2>WEEK 19</h2>
+            <h3>WEEK 19</h3>
         </div>
 
         <div className="week-grid">
@@ -159,15 +159,7 @@ const Rewind = () => {
           ))}
         </div>
 
-        <div className="mood-map">
-           <span>Mood-map</span>
-           <div className="mood-dots">
-                <span className="dot energetic"></span> Energetic
-                <span className="dot happy"></span> Happy
-                <span className="dot melancholic"></span> Melancholic
-                <span className="dot calm"></span> Calm
-           </div>
-        </div>
+        
       </div>
     </div>
   );

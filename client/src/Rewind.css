@@ -61,12 +61,13 @@ html, body {
     letter-spacing: 0.5px;
 }
 
-.week-subtitle h2 {
+.week-subtitle h3 {
     font-size: 1.8rem;
     margin-bottom: 30px;
     color: #fff;
     text-align: left;
     padding-left: 1%; 
+    
 }
 
 /* 7-Column Grid - Maximized */
