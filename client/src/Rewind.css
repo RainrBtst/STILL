@@ -60,12 +60,13 @@ html, body {
     letter-spacing: 0.5px;
 }
 
-.week-subtitle h2 {
+.week-subtitle h3 { /* Changed to h3 to match your JSX */
     font-size: 1.8rem;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     color: #fff;
     text-align: left;
     padding-left: 1%; 
+    font-weight: 800;
 }
 
 /* 7-Column Grid */
@@ -75,6 +76,8 @@ html, body {
     justify-content: center;
     align-items: flex-start;
     width: 100%;
+    /* ADDED THIS: Moves the dates and boxes down away from the 'WEEK' title */
+    margin-top: 50px; 
 }
 
 .day-column {
@@ -101,7 +104,6 @@ html, body {
     padding: 20px; 
     height: 580px; 
     overflow-y: auto;
-    /* FIX: Reserves space so scrollbar doesn't overlap cards */
     scrollbar-gutter: stable; 
     border: 1.5px solid #3a3a3a; 
     display: flex;
@@ -109,7 +111,7 @@ html, body {
     gap: 12px;
 }
 
-/* HOVER LOGIC: Disappears immediately on mouse-out */
+/* HOVER LOGIC */
 .day-column:hover .song-stack {
     border: 1.5px solid #FAEF5D;
     box-shadow: 0 0 25px rgba(250, 239, 93, 0.15);
