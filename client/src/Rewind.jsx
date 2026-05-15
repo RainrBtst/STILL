@@ -178,10 +178,31 @@ const Rewind = () => {
 
         {!isAvailable ? (
           // Display message if it's not yet Sunday 11:59pm
-          <div style={{textAlign: 'center', marginTop: '100px'}}>
-             <h2 style={{color: '#FAEF5D'}}>Your weekly rhythm rewind will be available on...</h2>
-             <p style={{fontSize: '1.5rem', color: '#fff'}}>{nextReleaseDate} at 11:59 PM</p>
-          </div>
+          <div className="rewind-lock-screen">
+    <div className="lock-card">
+      <div className="lock-icon-wrapper">
+        <div className="pulse-ring"></div>
+        <span className="lock-emoji">⏳</span>
+      </div>
+      
+      <h2 className="lock-title">
+        Your Weekly Rhythm Rewind is <br/> 
+        <span className="highlight-yellow">Almost Ready</span>
+      </h2>
+      
+      <p className="lock-subtitle">
+        Gathering your melodies... See you on <span className="day-name">Sunday</span>
+      </p>
+
+      <div className="countdown-mini-box">
+        <span className="time-tag">RELEASE: 11:59 PM</span>
+      </div>
+
+      <div className="loading-bar-container">
+        <div className="loading-bar-fill"></div>
+      </div>
+    </div>
+  </div>
         ) : (
           <>
             <div className="week-subtitle">
