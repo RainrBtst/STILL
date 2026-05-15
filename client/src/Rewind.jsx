@@ -157,11 +157,31 @@ const Rewind = () => {
         </header>
 
         {!isAvailable ? (
-          <div className="rewind-lock-screen">
-            <div className="lock-card">
-               <h2 className="lock-title">Almost Ready</h2>
-               <p>See you on Sunday</p>
-            </div>
+          <div className="rewind-loading-container">
+              <div className="rewind-premium-card">
+                  <div className="rewind-icon-circle">
+                      <span className="rewind-hourglass">⌛</span>
+                  </div>
+                  
+                  <h2 className="rewind-main-title">
+                      Your Weekly Rhythm <br /> Rewind is <br /> 
+                      <span className="highlight-text">Almost Ready</span>
+                  </h2>
+                  
+                  <p className="rewind-subtitle">
+                      Gathering your melodies... See you on <span className="yellow-text">Sunday</span>
+                  </p>
+
+                  <div className="rewind-release-tag">
+                      RELEASE: 11:59 PM
+                  </div>
+
+                  <div className="rewind-progress-wrapper">
+                      <div className="rewind-progress-bar">
+                          <div className="rewind-progress-fill" style={{ width: '60%' }}></div>
+                      </div>
+                  </div>
+              </div>
           </div>
         ) : (
           <>
