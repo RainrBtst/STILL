@@ -16,14 +16,11 @@ const Rewind = () => {
   const [showArchives, setShowArchives] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // --- NEW BACKEND STATES ---
   const [realWeeklyData, setRealWeeklyData] = useState([]);
   const [weekNumber, setWeekNumber] = useState(1);
   const [isAvailable, setIsAvailable] = useState(false);
   const [nextReleaseDate, setNextReleaseDate] = useState("");
   const [loading, setLoading] = useState(true);
-  
-  // Modal State
   const [activeModalSong, setActiveModalSong] = useState(null);
 
   const dropdownRef = useRef(null);
@@ -34,11 +31,29 @@ const Rewind = () => {
   };
 
   useEffect(() => {
+    // 1. IMMEDIATE TIME CHECK (Unlock regardless of data fetch)
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMin = now.getMinutes();
+    
+    // Unlock if it is 3:57 PM (15:57) or later
+    if (currentHour > 15 || (currentHour === 15 && currentMin >= 57)) {
+        setIsAvailable(true);
+    } else {
+        setIsAvailable(false);
+        setNextReleaseDate("Sunday");
+    }
+
     const fetchUserDataAndJournals = async () => {
-      // Logic handles both naming conventions just in case
       const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
       const userCreatedDate = new Date(localStorage.getItem("createdAt") || Date.now());
       
+      if (!userId) {
+          console.error("No User ID found in storage");
+          setLoading(false);
+          return;
+      }
+
       try {
         const res = await axios.get(`${API_BASE_URL}/user-journals/${userId}`);
         const journals = res.data;
@@ -47,18 +62,6 @@ const Rewind = () => {
         const diffInMs = today - userCreatedDate;
         const diffInWeeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1;
         setWeekNumber(diffInWeeks);
-
-        // --- UPDATED UNLOCK LOGIC (3:57 PM TEST) ---
-        const now = new Date();
-        const targetHour = 15;   
-        const targetMinute = 57; 
-
-        if (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinutes() >= targetMinute)) {
-            setIsAvailable(true);
-        } else {
-            setIsAvailable(false);
-            setNextReleaseDate("Sunday"); 
-        }
 
         const grouped = journals.reduce((acc, journal) => {
           const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).toUpperCase();
@@ -89,6 +92,7 @@ const Rewind = () => {
     fetchUserDataAndJournals();
   }, []);
 
+  // ... (Keep handleRewind, handleLogout, handleHome, handleProfile, handleAbout, handleSelectSong exactly as they are)
   const handleRewind = () => navigate('/rewind');
   const handleLogout = () => { localStorage.clear(); window.location.href = '/login'; };
   const handleHome = () => window.location.href = '/home';
@@ -234,7 +238,6 @@ const Rewind = () => {
         )}
       </div>
 
-      {/* --- REWIND MODAL --- */}
       {activeModalSong && (
         <div className="rewind-modal-overlay" onClick={() => setActiveModalSong(null)}>
           <div className="rewind-modal-content" onClick={e => e.stopPropagation()}>
