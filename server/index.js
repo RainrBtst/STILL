@@ -66,29 +66,27 @@ app.get("/ping", (req, res) => {
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
+        // Check if the user (old or new) already exists
         const existingUser = await UsersModel.findOne({ email });
-        if (existingUser) return res.json({ status: "ALREADY_EXISTS" });
+        if (existingUser) {
+            return res.json({ status: "ALREADY_EXISTS" });
+        }
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        await OTPModel.create({ email, otp, userData: { name, password } });
+        // Save the new user IMMEDIATELY
+        const newUser = await UsersModel.create({
+            name,
+            email,
+            password 
+        });
+
+        console.log(`New account created for: ${email}`);
         
-        const mailOptions = {
-            from: `"STILL Support" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'STILL - Your Verification Code',
-            html: `<div style="background:#121212; color:white; padding:40px; text-align:center; border-radius:10px;">
-                    <h1 style="color:#FAEF5D;">STILL</h1>
-                    <p>Your verification code is:</p>
-                    <h2 style="color:#FAEF5D; font-size:40px; letter-spacing:10px;">${otp}</h2>
-                   </div>`
-        };
+        // Tell the frontend to let them in!
+        res.json({ status: "SUCCESS" });
 
-        await transporter.sendMail(mailOptions);
-        res.json({ status: "OTP_SENT" });
-    } catch (err) { 
-        // Enhanced logging for debugging
-        console.error("Registration Error Detail:", err);
-        res.status(500).json({ error: "Registration failed", details: err.message }); 
+    } catch (err) {
+        console.error("Registration Error:", err);
+        res.status(500).json({ error: "Could not create account" });
     }
 });
 
