@@ -13,7 +13,6 @@ const OTPModel = require('./models/OTP');
 const app = express();
 
 // --- 1. PAYLOAD LIMITS ---
-// Fixed "413 Content Too Large" for Base64 profile pictures
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
@@ -37,20 +36,25 @@ mongoose.connect(process.env.MONGO_URI)
 // --- 4. EMAIL CONFIGURATION ---
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: { 
         user: process.env.EMAIL_USER, 
         pass: process.env.EMAIL_PASS 
+    },
+    tls: {
+        // Essential for Render/deployment environments
+        rejectUnauthorized: false 
     }
 });
 
 // --- 5. SYSTEM ROUTES (Ping & Health Check) ---
 
-// Root route to confirm deployment success
 app.get("/", (req, res) => {
     res.status(200).send("STILL Backend API is running.");
 });
 
-// Keep-Alive Route for cron-job.org
 app.get("/ping", (req, res) => {
     res.status(200).send("Server is awake!");
 });
@@ -76,11 +80,13 @@ app.post('/register', async (req, res) => {
                     <h2 style="color:#FAEF5D; font-size:40px; letter-spacing:10px;">${otp}</h2>
                    </div>`
         };
+
         await transporter.sendMail(mailOptions);
         res.json({ status: "OTP_SENT" });
     } catch (err) { 
-        console.error(err);
-        res.status(500).json({ error: "Registration failed" }); 
+        // Enhanced logging for debugging
+        console.error("Registration Error Detail:", err);
+        res.status(500).json({ error: "Registration failed", details: err.message }); 
     }
 });
 
@@ -192,7 +198,6 @@ app.get("/api/journals/user/:identifier", async (req, res) => {
 });
 
 // --- 9. MUSIC SEARCH (iTunes API) ---
-// We support both path names to prevent 404 errors on the frontend
 const handleMusicSearch = async (req, res) => {
     const { query } = req.query;
     if (!query) return res.json([]);
