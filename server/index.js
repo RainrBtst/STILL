@@ -113,7 +113,8 @@ app.post("/login", (req, res) => {
                         userId: user._id, 
                         username: user.name, 
                         email: user.email, 
-                        profilePic: user.profilePic 
+                        profilePic: user.profilePic, 
+                        createdAt: user.createdAt
                     });
                 } else { 
                     res.status(401).json("Incorrect Password"); 
