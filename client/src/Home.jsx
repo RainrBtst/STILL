@@ -64,7 +64,12 @@ function Home() {
     };
 
     const handleLogout = () => {
+        // PRESERVE THE FLAG BEFORE CLEARING
+        const seenFlag = localStorage.getItem("hasSeenRewindModal");
         localStorage.clear();
+        if (seenFlag) {
+            localStorage.setItem("hasSeenRewindModal", seenFlag);
+        }
         window.location.href = '/login';
     };
 
