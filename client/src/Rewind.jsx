@@ -13,7 +13,6 @@ const Rewind = () => {
   const [selectedSong, setSelectedSong] = useState(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
-  const [showArchives, setShowArchives] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [realWeeklyData, setRealWeeklyData] = useState([]);
@@ -31,13 +30,9 @@ const Rewind = () => {
   };
 
   useEffect(() => {
-    // 1. IMMEDIATE TIME CHECK (Unlock regardless of data fetch)
+    // 1. TIME CHECK
     const now = new Date();
-    const currentHour = now.getHours();
-    const currentMin = now.getMinutes();
-    
-    // Unlock if it is 3:57 PM (15:57) or later
-    if (currentHour > 15 || (currentHour === 15 && currentMin >= 57)) {
+    if (now.getHours() > 15 || (now.getHours() === 15 && now.getMinutes() >= 57)) {
         setIsAvailable(true);
     } else {
         setIsAvailable(false);
@@ -48,8 +43,8 @@ const Rewind = () => {
       const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
       const userCreatedDate = new Date(localStorage.getItem("createdAt") || Date.now());
       
-      if (!userId) {
-          console.error("No User ID found in storage");
+      if (!userId || userId === "undefined") {
+          console.error("User ID is missing. Please log in again.");
           setLoading(false);
           return;
       }
@@ -58,20 +53,26 @@ const Rewind = () => {
         const res = await axios.get(`${API_BASE_URL}/user-journals/${userId}`);
         const journals = res.data;
 
+        // Calculate Week Number
         const today = new Date();
         const diffInMs = today - userCreatedDate;
-        const diffInWeeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1;
+        const diffInWeeks = Math.max(1, Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1);
         setWeekNumber(diffInWeeks);
 
+        // Grouping logic with fallback keys to prevent empty cards
         const grouped = journals.reduce((acc, journal) => {
-          const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).toUpperCase();
+          const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { 
+            month: 'short', day: 'numeric', weekday: 'short' 
+          }).toUpperCase();
+          
           if (!acc[dateLabel]) acc[dateLabel] = [];
+          
           acc[dateLabel].push({
-            title: journal.journalTitle,
-            artist: journal.songDetails?.artist || "Unknown Artist",
-            mood: journal.mood.toUpperCase(),
-            albumArt: journal.songDetails?.albumArt,
-            content: journal.content
+            title: journal.journalTitle || journal.title || "Untitled Moment",
+            artist: journal.songName || journal.artist || journal.songDetails?.artist || "Unknown Artist",
+            mood: (journal.mood || "HAPPY").toUpperCase(),
+            albumArt: journal.albumArt || journal.songDetails?.albumArt || "",
+            content: journal.content || journal.journalText || "No thoughts recorded."
           });
           return acc;
         }, {});
@@ -84,7 +85,7 @@ const Rewind = () => {
         setRealWeeklyData(formattedData);
         setLoading(false);
       } catch (err) {
-        console.error("Failed to load rhythm rewind data", err);
+        console.error("Failed to load journals:", err);
         setLoading(false);
       }
     };
@@ -92,7 +93,6 @@ const Rewind = () => {
     fetchUserDataAndJournals();
   }, []);
 
-  // ... (Keep handleRewind, handleLogout, handleHome, handleProfile, handleAbout, handleSelectSong exactly as they are)
   const handleRewind = () => navigate('/rewind');
   const handleLogout = () => { localStorage.clear(); window.location.href = '/login'; };
   const handleHome = () => window.location.href = '/home';
@@ -116,63 +116,28 @@ const Rewind = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const fetchSongs = async () => {
-        if (searchQuery.length > 2) {
-            try {
-                const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                setResults(res.data);
-            } catch (err) { console.error("Search failed", err); }
-        } else { setResults([]); }
-    };
-    const debounce = setTimeout(fetchSongs, 500); 
-    return () => clearTimeout(debounce);
-  }, [searchQuery]);
-
   return (
     <div className="nt-container">
       <nav className="nt-navbar">
         <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
         <div className="nt-nav-links-wrapper">
-            <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={handleRewind} >
+            <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewind} >
                 <span>Rhythm Rewind</span>
             </div>
-            <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+            <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
                 <span>Send a SonG</span>
             </div>
         </div>
         <div className="nt-nav-actions">
-            <div className="nt-search-container">
-                {results.length > 0 && (
-                    <div className="nt-search-dropdown">
-                        {results.map((track) => (
-                            <div key={track.id} className="nt-search-item" onClick={() => handleSelectSong(track)}>
-                                <img src={track.albumArt} alt="art" />
-                                <div className="nt-search-info">
-                                    <p className="nt-search-name">{track.name}</p>
-                                    <p className="nt-search-artist">{track.artist}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
             <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                    {profilePic ? (
-                        <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                    ) : (
-                        "👤"
-                    )}
+                <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                    {profilePic ? <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : "👤"}
                 </div>
                 {showProfileDropdown && (
-                    <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
-                        <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
-                        <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
-                        <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
-                        <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
+                    <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
+                        <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', padding: '5px', cursor: 'pointer'}}>HOME</button>
+                        <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', padding: '5px', cursor: 'pointer'}}>PROFILE</button>
+                        <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', padding: '5px', cursor: 'pointer'}}>LOGOUT</button>
                     </div>
                 )}
             </div>
@@ -188,33 +153,15 @@ const Rewind = () => {
         {!isAvailable ? (
           <div className="rewind-lock-screen">
             <div className="lock-card">
-              <div className="lock-icon-wrapper">
-                <div className="pulse-ring"></div>
-                <span className="lock-emoji">⏳</span>
-              </div>
-              <h2 className="lock-title">
-                Your Weekly Rhythm Rewind is <br/> 
-                <span className="highlight-yellow">Almost Ready</span>
-              </h2>
-              <p className="lock-subtitle">
-                Gathering your melodies... See you on <span className="day-name">Sunday</span>
-              </p>
-              <div className="countdown-mini-box">
-                <span className="time-tag">RELEASE: 11:59 PM</span>
-              </div>
-              <div className="loading-bar-container">
-                <div className="loading-bar-fill"></div>
-              </div>
+               <h2 className="lock-title">Almost Ready</h2>
+               <p>See you on Sunday</p>
             </div>
           </div>
         ) : (
           <>
-            <div className="week-subtitle">
-                <h3>WEEK {weekNumber}</h3>
-            </div>
-
+            <div className="week-subtitle"><h3>WEEK {weekNumber}</h3></div>
             <div className="week-grid">
-              {(realWeeklyData.length > 0 ? realWeeklyData : []).map((day, index) => (
+              {realWeeklyData.map((day, index) => (
                 <div key={index} className="day-column">
                   <span className="day-label">{day.date}</span>
                   <div className="song-stack">
@@ -223,9 +170,7 @@ const Rewind = () => {
                         <div className="album-thumb" style={{backgroundImage: `url(${song.albumArt})`, backgroundSize: 'cover'}}></div>
                         <div className="song-meta">
                           <p className="song-title">{song.title}</p>
-                          <div className="mood-container">
-                            <span className="mood-tag">{song.mood}</span>
-                          </div>
+                          <span className="mood-tag">{song.mood}</span>
                           <p className="song-artist">{song.artist}</p>
                         </div>
                       </div>
@@ -242,12 +187,11 @@ const Rewind = () => {
         <div className="rewind-modal-overlay" onClick={() => setActiveModalSong(null)}>
           <div className="rewind-modal-content" onClick={e => e.stopPropagation()}>
             <button className="modal-close" onClick={() => setActiveModalSong(null)}>×</button>
-            <div className="modal-album-art" style={{backgroundImage: `url(${activeModalSong.albumArt})`, backgroundSize: 'cover'}}></div>
+            <div className="modal-album-art" style={{backgroundImage: `url(${activeModalSong.albumArt})`, backgroundSize: 'cover', width: '200px', height: '200px', margin: '0 auto'}}></div>
             <h2 className="modal-song-title">{activeModalSong.title}</h2>
             <p className="modal-song-artist">{activeModalSong.artist}</p>
             <span className="modal-mood-badge">{activeModalSong.mood}</span>
-            <div className="modal-divider"></div>
-            <p className="modal-journal-text">"{activeModalSong.content || "No thoughts recorded for this rhythm."}"</p>
+            <p className="modal-journal-text" style={{marginTop: '20px', fontStyle: 'italic'}}>"{activeModalSong.content}"</p>
           </div>
         </div>
       )}
