@@ -24,6 +24,16 @@ function Login() {
         axios.post(`${API_BASE_URL}/login`, { email, password })
             .then(result => {
     if (result.data.status === "Success") {
+        // --- ADDED: Persist Modal Flag ---
+        const hasSeenRewind = localStorage.getItem("hasSeenRewindModal");
+        
+        localStorage.clear(); 
+
+        if (hasSeenRewind) {
+            localStorage.setItem("hasSeenRewindModal", hasSeenRewind);
+        }
+        // ---------------------------------
+
         localStorage.setItem("userId", result.data.userId); 
         localStorage.setItem("currentUserId", result.data.userId);
         localStorage.setItem("currentUsername", result.data.username);
