@@ -44,18 +44,18 @@ const Rewind = () => {
         setWeekNumber(diffInWeeks);
 
         // 2. Check if it's Sunday 11:59pm
-        const dayOfWeek = today.getDay(); // 0 is Sunday
-        if (dayOfWeek === 0 && today.getHours() >= 23 && today.getMinutes() >= 59) {
-          setIsAvailable(true);
-        } else {
-          // Calculate next Sunday
-          const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
-          const nextSunday = new Date(today);
-          nextSunday.setDate(today.getDate() + daysUntilSunday);
-          setNextReleaseDate(nextSunday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }));
-          setIsAvailable(false);
-        }
+        const now = new Date();
+const targetHour = 15;   // 3 PM
+const targetMinute = 59; // 57 Minutes
 
+// If the time is 3:57 PM or later, show the Rewind!
+if (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinutes() >= targetMinute)) {
+    setIsAvailable(true);
+} else {
+    setIsAvailable(false);
+    // This will show your new "Sunday" design until 3:57 PM hits
+    setNextReleaseDate("Sunday"); 
+}
         // 5. Group journals by their actual entry dates
         const grouped = journals.reduce((acc, journal) => {
           const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).toUpperCase();
