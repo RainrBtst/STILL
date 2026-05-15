@@ -363,3 +363,7 @@ html, body {
     font-style: italic;
     line-height: 1.6;
 }
+
+.nt-profile-dropdown {
+    top: 55px !important; 
+}
