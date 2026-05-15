@@ -27,19 +27,25 @@ function Home() {
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
-    // --- 1. RHYTHM REWIND MODAL LOGIC (ONE-TIME ONLY) ---
+    // --- 1. RHYTHM REWIND MODAL LOGIC (SUNDAY 11:59 PM) ---
     useEffect(() => {
         const checkRewindAvailability = () => {
-            // Check if user has already dismissed/visited this modal
-            const hasSeenRewind = localStorage.getItem("hasSeenRewindModal");
+            const now = new Date();
+            
+            // Create a unique key for the current week (e.g., "seenRewind_2024_Week15")
+            // This ensures the modal resets every Sunday
+            const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+            
+            // Check if user has already dismissed/visited this modal THIS week
+            const hasSeenRewind = localStorage.getItem(weekKey);
             if (hasSeenRewind === "true") return;
 
-            const now = new Date();
+            const isSunday = now.getDay() === 0; 
             const hours = now.getHours();
             const minutes = now.getMinutes();
 
-            // Trigger if it is 3:57 PM or later
-            if (hours > 15 || (hours === 15 && minutes >= 57)) {
+            // Trigger if it is Sunday at 11:59 PM
+            if (isSunday && hours === 23 && minutes === 59) {
                 setModal({
                     show: true,
                     title: "WEEKLY RHYTHM REWIND",
@@ -50,13 +56,16 @@ function Home() {
         };
 
         checkRewindAvailability();
-        const interval = setInterval(checkRewindAvailability, 60000);
+        const interval = setInterval(checkRewindAvailability, 30000); // Check every 30 seconds for accuracy
         return () => clearInterval(interval);
     }, []);
 
-    // Helper to close rewind modal and save preference to localStorage
+    // Helper to close rewind modal and save preference to localStorage using Week Key
     const handleCloseRewindModal = (shouldNavigate) => {
-        localStorage.setItem("hasSeenRewindModal", "true");
+        const now = new Date();
+        const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+        
+        localStorage.setItem(weekKey, "true");
         setModal({ ...modal, show: false });
         if (shouldNavigate) {
             navigate('/rewind');
@@ -64,11 +73,18 @@ function Home() {
     };
 
     const handleLogout = () => {
+        // IDENTIFY THE CURRENT WEEK KEY
+        const now = new Date();
+        const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+        
         // PRESERVE THE FLAG BEFORE CLEARING
-        const seenFlag = localStorage.getItem("hasSeenRewindModal");
+        const seenFlag = localStorage.getItem(weekKey);
+        
         localStorage.clear();
+        
+        // RE-SET THE FLAG SO IT SURVIVES THE LOGOUT/LOGIN
         if (seenFlag) {
-            localStorage.setItem("hasSeenRewindModal", seenFlag);
+            localStorage.setItem(weekKey, seenFlag);
         }
         window.location.href = '/login';
     };

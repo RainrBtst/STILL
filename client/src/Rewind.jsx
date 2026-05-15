@@ -23,9 +23,14 @@ const Rewind = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 1. TIME CHECK (Unlocks at 3:57 PM)
+    // 1. TIME CHECK (Unlocks ONLY on Sunday at 11:59 PM)
     const now = new Date();
-    if (now.getHours() > 15 || (hours === 15 && minutes >= 57)) {
+    const isSunday = now.getDay() === 0; // 0 is Sunday
+    const isTime = now.getHours() === 23 && now.getMinutes() === 59;
+    
+    // For testing/development, you might want to use: (isSunday)
+    // But per your request for exactly 11:59 PM:
+    if (isSunday && isTime) {
         setIsAvailable(true);
     } else {
         setIsAvailable(false);
@@ -36,7 +41,6 @@ const Rewind = () => {
       const userCreatedDate = new Date(localStorage.getItem("createdAt") || Date.now());
       
       if (!userId || userId === "undefined") {
-          console.error("User ID is missing.");
           setLoading(false);
           return;
       }
@@ -45,27 +49,22 @@ const Rewind = () => {
         const res = await axios.get(`${API_BASE_URL}/user-journals/${userId}`);
         const journals = res.data;
 
-        // Calculate Week Number
+        // Calculate Week Number for display
         const today = new Date();
         const diffInMs = today - userCreatedDate;
         const diffInWeeks = Math.max(1, Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1);
         setWeekNumber(diffInWeeks);
 
-        // Grouping logic
         const grouped = journals.reduce((acc, journal) => {
           const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { 
             month: 'short', day: 'numeric', weekday: 'short' 
           }).toUpperCase();
-          
           if (!acc[dateLabel]) acc[dateLabel] = [];
-          
           acc[dateLabel].push({
             ...journal,
-            // Mapping keys for ReadJournal compatibility
             journalTitle: journal.journalTitle || journal.title || "Untitled Moment",
             content: journal.content || journal.journalText || "No thoughts recorded.",
             mood: (journal.mood || "HAPPY").toUpperCase(),
-            // Ensure songDetails exists for ReadJournal
             songDetails: journal.songDetails || {
                 title: journal.songName || journal.title,
                 artist: journal.artist,
@@ -91,11 +90,16 @@ const Rewind = () => {
 
     fetchUserDataAndJournals();
   }, []);
-
   const handleLogout = () => { 
-    const seenFlag = localStorage.getItem("hasSeenRewindModal");
+    const now = new Date();
+    const weekKey = `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
+    const seenValue = localStorage.getItem(weekKey);
+    
     localStorage.clear(); 
-    if (seenFlag) localStorage.setItem("hasSeenRewindModal", seenFlag);
+    
+    if (seenValue) {
+        localStorage.setItem(weekKey, seenValue);
+    }
     window.location.href = '/login'; 
   };
   const handleHome = () => navigate('/home');

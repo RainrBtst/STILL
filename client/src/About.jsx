@@ -11,7 +11,17 @@ function About() {
     const [showDevInfo, setShowDevInfo] = useState(false);
 
     const handleLogout = () => {
+        // IDENTIFY THE CURRENT WEEK KEY FOR REWIND PERSISTENCE
+        const now = new Date();
+        const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+        const seenFlag = localStorage.getItem(weekKey);
+
         localStorage.clear();
+
+        // RE-SET THE SEEN FLAG IF IT EXISTED SO REWIND DOESN'T RE-TRIGGER ON RE-LOGIN
+        if (seenFlag) {
+            localStorage.setItem(weekKey, seenFlag);
+        }
         window.location.href = '/login';
     };
 
@@ -25,6 +35,10 @@ function About() {
 
     const handleAbout = () => {
         window.location.href = '/about';
+    };
+
+    const handleRewindNav = () => {
+        window.location.href = '/rewind';
     };
 
     useEffect(() => {
@@ -43,8 +57,13 @@ function About() {
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
                 
-                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
-                    <span>Send a Song</span>
+                <div className="nt-nav-links-wrapper">
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
+                        <span>Rhythm Rewind</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+                        <span>Send a Song</span>
+                    </div>
                 </div>
 
                 <div className="nt-nav-actions">

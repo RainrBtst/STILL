@@ -78,7 +78,16 @@ function Profile() {
 
     // --- HANDLERS ---
     const handleLogout = () => {
+        // IDENTIFY THE CURRENT WEEK KEY FOR REWIND PERSISTENCE
+        const now = new Date();
+        const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+        const seenFlag = localStorage.getItem(weekKey);
+
         localStorage.clear();
+
+        if (seenFlag) {
+            localStorage.setItem(weekKey, seenFlag);
+        }
         window.location.href = '/login';
     };
 
@@ -94,9 +103,11 @@ function Profile() {
         window.location.href = '/about';
     };
 
+    const handleRewindNav = () => {
+        window.location.href = '/rewind';
+    };
+
     const handleSelectSong = (track) => {
-        // Since we are on Profile, you might want to redirect to home 
-        // with this song or just clear the search.
         setSearchQuery(''); 
         setResults([]); 
     };
@@ -178,8 +189,13 @@ function Profile() {
             {/* --- NAV BAR COPIED EXACTLY FROM HOME --- */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
-                <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
-                    <span>Send a Song</span>
+                <div className="nt-nav-links-wrapper">
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
+                        <span>Rhythm Rewind</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
+                        <span>Send a Song</span>
+                    </div>
                 </div>
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
