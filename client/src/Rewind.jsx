@@ -122,6 +122,29 @@ if (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinu
     return () => clearTimeout(debounce);
   }, [searchQuery]);
 
+  // Add this state at the top with your others
+const [activeModalSong, setActiveModalSong] = useState(null);
+
+// Add this function to handle opening the modal
+const openSongModal = (song) => {
+  setActiveModalSong(song);
+};
+
+// ... inside your return () statement, add the Modal HTML at the very bottom of the main div
+{activeModalSong && (
+  <div className="rewind-modal-overlay" onClick={() => setActiveModalSong(null)}>
+    <div className="rewind-modal-content" onClick={e => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setActiveModalSong(null)}>×</button>
+      <div className="modal-album-art"></div>
+      <h2 className="modal-song-title">{activeModalSong.title}</h2>
+      <p className="modal-song-artist">{activeModalSong.artist}</p>
+      <span className="modal-mood-badge">{activeModalSong.mood}</span>
+      <div className="modal-divider"></div>
+      <p className="modal-journal-text">"This song perfectly captured the rhythm of my day."</p>
+    </div>
+  </div>
+)}
+
   return (
     <div className="nt-container">
       <nav className="nt-navbar">
