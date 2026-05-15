@@ -22,33 +22,53 @@ function Home() {
     const [entries, setEntries] = useState([]);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const dropdownRef = useRef(null);
-    const navigate = useNavigate(); // Add this line
+    const navigate = useNavigate(); 
+
+    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
+    const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
+
+    // --- NEW: RHYTHM REWIND CHECKER ---
+    useEffect(() => {
+        const checkRewindAvailability = () => {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // 0 is Sunday
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+
+            // Check if it's Sunday and 11:59 PM or later
+            if (dayOfWeek === 0 && (hours > 23 || (hours === 23 && minutes >= 59))) {
+                setModal({
+                    show: true,
+                    title: "Weekly Rhythm Rewind",
+                    message: "Your weekly rhythm rewind is available.",
+                    type: "rewind"
+                });
+            }
+        };
+
+        checkRewindAvailability();
+        // Check every minute in case the user stays on the home page
+        const interval = setInterval(checkRewindAvailability, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleRewind = () => {
-    navigate('/rewind');
+        navigate('/rewind');
     };
-    // ADDED: State for profile picture
-    const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
-
-    // ADDED: STATE FOR CUSTOM MODAL
-    const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
     const handleLogout = () => {
         localStorage.clear();
         window.location.href = '/login';
     };
 
-    // ADDED HOME HANDLER
     const handleHome = () => {
         window.location.href = '/home';
     };
 
-    // ADDED PROFILE HANDLER
     const handleProfile = () => {
         window.location.href = '/profile';
     };
 
-    // ADDED ABOUT HANDLER
     const handleAbout = () => {
         window.location.href = '/about';
     };
@@ -110,7 +130,6 @@ function Home() {
     };
 
     const handleStartEntry = () => {
-        // UPDATED: Using custom modal instead of alert
         if (!selectedSong) { 
             setModal({
                 show: true,
@@ -148,14 +167,11 @@ function Home() {
 
         try {
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData,); 
-            
             setEntries(prev => [response.data, ...prev]);
-            
             setIsJournaling(false);
             setSelectedSong(null);
         } catch (err) {
             console.error("Error saving entry:", err);
-            // UPDATED: Using custom modal
             setModal({
                 show: true,
                 title: "Error",
@@ -182,19 +198,33 @@ function Home() {
 
     return (
         <div className="nt-container">
-            {/* ADDED: CUSTOM CONFIRMATION MODAL UI */}
             {modal.show && (
                 <div className="still-modal-overlay">
                     <div className="still-modal-card">
                         <h2 className="modal-title">{modal.title}</h2>
                         <p className="modal-message">{modal.message}</p>
                         <div className="modal-actions">
-                            <button className="modal-btn-primary" onClick={() => setModal({ ...modal, show: false })}>
-                                {modal.type === "confirm" ? "KEEP EDITING" : "OKAY"}
-                            </button>
+                            {/* IF TYPE IS REWIND, GO TO REWIND PAGE */}
+                            {modal.type === "rewind" ? (
+                                <button className="modal-btn-primary" onClick={() => { setModal({ ...modal, show: false }); navigate('/rewind'); }}>
+                                    VISIT
+                                </button>
+                            ) : (
+                                <button className="modal-btn-primary" onClick={() => setModal({ ...modal, show: false })}>
+                                    {modal.type === "confirm" ? "KEEP EDITING" : "OKAY"}
+                                </button>
+                            )}
+                            
                             {modal.type === "confirm" && (
                                 <button className="modal-btn-secondary" onClick={() => setModal({ ...modal, show: false })}>
                                     DISCARD
+                                </button>
+                            )}
+                            
+                            {/* CLOSE BUTTON FOR REWIND MODAL IF THEY DON'T WANT TO VISIT YET */}
+                            {modal.type === "rewind" && (
+                                <button className="modal-btn-secondary" onClick={() => setModal({ ...modal, show: false })}>
+                                    NOT NOW
                                 </button>
                             )}
                         </div>
@@ -213,13 +243,13 @@ function Home() {
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={() => setShowArchives(false)}>STILL</h1>
                 <div className="nt-nav-links-wrapper">
-        <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={handleRewind} >
-            <span>Rhythm Rewind</span>
-        </div>
-        <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
-            <span>Send a SonG</span>
-        </div>
-    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={handleRewind} >
+                        <span>Rhythm Rewind</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+                        <span>Send a SonG</span>
+                    </div>
+                </div>
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
                         <div className="nt-search-bar">
@@ -241,7 +271,6 @@ function Home() {
                         )}
                     </div>
                     <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        {/* UPDATED: Profile Circle logic */}
                         <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                             {profilePic ? (
                                 <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
@@ -251,11 +280,8 @@ function Home() {
                         </div>
                         {showProfileDropdown && (
                             <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)'}}>
-                                {/* ADDED HOME BUTTON */}
                                 <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>HOME</button>
-                                {/* ADDED PROFILE BUTTON WITHOUT UNDERLINE */}
                                 <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>PROFILE</button>
-                                {/* ADDED ABOUT BUTTON */}
                                 <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>ABOUT</button>
                                 <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{background: 'none', border: 'none', color: 'white', width: '100%', textAlign: 'left', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold', padding: '5px'}}>LOGOUT</button>
                             </div>

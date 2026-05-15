@@ -16,21 +16,73 @@ const Rewind = () => {
   const [showArchives, setShowArchives] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // --- NEW BACKEND STATES ---
+  const [realWeeklyData, setRealWeeklyData] = useState([]);
+  const [weekNumber, setWeekNumber] = useState(1);
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [nextReleaseDate, setNextReleaseDate] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Updated Mock data to include Author (matching image_a378bf.jpg style)
-  const weeklyData = [
-    { date: 'MAY 9 (SUN)', entries: [{ title: 'somacea', artist: 'Kosullifaurg', mood: 'HAPPY' }, { title: 'ang tram', artist: 'Pasyket M...', mood: 'CALM' }] },
-    { date: 'MAY 10 (MON)', entries: [{ title: 'ang tram', artist: 'Ifigo', mood: 'HAPPY' }, { title: 'ang tra...', artist: 'Pascual', mood: 'HAPPY' }] },
-    { date: 'MAY 11 (TUE)', entries: [{ title: 'shining', artist: 'Lost I Saer', mood: 'CALM' }, { title: 'shining', artist: 'Pascual', mood: 'CALM' }, { title: 'shining', artist: 'Lost I Saer', mood: 'HAPPY' }] },
-    { date: 'MAY 12 (WED)', entries: [{ title: 'manoyla', artist: 'Dahil Sa\'Yo', mood: 'HAPPY' }, { title: 'shining', artist: 'Pascual', mood: 'CALM' }, { title: 'man...', artist: 'Dahil Sa\'Yo', mood: 'ENERGETIC' }, { title: 'lost...', artist: 'Kosullifaurg', mood: 'MELANCHOLIC' }, { title: 'chill', artist: 'Pascual', mood: 'CHILL' }] },
-    { date: 'MAY 13 (THUR)', entries: [{ title: 'lost', artist: 'Pascual', mood: 'MELANCHOLIC' }, { title: 'ma...', artist: 'Pascual', mood: 'MELANCHOLIC' }, { title: 'los!', artist: 'Pascual', mood: 'MELANCHOLIC' }, { title: 'los:', artist: 'Pascual', mood: 'MELANCHOLIC' }, { title: 'manoyla', artist: 'Dahil Sa\'Yo', mood: 'CALM' }] },
-    { date: 'MAY 14 (FRI)', entries: [{ title: 'ang tram', artist: 'Ifigo', mood: 'HAPPY' }, { title: 'ang tram', artist: 'Pasyket M...', mood: 'HAPPY' }] },
-    { date: 'MAY 15 (SAT)', entries: [{ title: 'somacea', artist: 'Kosullifaurg', mood: 'HAPPY' }, { title: 'ang tra...', artist: 'Pasyket M...', mood: 'CALM' }, { title: 'somacea', artist: 'Pascual', mood: 'CALM' }] },
-  ];
+  // Logic to calculate Week Number and Next Release
+  useEffect(() => {
+    const fetchUserDataAndJournals = async () => {
+      const userId = localStorage.getItem("userId");
+      const userCreatedDate = new Date(localStorage.getItem("createdAt") || Date.now());
+      
+      try {
+        // 1. Fetch only the logged-in user's journals
+        const res = await axios.get(`${API_BASE_URL}/user-journals/${userId}`);
+        const journals = res.data;
 
-  const [hoveredDay, setHoveredDay] = useState('MAY 13 (THUR)');
+        // 3. Calculate Week Number since account creation
+        const today = new Date();
+        const diffInMs = today - userCreatedDate;
+        const diffInWeeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1;
+        setWeekNumber(diffInWeeks);
+
+        // 2. Check if it's Sunday 11:59pm
+        const dayOfWeek = today.getDay(); // 0 is Sunday
+        if (dayOfWeek === 0 && today.getHours() >= 23 && today.getMinutes() >= 59) {
+          setIsAvailable(true);
+        } else {
+          // Calculate next Sunday
+          const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+          const nextSunday = new Date(today);
+          nextSunday.setDate(today.getDate() + daysUntilSunday);
+          setNextReleaseDate(nextSunday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }));
+          setIsAvailable(false);
+        }
+
+        // 5. Group journals by their actual entry dates
+        const grouped = journals.reduce((acc, journal) => {
+          const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).toUpperCase();
+          if (!acc[dateLabel]) acc[dateLabel] = [];
+          acc[dateLabel].push({
+            title: journal.journalTitle,
+            artist: journal.songName, // Placeholder logic as per previous request
+            mood: journal.mood.toUpperCase()
+          });
+          return acc;
+        }, {});
+
+        const formattedData = Object.keys(grouped).map(date => ({
+          date,
+          entries: grouped[date]
+        }));
+
+        setRealWeeklyData(formattedData);
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to load rhythm rewind data", err);
+        setLoading(false);
+      }
+    };
+
+    fetchUserDataAndJournals();
+  }, []);
 
   const handleRewind = () => navigate('/rewind');
   const handleLogout = () => { localStorage.clear(); window.location.href = '/login'; };
@@ -73,7 +125,6 @@ const Rewind = () => {
   return (
     <div className="nt-container">
       <nav className="nt-navbar">
-        {/* LOGO UPDATED TO NAVIGATE HOME */}
         <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
         <div className="nt-nav-links-wrapper">
             <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={handleRewind} >
@@ -85,7 +136,6 @@ const Rewind = () => {
         </div>
         <div className="nt-nav-actions">
             <div className="nt-search-container">
-                
                 {results.length > 0 && (
                     <div className="nt-search-dropdown">
                         {results.map((track) => (
@@ -126,39 +176,41 @@ const Rewind = () => {
           <p>Your days, tracked in rhythm.</p>
         </header>
 
-        {/* Added Week Number display */}
-        <div className="week-subtitle">
-            <h3>WEEK 19</h3>
-        </div>
-
-        <div className="week-grid">
-  {weeklyData.map((day, index) => (
-    <div key={index} className="day-column">
-      <span className="day-label">{day.date}</span>
-      <div className="song-stack">
-        {day.entries.map((song, sIndex) => (
-          <div key={sIndex} className="song-card">
-            <div className="album-thumb"></div>
-            <div className="song-meta">
-              {/* Journal Title */}
-              <p className="song-title">{song.title}</p>
-              
-              {/* Mood (All will be yellow via CSS) */}
-              <div className="mood-container">
-                <span className="mood-tag">{song.mood}</span>
-              </div>
-              
-              {/* Song Title (Using the artist field as a placeholder for song name per your request) */}
-              <p className="song-artist">{song.artist}</p>
-            </div>
+        {!isAvailable ? (
+          // Display message if it's not yet Sunday 11:59pm
+          <div style={{textAlign: 'center', marginTop: '100px'}}>
+             <h2 style={{color: '#FAEF5D'}}>Your weekly rhythm rewind will be available on...</h2>
+             <p style={{fontSize: '1.5rem', color: '#fff'}}>{nextReleaseDate} at 11:59 PM</p>
           </div>
-        ))}
-      </div>
-    </div>
-  ))}
-</div>
+        ) : (
+          <>
+            <div className="week-subtitle">
+                <h3>WEEK {weekNumber}</h3>
+            </div>
 
-        
+            <div className="week-grid">
+              {(realWeeklyData.length > 0 ? realWeeklyData : []).map((day, index) => (
+                <div key={index} className="day-column">
+                  <span className="day-label">{day.date}</span>
+                  <div className="song-stack">
+                    {day.entries.map((song, sIndex) => (
+                      <div key={sIndex} className="song-card">
+                        <div className="album-thumb"></div>
+                        <div className="song-meta">
+                          <p className="song-title">{song.title}</p>
+                          <div className="mood-container">
+                            <span className="mood-tag">{song.mood}</span>
+                          </div>
+                          <p className="song-artist">{song.artist}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

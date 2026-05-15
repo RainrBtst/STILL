@@ -23,16 +23,17 @@ function Login() {
         // --- UPDATED: Use dynamic URL instead of hardcoded ngrok ---
         axios.post(`${API_BASE_URL}/login`, { email, password })
             .then(result => {
-                if (result.data.status === "Success") {
-                    localStorage.setItem("userId", result.data.userId); 
-                    localStorage.setItem("currentUserId", result.data.userId);
-                    localStorage.setItem("currentUsername", result.data.username);
-                    localStorage.setItem("currentUserEmail", email);
-                    localStorage.setItem("profilePic", result.data.profilePic || "");
-                    
-                    navigate('/home');
-                }
-            })
+    if (result.data.status === "Success") {
+        localStorage.setItem("userId", result.data.userId); 
+        localStorage.setItem("currentUserId", result.data.userId);
+        localStorage.setItem("currentUsername", result.data.username);
+        localStorage.setItem("currentUserEmail", email);
+        localStorage.setItem("profilePic", result.data.profilePic || "");
+        localStorage.setItem("createdAt", result.data.createdAt); // <-- ADD THIS LINE
+        
+        navigate('/home');
+    }
+})
             .catch(err => {
                 console.log("Login Error:", err);
                 if (err.response && err.response.status === 401) {
