@@ -28,8 +28,6 @@ const Rewind = () => {
     const isSunday = now.getDay() === 0; // 0 is Sunday
     const isTime = now.getHours() === 23 && now.getMinutes() === 59;
     
-    // For testing/development, you might want to use: (isSunday)
-    // But per your request for exactly 11:59 PM:
     if (isSunday && isTime) {
         setIsAvailable(true);
     } else {
@@ -90,6 +88,7 @@ const Rewind = () => {
 
     fetchUserDataAndJournals();
   }, []);
+
   const handleLogout = () => { 
     const now = new Date();
     const weekKey = `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
@@ -102,6 +101,7 @@ const Rewind = () => {
     }
     window.location.href = '/login'; 
   };
+
   const handleHome = () => navigate('/home');
   const handleProfile = () => navigate('/profile');
   const handleRewind = () => navigate('/rewind');
@@ -138,13 +138,13 @@ const Rewind = () => {
                     {profilePic ? <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : "👤"}
                 </div>
                 {showProfileDropdown && (
-                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
-                                <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>HOME</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>PROFILE</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>ABOUT</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>LOGOUT</button>
-                            </div>
-                        )}
+                    <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
+                        <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>HOME</button>
+                        <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>PROFILE</button>
+                        <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>ABOUT</button>
+                        <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>LOGOUT</button>
+                    </div>
+                )}
             </div>
         </div>
       </nav>
@@ -157,31 +157,30 @@ const Rewind = () => {
         </header>
 
         {!isAvailable ? (
-          <div className="rewind-loading-container">
-              <div className="rewind-premium-card">
-                  <div className="rewind-icon-circle">
-                      <span className="rewind-hourglass">⌛</span>
-                  </div>
-                  
-                  <h2 className="rewind-main-title">
-                      Your Weekly Rhythm <br /> Rewind is <br /> 
-                      <span className="highlight-text">Almost Ready</span>
-                  </h2>
-                  
-                  <p className="rewind-subtitle">
-                      Gathering your melodies... See you on <span className="yellow-text">Sunday</span>
-                  </p>
-
-                  <div className="rewind-release-tag">
-                      RELEASE: 11:59 PM
-                  </div>
-
-                  <div className="rewind-progress-wrapper">
-                      <div className="rewind-progress-bar">
-                          <div className="rewind-progress-fill" style={{ width: '60%' }}></div>
-                      </div>
-                  </div>
+          <div className="rewind-lock-screen">
+            <div className="lock-card">
+              <div className="lock-icon-wrapper">
+                <div className="pulse-ring"></div>
+                <span className="lock-emoji">⏳</span>
               </div>
+              
+              <h2 className="lock-title">
+                Your Weekly Rhythm Rewind is <br/> 
+                <span className="highlight-yellow">Almost Ready</span>
+              </h2>
+              
+              <p className="lock-subtitle">
+                Gathering your melodies... See you on <span className="day-name">Sunday</span>
+              </p>
+
+              <div className="countdown-mini-box">
+                <span className="time-tag">RELEASE: 11:59 PM</span>
+              </div>
+
+              <div className="loading-bar-container">
+                <div className="loading-bar-fill"></div>
+              </div>
+            </div>
           </div>
         ) : (
           <>
