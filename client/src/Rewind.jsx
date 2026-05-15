@@ -22,48 +22,53 @@ const Rewind = () => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [nextReleaseDate, setNextReleaseDate] = useState("");
   const [loading, setLoading] = useState(true);
+  
+  // Modal State
+  const [activeModalSong, setActiveModalSong] = useState(null);
 
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // Logic to calculate Week Number and Next Release
+  const openSongModal = (song) => {
+    setActiveModalSong(song);
+  };
+
   useEffect(() => {
     const fetchUserDataAndJournals = async () => {
-      const userId = localStorage.getItem("userId");
+      // Logic handles both naming conventions just in case
+      const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
       const userCreatedDate = new Date(localStorage.getItem("createdAt") || Date.now());
       
       try {
-        // 1. Fetch only the logged-in user's journals
         const res = await axios.get(`${API_BASE_URL}/user-journals/${userId}`);
         const journals = res.data;
 
-        // 3. Calculate Week Number since account creation
         const today = new Date();
         const diffInMs = today - userCreatedDate;
         const diffInWeeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1;
         setWeekNumber(diffInWeeks);
 
-        // 2. Check if it's Sunday 11:59pm
+        // --- UPDATED UNLOCK LOGIC (3:57 PM TEST) ---
         const now = new Date();
-const targetHour = 15;   // 3 PM
-const targetMinute = 59; // 57 Minutes
+        const targetHour = 15;   
+        const targetMinute = 57; 
 
-// If the time is 3:57 PM or later, show the Rewind!
-if (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinutes() >= targetMinute)) {
-    setIsAvailable(true);
-} else {
-    setIsAvailable(false);
-    // This will show your new "Sunday" design until 3:57 PM hits
-    setNextReleaseDate("Sunday"); 
-}
-        // 5. Group journals by their actual entry dates
+        if (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinutes() >= targetMinute)) {
+            setIsAvailable(true);
+        } else {
+            setIsAvailable(false);
+            setNextReleaseDate("Sunday"); 
+        }
+
         const grouped = journals.reduce((acc, journal) => {
           const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).toUpperCase();
           if (!acc[dateLabel]) acc[dateLabel] = [];
           acc[dateLabel].push({
             title: journal.journalTitle,
-            artist: journal.songName, // Placeholder logic as per previous request
-            mood: journal.mood.toUpperCase()
+            artist: journal.songDetails?.artist || "Unknown Artist",
+            mood: journal.mood.toUpperCase(),
+            albumArt: journal.songDetails?.albumArt,
+            content: journal.content
           });
           return acc;
         }, {});
@@ -122,29 +127,6 @@ if (now.getHours() > targetHour || (now.getHours() === targetHour && now.getMinu
     return () => clearTimeout(debounce);
   }, [searchQuery]);
 
-  // Add this state at the top with your others
-const [activeModalSong, setActiveModalSong] = useState(null);
-
-// Add this function to handle opening the modal
-const openSongModal = (song) => {
-  setActiveModalSong(song);
-};
-
-// ... inside your return () statement, add the Modal HTML at the very bottom of the main div
-{activeModalSong && (
-  <div className="rewind-modal-overlay" onClick={() => setActiveModalSong(null)}>
-    <div className="rewind-modal-content" onClick={e => e.stopPropagation()}>
-      <button className="modal-close" onClick={() => setActiveModalSong(null)}>×</button>
-      <div className="modal-album-art"></div>
-      <h2 className="modal-song-title">{activeModalSong.title}</h2>
-      <p className="modal-song-artist">{activeModalSong.artist}</p>
-      <span className="modal-mood-badge">{activeModalSong.mood}</span>
-      <div className="modal-divider"></div>
-      <p className="modal-journal-text">"This song perfectly captured the rhythm of my day."</p>
-    </div>
-  </div>
-)}
-
   return (
     <div className="nt-container">
       <nav className="nt-navbar">
@@ -200,32 +182,27 @@ const openSongModal = (song) => {
         </header>
 
         {!isAvailable ? (
-          // Display message if it's not yet Sunday 11:59pm
           <div className="rewind-lock-screen">
-    <div className="lock-card">
-      <div className="lock-icon-wrapper">
-        <div className="pulse-ring"></div>
-        <span className="lock-emoji">⏳</span>
-      </div>
-      
-      <h2 className="lock-title">
-        Your Weekly Rhythm Rewind is <br/> 
-        <span className="highlight-yellow">Almost Ready</span>
-      </h2>
-      
-      <p className="lock-subtitle">
-        Gathering your melodies... See you on <span className="day-name">Sunday</span>
-      </p>
-
-      <div className="countdown-mini-box">
-        <span className="time-tag">RELEASE: 11:59 PM</span>
-      </div>
-
-      <div className="loading-bar-container">
-        <div className="loading-bar-fill"></div>
-      </div>
-    </div>
-  </div>
+            <div className="lock-card">
+              <div className="lock-icon-wrapper">
+                <div className="pulse-ring"></div>
+                <span className="lock-emoji">⏳</span>
+              </div>
+              <h2 className="lock-title">
+                Your Weekly Rhythm Rewind is <br/> 
+                <span className="highlight-yellow">Almost Ready</span>
+              </h2>
+              <p className="lock-subtitle">
+                Gathering your melodies... See you on <span className="day-name">Sunday</span>
+              </p>
+              <div className="countdown-mini-box">
+                <span className="time-tag">RELEASE: 11:59 PM</span>
+              </div>
+              <div className="loading-bar-container">
+                <div className="loading-bar-fill"></div>
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             <div className="week-subtitle">
@@ -238,8 +215,8 @@ const openSongModal = (song) => {
                   <span className="day-label">{day.date}</span>
                   <div className="song-stack">
                     {day.entries.map((song, sIndex) => (
-                      <div key={sIndex} className="song-card">
-                        <div className="album-thumb"></div>
+                      <div key={sIndex} className="song-card" onClick={() => openSongModal(song)} style={{cursor: 'pointer'}}>
+                        <div className="album-thumb" style={{backgroundImage: `url(${song.albumArt})`, backgroundSize: 'cover'}}></div>
                         <div className="song-meta">
                           <p className="song-title">{song.title}</p>
                           <div className="mood-container">
@@ -256,6 +233,21 @@ const openSongModal = (song) => {
           </>
         )}
       </div>
+
+      {/* --- REWIND MODAL --- */}
+      {activeModalSong && (
+        <div className="rewind-modal-overlay" onClick={() => setActiveModalSong(null)}>
+          <div className="rewind-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setActiveModalSong(null)}>×</button>
+            <div className="modal-album-art" style={{backgroundImage: `url(${activeModalSong.albumArt})`, backgroundSize: 'cover'}}></div>
+            <h2 className="modal-song-title">{activeModalSong.title}</h2>
+            <p className="modal-song-artist">{activeModalSong.artist}</p>
+            <span className="modal-mood-badge">{activeModalSong.mood}</span>
+            <div className="modal-divider"></div>
+            <p className="modal-journal-text">"{activeModalSong.content || "No thoughts recorded for this rhythm."}"</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
