@@ -34,19 +34,21 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
 // --- 4. EMAIL CONFIGURATION ---
+// --- 4. EMAIL CONFIGURATION ---
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
     host: 'smtp.gmail.com',
-    port: 587,         // Changed from 465 to 587
-    secure: false,      // Use false for port 587
+    port: 465,
+    secure: true, // Use SSL for port 465
     auth: { 
         user: process.env.EMAIL_USER, 
         pass: process.env.EMAIL_PASS 
     },
     tls: {
-        rejectUnauthorized: false,
-        minVersion: 'TLSv1.2' // Forces a modern security standard
-    }
+        rejectUnauthorized: false
+    },
+    connectionTimeout: 10000, // Wait 10 seconds before giving up
+    greetingTimeout: 10000,
+    socketTimeout: 10000
 });
 
 // --- 5. SYSTEM ROUTES (Ping & Health Check) ---
