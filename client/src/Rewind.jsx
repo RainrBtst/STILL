@@ -25,7 +25,7 @@ const Rewind = () => {
   useEffect(() => {
     // 1. TIME CHECK (Unlocks at 3:57 PM)
     const now = new Date();
-    if (now.getHours() > 15 || (now.getHours() === 15 && now.getMinutes() >= 57)) {
+    if (now.getHours() > 15 || (hours === 15 && minutes >= 57)) {
         setIsAvailable(true);
     } else {
         setIsAvailable(false);
@@ -92,10 +92,16 @@ const Rewind = () => {
     fetchUserDataAndJournals();
   }, []);
 
-  const handleLogout = () => { localStorage.clear(); window.location.href = '/login'; };
+  const handleLogout = () => { 
+    const seenFlag = localStorage.getItem("hasSeenRewindModal");
+    localStorage.clear(); 
+    if (seenFlag) localStorage.setItem("hasSeenRewindModal", seenFlag);
+    window.location.href = '/login'; 
+  };
   const handleHome = () => navigate('/home');
   const handleProfile = () => navigate('/profile');
   const handleRewind = () => navigate('/rewind');
+  const handleAbout = () => navigate('/about');
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -131,6 +137,7 @@ const Rewind = () => {
                     <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
                         <button className="nt-logout-btn-dropdown" onClick={handleHome}>HOME</button>
                         <button className="nt-logout-btn-dropdown" onClick={handleProfile}>PROFILE</button>
+                        <button className="nt-logout-btn-dropdown" onClick={handleAbout}>ABOUT</button>
                         <button className="nt-logout-btn-dropdown" onClick={handleLogout}>LOGOUT</button>
                     </div>
                 )}
@@ -182,7 +189,7 @@ const Rewind = () => {
         )}
       </div>
 
-      {/* --- INTEGRATED READ JOURNAL (No longer an image modal) --- */}
+      {/* --- INTEGRATED READ JOURNAL --- */}
       {selectedJournal && (
         <ReadJournal 
             selectedSong={selectedJournal} 
