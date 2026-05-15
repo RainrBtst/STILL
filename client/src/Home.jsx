@@ -29,28 +29,28 @@ function Home() {
 
     // --- NEW: RHYTHM REWIND CHECKER ---
     useEffect(() => {
-        const checkRewindAvailability = () => {
-            const now = new Date();
-            const dayOfWeek = now.getDay(); // 0 is Sunday
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
+    const checkRewindAvailability = () => {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); 
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
 
-            // Check if it's Sunday and 11:59 PM or later
-            if (dayOfWeek === 0 && (hours > 23 || (hours === 23 && minutes >= 59))) {
-                setModal({
-                    show: true,
-                    title: "Weekly Rhythm Rewind",
-                    message: "Your weekly rhythm rewind is available.",
-                    type: "rewind"
-                });
-            }
-        };
+        // TEMPORARY: Triggers if it is 3:57 PM or later for testing
+        // Change back to (dayOfWeek === 0 && hours === 23 && minutes >= 59) later
+        if (hours > 15 || (hours === 15 && minutes >= 57)) {
+            setModal({
+                show: true,
+                title: "WEEKLY RHYTHM REWIND",
+                message: "Your weekly musical journey is ready to be unlocked. Would you like to see your rhythm?",
+                type: "rewind"
+            });
+        }
+    };
 
-        checkRewindAvailability();
-        // Check every minute in case the user stays on the home page
-        const interval = setInterval(checkRewindAvailability, 60000);
-        return () => clearInterval(interval);
-    }, []);
+    checkRewindAvailability();
+    const interval = setInterval(checkRewindAvailability, 60000);
+    return () => clearInterval(interval);
+}, []);
 
     const handleRewind = () => {
         navigate('/rewind');
