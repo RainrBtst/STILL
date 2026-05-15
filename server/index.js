@@ -34,11 +34,10 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
 // --- 4. EMAIL CONFIGURATION ---
-// --- 4. EMAIL CONFIGURATION ---
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true, // Use SSL for port 465
+    secure: true, 
     auth: { 
         user: process.env.EMAIL_USER, 
         pass: process.env.EMAIL_PASS 
@@ -46,13 +45,12 @@ const transporter = nodemailer.createTransport({
     tls: {
         rejectUnauthorized: false
     },
-    connectionTimeout: 10000, // Wait 10 seconds before giving up
+    connectionTimeout: 10000, 
     greetingTimeout: 10000,
     socketTimeout: 10000
 });
 
-// --- 5. SYSTEM ROUTES (Ping & Health Check) ---
-
+// --- 5. SYSTEM ROUTES ---
 app.get("/", (req, res) => {
     res.status(200).send("STILL Backend API is running.");
 });
@@ -62,30 +60,20 @@ app.get("/ping", (req, res) => {
 });
 
 // --- 6. AUTHENTICATION ROUTES ---
-
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     try {
-        // Check if the user (old or new) already exists
         const existingUser = await UsersModel.findOne({ email });
         if (existingUser) {
             return res.json({ status: "ALREADY_EXISTS" });
         }
-
-        // Save the new user IMMEDIATELY
         const newUser = await UsersModel.create({
             name,
             email,
             password 
         });
-
-        console.log(`New account created for: ${email}`);
-        
-        // Tell the frontend to let them in!
         res.json({ status: "SUCCESS" });
-
     } catch (err) {
-        console.error("Registration Error:", err);
         res.status(500).json({ error: "Could not create account" });
     }
 });
@@ -132,7 +120,6 @@ app.post("/login", (req, res) => {
 });
 
 // --- 7. PROFILE & USER ROUTES ---
-
 app.get("/api/user/:id", async (req, res) => {
     try {
         const user = await UsersModel.findById(req.params.id);
@@ -146,23 +133,30 @@ app.put("/api/user/update/:id", async (req, res) => {
     try {
         const user = await UsersModel.findById(req.params.id);
         if (!user) return res.status(404).json("User not found");
-
         if (currentPassword || newPassword) {
             if (user.password !== currentPassword) {
                 return res.status(400).json({ error: "Incorrect current password." });
             }
             user.password = newPassword;
         }
-
         if (username) user.name = username;
         if (profilePic !== undefined) user.profilePic = profilePic;
-
         await user.save();
         res.json({ status: "Success", username: user.name, profilePic: user.profilePic });
     } catch (err) { res.status(500).json(err); }
 });
 
 // --- 8. MESSAGES & JOURNAL ROUTES ---
+
+// NEW: This route specifically for Rhythm Rewind to fix the 404 error
+app.get("/user-journals/:userId", async (req, res) => {
+    try {
+        const journals = await JournalModel.find({ userId: req.params.userId }).sort({ date: -1 });
+        res.json(journals);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch user journals" });
+    }
+});
 
 app.get("/api/messages", async (req, res) => {
     try {
