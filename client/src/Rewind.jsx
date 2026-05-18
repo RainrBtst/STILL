@@ -23,12 +23,22 @@ const Rewind = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 1. TIME CHECK (Unlocks ONLY on Sunday at 11:59 PM)
+    // 1. TIME CHECK (Unlocks ONLY on Sunday at 11:59 PM, lasts until Saturday 11:59 PM, locks at Sunday 12:00 AM)
     const now = new Date();
-    const isSunday = now.getDay() === 0; // 0 is Sunday
-    const isTime = now.getHours() === 23 && now.getMinutes() === 59;
+    const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
     
-    if (isSunday && isTime) {
+    // Convert current time to a numeric value representing minutes passed since Sunday 00:00 (12:00 AM)
+    const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
+    
+    // Sunday 11:59 PM absolute minutes calculation: (0 days * 24 * 60) + (23 * 60) + 59
+    const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; 
+    
+    // Saturday 11:59 PM absolute minutes calculation: (6 days * 24 * 60) + (23 * 60) + 59
+    const lockTime = (6 * 24 * 60) + (23 * 60) + 59;
+
+    if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
         setIsAvailable(true);
     } else {
         setIsAvailable(false);
