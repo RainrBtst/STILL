@@ -27,16 +27,17 @@ function Home() {
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
+    // Helper to calculate standard week key
+    const getWeekKey = () => {
+        const now = new Date();
+        return `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
+    };
+
     // --- 1. RHYTHM REWIND MODAL LOGIC (UPDATED ACCESS LOGIC) ---
     useEffect(() => {
         const checkRewindAvailability = () => {
             const now = new Date();
-            
-            // Generate uniform chronological week indicators across the year
-            const startOfYear = new Date(now.getFullYear(), 0, 1);
-            const pastDaysOfYear = (now - startOfYear) / 86400000;
-            const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-            const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
+            const weekKey = getWeekKey();
             
             // Check if user has already dismissed/visited this modal THIS week
             const hasSeenRewind = localStorage.getItem(weekKey);
@@ -62,18 +63,13 @@ function Home() {
         };
 
         checkRewindAvailability();
-        const interval = setInterval(checkRewindAvailability, 30000); // Check every 30 seconds for accuracy
+        const interval = setInterval(checkRewindAvailability, 60000); // Check every 60 seconds
         return () => clearInterval(interval);
     }, []);
 
     // Helper to close rewind modal and save preference to localStorage using Week Key
     const handleCloseRewindModal = (shouldNavigate) => {
-        const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const pastDaysOfYear = (now - startOfYear) / 86400000;
-        const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-        const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
-        
+        const weekKey = getWeekKey();
         localStorage.setItem(weekKey, "true");
         setModal(prev => ({ ...prev, show: false }));
         if (shouldNavigate) {
@@ -82,21 +78,14 @@ function Home() {
     };
 
     const handleLogout = () => {
-        // IDENTIFY THE CURRENT WEEK KEY
-        const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const pastDaysOfYear = (now - startOfYear) / 86400000;
-        const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-        const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
+        const weekKey = getWeekKey();
+        const seenValue = localStorage.getItem(weekKey);
         
-        // PRESERVE THE FLAG BEFORE CLEARING
-        const seenFlag = localStorage.getItem(weekKey);
+        localStorage.clear(); 
         
-        localStorage.clear();
-        
-        // RE-SET THE FLAG SO IT SURVIVES THE LOGOUT/LOGIN
-        if (seenFlag) {
-            localStorage.setItem(weekKey, seenFlag);
+        // Re-inject the seen tracking value back to ensure persistent state
+        if (seenValue) {
+            localStorage.setItem(weekKey, seenValue);
         }
         window.location.href = '/login';
     };

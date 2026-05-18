@@ -64,14 +64,39 @@ const Rewind = () => {
         setWeekNumber(diffInWeeks);
 
         const grouped = journals.reduce((acc, journal) => {
-          // Parse string manually by splitting off timezone modifiers to safeguard matching native local date inputs
-          const rawDateStr = journal.date.includes('T') ? journal.date.split('T')[0] : journal.date;
-          const [year, month, day] = rawDateStr.split('-').map(Number);
-          const localDate = new Date(year, month - 1, day);
+          if (!journal.date) return acc;
+          
+          let dateLabel = "";
 
-          const dateLabel = localDate.toLocaleDateString('en-US', { 
-            month: 'short', day: 'numeric', weekday: 'short' 
-          }).toUpperCase();
+          // Match string format from your Mongoose schema (e.g., "MAY 18")
+          if (typeof journal.date === 'string' && isNaN(Number(journal.date)) && !journal.date.includes('-') && !journal.date.includes('/')) {
+              dateLabel = journal.date.toUpperCase();
+          } else {
+              // Fallback block if an entry contains a timestamp structure
+              let localDate;
+              try {
+                const rawDateStr = String(journal.date).includes('T') ? String(journal.date).split('T')[0] : String(journal.date);
+                if (rawDateStr.includes('-')) {
+                  const parts = rawDateStr.split('-').map(Number);
+                  if (parts.length === 3 && !parts.some(isNaN)) {
+                    localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                  }
+                }
+                if (!localDate || isNaN(localDate.getTime())) {
+                  localDate = new Date(journal.date);
+                }
+              } catch (e) {
+                localDate = new Date(journal.date);
+              }
+
+              if (!localDate || isNaN(localDate.getTime())) {
+                  localDate = new Date(journal.createdAt || Date.now());
+              }
+
+              dateLabel = localDate.toLocaleDateString('en-US', { 
+                month: 'short', day: 'numeric'
+              }).toUpperCase();
+          }
           
           if (!acc[dateLabel]) acc[dateLabel] = [];
           acc[dateLabel].push({
@@ -107,10 +132,7 @@ const Rewind = () => {
 
   const handleLogout = () => { 
     const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const pastDaysOfYear = (now - startOfYear) / 86400000;
-    const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-    const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
+    const weekKey = `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
     const seenValue = localStorage.getItem(weekKey);
     
     localStorage.clear(); 
