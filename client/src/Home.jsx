@@ -27,10 +27,14 @@ function Home() {
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
-    // Helper to calculate standard week key
+    // Helper to calculate a true, bulletproof calendar week key
     const getWeekKey = () => {
         const now = new Date();
-        return `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const pastDaysOfYear = (now - startOfYear) / 86400000;
+        const trueWeekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+        
+        return `seenRewind_Year${now.getFullYear()}_Week${trueWeekNumber}`;
     };
 
     // --- 1. RHYTHM REWIND MODAL LOGIC (UPDATED ACCESS LOGIC) ---
@@ -49,8 +53,11 @@ function Home() {
 
             // Match active time matrix constraints
             const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
+            
+            // Tight release window: Triggers precisely at Sunday 11:59 PM (Day 0) 
+            // and remains active through the end of Monday (Day 1) to allow visibility upon login.
             const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
-            const lockTime = (6 * 24 * 60) + (23 * 60) + 59;   // Saturday 11:59 PM
+            const lockTime = (1 * 24 * 60) + (23 * 60) + 59;   // Monday 11:59 PM
 
             if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
                 setModal({
@@ -85,7 +92,7 @@ function Home() {
         
         // Re-inject the seen tracking value back to ensure persistent state
         if (seenValue) {
-            localStorage.setItem(weekKey, seenValue);
+            localStorage.setItem(weekKey, String(seenValue));
         }
         window.location.href = '/login';
     };

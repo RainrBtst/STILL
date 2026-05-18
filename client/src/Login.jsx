@@ -15,6 +15,16 @@ function Login() {
     // --- UPDATED: Use the Vercel Environment Variable ---
     const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
+    // Helper to calculate a true, bulletproof calendar week key matching Home.jsx
+    const getWeekKey = () => {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const pastDaysOfYear = (now - startOfYear) / 86400000;
+        const trueWeekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+        
+        return `seenRewind_Year${now.getFullYear()}_Week${trueWeekNumber}`;
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -23,33 +33,34 @@ function Login() {
         // --- UPDATED: Use dynamic URL instead of hardcoded ngrok ---
         axios.post(`${API_BASE_URL}/login`, { email, password })
             .then(result => {
-    if (result.data.status === "Success") {
-        // --- ADDED: Persist Modal Flag ---
-        const hasSeenRewind = localStorage.getItem("hasSeenRewindModal");
-        
-        localStorage.clear(); 
+                if (result.data.status === "Success") {
+                    // --- FIXED: Capture the correct dynamic week tracking key ---
+                    const weekKey = getWeekKey();
+                    const hasSeenRewind = localStorage.getItem(weekKey);
+                    
+                    localStorage.clear(); 
 
-        if (hasSeenRewind) {
-            localStorage.setItem("hasSeenRewindModal", hasSeenRewind);
-        }
-        // ---------------------------------
+                    // Restore the dynamic key state so it survives clear actions
+                    if (hasSeenRewind) {
+                        localStorage.setItem(weekKey, hasSeenRewind);
+                    }
+                    // -----------------------------------------------------------
 
-        localStorage.setItem("userId", result.data.userId); 
-        localStorage.setItem("currentUserId", result.data.userId);
-        localStorage.setItem("currentUsername", result.data.username);
-        localStorage.setItem("currentUserEmail", email);
-        localStorage.setItem("profilePic", result.data.profilePic || "");
-        localStorage.setItem("createdAt", result.data.createdAt); // <-- ADD THIS LINE
-        
-        navigate('/home');
-    }
-})
+                    localStorage.setItem("userId", result.data.userId); 
+                    localStorage.setItem("currentUserId", result.data.userId);
+                    localStorage.setItem("currentUsername", result.data.username);
+                    localStorage.setItem("currentUserEmail", email);
+                    localStorage.setItem("profilePic", result.data.profilePic || "");
+                    localStorage.setItem("createdAt", result.data.createdAt);
+                    
+                    navigate('/home');
+                }
+            })
             .catch(err => {
                 console.log("Login Error:", err);
                 if (err.response && err.response.status === 401) {
                     setError(err.response.data);
                 } else {
-                    // --- UPDATED: Updated error message for Cloud environment ---
                     setError("Unable to connect to the server. Please check your internet or try again later.");
                 }
             })
