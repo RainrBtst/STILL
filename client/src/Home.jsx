@@ -27,25 +27,31 @@ function Home() {
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
-    // --- 1. RHYTHM REWIND MODAL LOGIC (SUNDAY 11:59 PM) ---
+    // --- 1. RHYTHM REWIND MODAL LOGIC (UPDATED ACCESS LOGIC) ---
     useEffect(() => {
         const checkRewindAvailability = () => {
             const now = new Date();
             
-            // Create a unique key for the current week (e.g., "seenRewind_2024_Week15")
-            // This ensures the modal resets every Sunday
-            const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+            // Generate uniform chronological week indicators across the year
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const pastDaysOfYear = (now - startOfYear) / 86400000;
+            const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+            const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
             
             // Check if user has already dismissed/visited this modal THIS week
             const hasSeenRewind = localStorage.getItem(weekKey);
             if (hasSeenRewind === "true") return;
 
-            const isSunday = now.getDay() === 0; 
+            const day = now.getDay(); 
             const hours = now.getHours();
             const minutes = now.getMinutes();
 
-            // Trigger if it is Sunday at 11:59 PM
-            if (isSunday && hours === 23 && minutes === 59) {
+            // Match active time matrix constraints
+            const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
+            const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
+            const lockTime = (6 * 24 * 60) + (23 * 60) + 59;   // Saturday 11:59 PM
+
+            if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
                 setModal({
                     show: true,
                     title: "WEEKLY RHYTHM REWIND",
@@ -63,10 +69,13 @@ function Home() {
     // Helper to close rewind modal and save preference to localStorage using Week Key
     const handleCloseRewindModal = (shouldNavigate) => {
         const now = new Date();
-        const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const pastDaysOfYear = (now - startOfYear) / 86400000;
+        const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+        const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
         
         localStorage.setItem(weekKey, "true");
-        setModal({ ...modal, show: false });
+        setModal(prev => ({ ...prev, show: false }));
         if (shouldNavigate) {
             navigate('/rewind');
         }
@@ -75,7 +84,10 @@ function Home() {
     const handleLogout = () => {
         // IDENTIFY THE CURRENT WEEK KEY
         const now = new Date();
-        const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const pastDaysOfYear = (now - startOfYear) / 86400000;
+        const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+        const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
         
         // PRESERVE THE FLAG BEFORE CLEARING
         const seenFlag = localStorage.getItem(weekKey);

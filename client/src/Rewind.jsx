@@ -64,9 +64,15 @@ const Rewind = () => {
         setWeekNumber(diffInWeeks);
 
         const grouped = journals.reduce((acc, journal) => {
-          const dateLabel = new Date(journal.date).toLocaleDateString('en-US', { 
+          // Parse string manually by splitting off timezone modifiers to safeguard matching native local date inputs
+          const rawDateStr = journal.date.includes('T') ? journal.date.split('T')[0] : journal.date;
+          const [year, month, day] = rawDateStr.split('-').map(Number);
+          const localDate = new Date(year, month - 1, day);
+
+          const dateLabel = localDate.toLocaleDateString('en-US', { 
             month: 'short', day: 'numeric', weekday: 'short' 
           }).toUpperCase();
+          
           if (!acc[dateLabel]) acc[dateLabel] = [];
           acc[dateLabel].push({
             ...journal,
@@ -101,7 +107,10 @@ const Rewind = () => {
 
   const handleLogout = () => { 
     const now = new Date();
-    const weekKey = `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const pastDaysOfYear = (now - startOfYear) / 86400000;
+    const chronologicalWeek = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+    const weekKey = `seenRewind_${now.getFullYear()}_Week${chronologicalWeek}`;
     const seenValue = localStorage.getItem(weekKey);
     
     localStorage.clear(); 
