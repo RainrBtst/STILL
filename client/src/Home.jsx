@@ -27,14 +27,10 @@ function Home() {
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
-    // Helper to calculate a true, bulletproof calendar week key
+    // Helper to calculate standard week key
     const getWeekKey = () => {
         const now = new Date();
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const pastDaysOfYear = (now - startOfYear) / 86400000;
-        const trueWeekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-        
-        return `seenRewind_Year${now.getFullYear()}_Week${trueWeekNumber}`;
+        return `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
     };
 
     // --- 1. RHYTHM REWIND MODAL LOGIC (UPDATED ACCESS LOGIC) ---
