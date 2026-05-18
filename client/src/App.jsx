@@ -9,6 +9,7 @@ import SendSong from './SendSong'
 import Profile from './Profile'
 import About from './About' // 1. IMPORT THE ABOUT COMPONENT
 import Rewind from './Rewind' // Import the new file
+import Daily from './Daily' // IMPORT THE DAILY COMPONENT
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
         <Route path="/send-song" element={<SendSong />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/rewind' element={<Rewind />} />
+        
+        {/* DAILY AUX ROUTE USING /daily */}
+        <Route path='/daily' element={<Daily />} />
         
         {/* 2. ADD THE ABOUT ROUTE HERE */}
         <Route path='/about' element={<About />} />

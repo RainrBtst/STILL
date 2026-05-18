@@ -1,0 +1,69 @@
+.nt-container {
+    background-color: #121212;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 0 2rem 2rem 2rem; 
+    font-family: 'Inter', sans-serif;
+}
+
+.nt-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 2rem auto; 
+    padding-top: 0.8rem; /* ADJUST THIS: Make lower (e.g., 0.2rem) to push it even higher up */
+    width: 100%;
+}
+
+.nt-logo {
+    color: #FAEF5D; 
+    font-weight: 900;
+    letter-spacing: -2px;
+    font-size: 2rem;
+}
+
+.nt-nav-links-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px; 
+    pointer-events: none;
+    /* CHANGED: This dynamically links center item height to the layout context */
+    top: inherit; 
+    align-self: center;
+}
+
+.nt-nav-links-wrapper .nt-nav-note {
+    position: relative; 
+    left: auto;
+    transform: none;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+}
+
+.nt-nav-actions {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.nt-profile-circle {
+    width: 45px;          
+    height: 45px;         
+    background: #282828;  
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;    
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nt-profile-circle:hover {
+    background: #333;
+    transform: scale(1.1);
+    border-color: #FAEF5D; 
+}
