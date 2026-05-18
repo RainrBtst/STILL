@@ -31,22 +31,22 @@ const Rewind = () => {
   };
 
   useEffect(() => {
-    // 1. TIME CHECK (Unlocks strictly based on the Sunday 11:59 PM to Monday 11:59 PM visibility matrix)
-    const now = new Date();
-    const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    
-    const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
-    
-    const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
-    const lockTime = (1 * 24 * 60) + (23 * 60) + 59;   // Monday 11:59 PM
+   // 1. TIME CHECK (Unlocks Sunday 11:59 PM, remains open all week, locks Saturday 11:59 PM)
+const now = new Date();
+const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+const hours = now.getHours();
+const minutes = now.getMinutes();
 
-    if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
-        setIsAvailable(true);
-    } else {
-        setIsAvailable(false);
-    }
+const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
+
+const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
+const lockTime = (6 * 24 * 60) + (23 * 60) + 59;   // CHANGED TO 6: Saturday 11:59 PM
+
+if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
+    setIsAvailable(true);
+} else {
+    setIsAvailable(false);
+}
 
     const fetchUserDataAndJournals = async () => {
       const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
