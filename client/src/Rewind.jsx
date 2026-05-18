@@ -22,21 +22,25 @@ const Rewind = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
+  // Helper function to figure out the exact calendar week number of any Date object
+  const getCalendarWeek = (date) => {
+    const d = new Date(date);
+    const startOfYear = new Date(d.getFullYear(), 0, 1);
+    const pastDaysOfYear = (d - startOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+  };
+
   useEffect(() => {
-    // 1. TIME CHECK (Unlocks ONLY on Sunday at 11:59 PM, lasts until Saturday 11:59 PM, locks at Sunday 12:00 AM)
+    // 1. TIME CHECK (Unlocks strictly based on the Sunday 11:59 PM to Monday 11:59 PM visibility matrix)
     const now = new Date();
     const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     const hours = now.getHours();
     const minutes = now.getMinutes();
     
-    // Convert current time to a numeric value representing minutes passed since Sunday 00:00 (12:00 AM)
     const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
     
-    // Sunday 11:59 PM absolute minutes calculation: (0 days * 24 * 60) + (23 * 60) + 59
-    const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; 
-    
-    // Saturday 11:59 PM absolute minutes calculation: (6 days * 24 * 60) + (23 * 60) + 59
-    const lockTime = (6 * 24 * 60) + (23 * 60) + 59;
+    const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
+    const lockTime = (1 * 24 * 60) + (23 * 60) + 59;   // Monday 11:59 PM
 
     if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
         setIsAvailable(true);
@@ -63,16 +67,32 @@ const Rewind = () => {
         const diffInWeeks = Math.max(1, Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7)) + 1);
         setWeekNumber(diffInWeeks);
 
+        // Get the current week number to isolate data processing boundaries
+        const currentTrackingWeek = getCalendarWeek(today);
+
         const grouped = journals.reduce((acc, journal) => {
           if (!journal.date) return acc;
           
+          // --- TARGETED DATA FILTERING LOGIC ---
+          // Resolve entry validation timestamp
+          let entryDate = new Date(journal.createdAt || journal.date);
+          if (isNaN(entryDate.getTime())) {
+              entryDate = new Date();
+          }
+
+          // If the entry belongs to the current calendar week or a future date,
+          // exclude it from this overview window so it stays locked until next week's release cycle.
+          if (getCalendarWeek(entryDate) >= currentTrackingWeek && entryDate.getFullYear() === today.getFullYear()) {
+              return acc; 
+          }
+          // -------------------------------------
+
           let dateLabel = "";
 
           // Match string format from your Mongoose schema (e.g., "MAY 18")
           if (typeof journal.date === 'string' && isNaN(Number(journal.date)) && !journal.date.includes('-') && !journal.date.includes('/')) {
               dateLabel = journal.date.toUpperCase();
           } else {
-              // Fallback block if an entry contains a timestamp structure
               let localDate;
               try {
                 const rawDateStr = String(journal.date).includes('T') ? String(journal.date).split('T')[0] : String(journal.date);
@@ -132,7 +152,10 @@ const Rewind = () => {
 
   const handleLogout = () => { 
     const now = new Date();
-    const weekKey = `seenRewind_Year${now.getFullYear()}_Week${Math.ceil(now.getDate() / 7)}`;
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const pastDaysOfYear = (now - startOfYear) / 86400000;
+    const trueWeekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+    const weekKey = `seenRewind_Year${now.getFullYear()}_Week${trueWeekNumber}`;
     const seenValue = localStorage.getItem(weekKey);
     
     localStorage.clear(); 
