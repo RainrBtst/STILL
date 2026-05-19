@@ -26,6 +26,8 @@ function Daily() {
   
   // Custom Limit Modal State
   const [showLimitModal, setShowLimitModal] = useState(false);
+  // NEW STATE VARIABLE FOR THE DUPLICATE TRACK SELECTION MODAL
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
 
@@ -138,11 +140,15 @@ function Daily() {
         setSearchResults([]);
         fetchAuxPlaylist();
     } catch (err) {
-        // Enforce modal popups if backend triggers limit protection status rules
+        setSearchQuery('');
+        setSearchResults([]);
+        
+        // Enforce modal popups if backend triggers specific validation protection status codes
         if (err.response && err.response.data && err.response.data.code === "LIMIT_REACHED") {
-            setSearchQuery('');
-            setSearchResults([]);
             setShowLimitModal(true);
+        } else if (err.response && err.response.status === 400) {
+            // Catches standard bad request rules indicating the unique track entry item already exists on board
+            setShowDuplicateModal(true);
         } else {
             alert(err.response?.data || "Could not pass this track to the dashboard");
         }
@@ -288,7 +294,7 @@ function Daily() {
 
             {/* DYNAMIC SCROLL CONTAINER SHOWING ALL VOTED SONGS */}
             <p className="voted-card-header-label">You have voted for:</p>
-            <div className="sidebar-voted-tracks-scroll-list" style={{maxHeight: '220px', overflowY: 'auto', marginBottom: '24px'}}>
+            <div className="sidebar-voted-tracks-scroll-list">
               {votedTracksList.length === 0 ? (
                 <div className="sidebar-voted-display-card">
                   <div className="voted-card-row-data">
@@ -298,7 +304,7 @@ function Daily() {
                 </div>
               ) : (
                 votedTracksList.map((track, i) => (
-                  <div key={i} className="sidebar-voted-display-card" style={{marginBottom: '8px'}}>
+                  <div key={i} className="sidebar-voted-display-card">
                     <div className="voted-card-row-data">
                       <div style={{display: 'flex', flexDirection: 'column'}}>
                         <span className="voted-song-title-str" title={track.title}>"{track.title}"</span>
@@ -332,6 +338,23 @@ function Daily() {
             <div className="modal-actions">
               <button className="modal-btn-primary" onClick={() => setShowLimitModal(false)}>
                 ACKNOWLEDGE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- DUPLICATE TRACK SUBMISSION WARNING MODAL SYSTEM --- */}
+      {showDuplicateModal && (
+        <div className="still-modal-overlay">
+          <div className="still-modal-card">
+            <h3 className="modal-title">DUPLICATE SONG</h3>
+            <p className="modal-message">
+              This song is already on the leaderboard. Upvote it instead.
+            </p>
+            <div className="modal-actions">
+              <button className="modal-btn-primary" onClick={() => setShowDuplicateModal(false)}>
+                OK
               </button>
             </div>
           </div>
