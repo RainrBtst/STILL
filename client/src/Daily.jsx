@@ -19,8 +19,14 @@ function Daily() {
   const [searchResults, setSearchResults] = useState([]);
   const [playlist, setPlaylist] = useState([]);
   const [timeLeft, setTimeLeft] = useState('00:00:00');
-  const [hasVoted, setHasVoted] = useState(false);
-  const [votedForTrack, setVotedForTrack] = useState('');
+  
+  // Enforce new 10-vote pool allocations
+  const [votesRemaining, setVotesRemaining] = useState(10);
+  const [votedTracksList, setVotedTracksList] = useState([]);
+  
+  // Custom Limit Modal State
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
   const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
 
   // --- HANDLER FUNCTIONS ---
@@ -76,31 +82,30 @@ function Daily() {
     return () => clearInterval(timer);
   }, []);
 
-  // --- FETCH LEADERBOARD DATA FROM API ---
+  // --- FETCH LEADERBOARD & USER STATUS BREAKDOWN FROM API ---
   const fetchAuxPlaylist = async () => {
     try {
+        // 1. Get tracks
         const res = await axios.get(`${API_BASE_URL}/api/daily-aux`);
         const sortedPlaylist = res.data.sort((a, b) => b.votes - a.votes);
         setPlaylist(sortedPlaylist);
 
-        const userVote = sortedPlaylist.find(track => track.votedUsers?.includes(userId));
-        if (userVote) {
-            setHasVoted(true);
-            setVotedForTrack(userVote.title);
-        } else {
-            setHasVoted(false);
-            setVotedForTrack('');
-        }
+        // 2. Fetch specific user distribution metrics tracking totals
+        const userStatusRes = await axios.get(`${API_BASE_URL}/api/daily-aux/user-status/${userId}`);
+        setVotesRemaining(userStatusRes.data.votesRemaining);
+        setVotedTracksList(userStatusRes.data.votedTracks);
     } catch (err) {
-        console.error("Error loading Aux panel", err);
+        console.error("Error loading Aux panel telemetry", err);
     }
   };
 
   useEffect(() => {
-    fetchAuxPlaylist();
+    if (userId) {
+       fetchAuxPlaylist();
+    }
   }, [userId]);
 
-  // --- INTERACTION SEARCH DEBOUNCE ---
+  // --- SEARCH ENGINE TRIGGER DEBOUNCE TRACKING ---
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
         if (searchQuery.length > 2) {
@@ -133,17 +138,24 @@ function Daily() {
         setSearchResults([]);
         fetchAuxPlaylist();
     } catch (err) {
-        alert(err.response?.data || "Could not pass this track to the dashboard");
+        // Enforce modal popups if backend triggers limit protection status rules
+        if (err.response && err.response.data && err.response.data.code === "LIMIT_REACHED") {
+            setSearchQuery('');
+            setSearchResults([]);
+            setShowLimitModal(true);
+        } else {
+            alert(err.response?.data || "Could not pass this track to the dashboard");
+        }
     }
   };
 
   const handleVote = async (trackId) => {
-    if (hasVoted) return;
+    if (votesRemaining <= 0) return;
     try {
         await axios.post(`${API_BASE_URL}/api/daily-aux/vote`, { trackId, userId });
         fetchAuxPlaylist();
     } catch (err) {
-        console.error("Vote tracking failed", err);
+        console.error("Vote tracking execution failed", err);
     }
   };
 
@@ -160,7 +172,6 @@ function Daily() {
             <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
                 <span>Send a Song</span>
             </div>
-            {/* FIXED: Removed the vote status tag from text node */}
             <div className="nt-nav-note active-aux-note" style={{cursor: 'pointer'}}>
                 <span>DAILY AUX</span>
             </div>
@@ -183,7 +194,7 @@ function Daily() {
         </div>
       </nav>
 
-      {/* --- RECREATED MAIN LAYOUT CONTAINER --- */}
+      {/* --- MAIN LAYOUT SCHEME --- */}
       <div className="aux-dashboard-wrapper">
         <div className="aux-dashboard-left">
           
@@ -192,16 +203,14 @@ function Daily() {
             <div className="header-meta-titles">
               <h1 className="aux-main-heading">THE DAILY AUX</h1>
               <p className="aux-sub-heading-details">
-                Single, global playlist. Resets every 24 hours. Users get one upvote per day. Tracks rise or fall in real-time.
+                Single, global playlist capped at 30 songs. Resets every 24 hours. Cast up to 10 votes across any tracks on the board.
               </p>
-              {/* FIXED: Removed the big tracking timer block element from here */}
             </div>
 
             {/* SEARCH BANNER FIELD */}
             <div className="aux-search-input-field-wrapper">
               <div className="aux-search-bar-inline">
                 <span className="search-plug-vector">🔌</span>
-                {/* FIXED: Updated placeholder prompt string */}
                 <input 
                   type="text" 
                   placeholder="Search song and  put it in Aux" 
@@ -230,32 +239,38 @@ function Daily() {
             {playlist.length === 0 ? (
               <p className="empty-aux-notice-label">The Aux is currently empty. Drop a track above to fill the leaderboard.</p>
             ) : (
-              playlist.map((track, index) => (
-                <div key={track._id || index} className="aux-grid-card-item">
-                  <div className="aux-index-marker-digit">{index + 1}.</div>
-                  <div className="aux-card-inner-box">
-                    <img className="aux-card-artwork" src={track.albumArt || "https://via.placeholder.com/150"} alt="Art" />
-                    <div className="aux-card-labels">
-                      <h5 className="aux-track-headline">{track.title}</h5>
-                      <p className="aux-track-byline">{track.artist}</p>
-                      <div className="aux-tag-mood-badge">HAPPY</div>
-                    </div>
-                    <div className="aux-action-btn-cell">
-                      <button 
-                        className={`aux-votes-pill-btn ${track.votedUsers?.includes(userId) ? 'voted-active-glow' : ''}`}
-                        disabled={hasVoted}
-                        onClick={() => handleVote(track._id)}
-                      >
-                        <span className="btn-plug-icon">🔌</span>
-                        <span className="btn-votes-digits">VOTES: {track.votes}</span>
-                      </button>
-                      <p className="aux-vote-indicator-text">
-                        {track.votedUsers?.includes(userId) ? "Daily Vote: Voted" : "Click to Vote"}
-                      </p>
+              playlist.map((track, index) => {
+                // Find if this current user has cast an upvote on this item
+                const userContributions = track.votedUsers?.find(u => u.userId === userId);
+                const userHasVotedThisSong = !!userContributions;
+                
+                return (
+                  <div key={track._id || index} className="aux-grid-card-item">
+                    <div className="aux-index-marker-digit">{index + 1}.</div>
+                    <div className="aux-card-inner-box">
+                      <img className="aux-card-artwork" src={track.albumArt || "https://via.placeholder.com/150"} alt="Art" />
+                      <div className="aux-card-labels">
+                        <h5 className="aux-track-headline">{track.title}</h5>
+                        <p className="aux-track-byline">{track.artist}</p>
+                        <div className="aux-tag-mood-badge">ACTIVE</div>
+                      </div>
+                      <div className="aux-action-btn-cell">
+                        <button 
+                          className={`aux-votes-pill-btn ${userHasVotedThisSong ? 'voted-active-glow' : ''}`}
+                          disabled={votesRemaining <= 0}
+                          onClick={() => handleVote(track._id)}
+                        >
+                          <span className="btn-plug-icon">🔌</span>
+                          <span className="btn-votes-digits">VOTES: {track.votes}</span>
+                        </button>
+                        <p className="aux-vote-indicator-text">
+                          {userHasVotedThisSong ? `You cast: ${userContributions.count}` : "Click to Vote"}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -264,21 +279,38 @@ function Daily() {
         <div className="aux-dashboard-right-sidebar">
           <div className="vote-status-sticky-panel">
             <h4 className="sidebar-status-title">YOUR VOTE STATUS</h4>
-            <p className="sidebar-status-desc">You get one vote per day.</p>
+            <p className="sidebar-status-desc">You get 10 votes per day.</p>
             
             <div className="sidebar-data-metric-block">
-              <span className="metric-label">Votes Available:</span>
-              <span className="metric-value-num">{hasVoted ? "0" : "1"}</span>
+              <span className="metric-label">Votes Remaining:</span>
+              <span className="metric-value-num">{votesRemaining} / 10</span>
             </div>
 
-            <div className="sidebar-voted-display-card">
-              <p className="voted-card-header-label">You have voted for:</p>
-              <div className="voted-card-row-data">
-                <span className="voted-song-title-str">
-                  {hasVoted ? `"${votedForTrack}"` : "[song title]"}
-                </span>
-                <div className="voted-mini-plug-circle">🔌</div>
-              </div>
+            {/* DYNAMIC SCROLL CONTAINER SHOWING ALL VOTED SONGS */}
+            <p className="voted-card-header-label">You have voted for:</p>
+            <div className="sidebar-voted-tracks-scroll-list" style={{maxHeight: '220px', overflowY: 'auto', marginBottom: '24px'}}>
+              {votedTracksList.length === 0 ? (
+                <div className="sidebar-voted-display-card">
+                  <div className="voted-card-row-data">
+                    <span className="voted-song-title-str" style={{color: '#666'}}>[No songs upvoted yet]</span>
+                    <div className="voted-mini-plug-circle">🔌</div>
+                  </div>
+                </div>
+              ) : (
+                votedTracksList.map((track, i) => (
+                  <div key={i} className="sidebar-voted-display-card" style={{marginBottom: '8px'}}>
+                    <div className="voted-card-row-data">
+                      <div style={{display: 'flex', flexDirection: 'column'}}>
+                        <span className="voted-song-title-str" title={track.title}>"{track.title}"</span>
+                        <span style={{fontSize: '0.7rem', color: '#666'}}>{track.artist}</span>
+                      </div>
+                      <div className="voted-mini-plug-circle" style={{backgroundColor: '#2c2813', color: '#FAEF5D', fontSize: '0.7rem', fontWeight: 'bold'}}>
+                        +{track.votesContributed}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="sidebar-footer-countdown-row">
@@ -288,6 +320,23 @@ function Daily() {
           </div>
         </div>
       </div>
+
+      {/* --- STRICT POPUP MODAL ENFORCEMENT --- */}
+      {showLimitModal && (
+        <div className="still-modal-overlay">
+          <div className="still-modal-card">
+            <h3 className="modal-title">LEADERBOARD FULL</h3>
+            <p className="modal-message">
+              Leaderboard has a maximum songs, you can vote for now only.
+            </p>
+            <div className="modal-actions">
+              <button className="modal-btn-primary" onClick={() => setShowLimitModal(false)}>
+                ACKNOWLEDGE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
