@@ -32,6 +32,7 @@ function Daily() {
   // Custom Limit Modal State
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [showNoVotesModal, setShowNoVotesModal] = useState(false);
 
   const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
 
@@ -147,7 +148,8 @@ function Daily() {
         if (searchQuery.length > 2) {
             try {
                 const res = await axios.get(`${API_BASE_URL}/music-search?query=${searchQuery}`);
-                setSearchResults(res.data);
+                const MathSearchResults = res.data;
+                setSearchResults(MathSearchResults);
             } catch (err) {
                 console.error("Track search failed", err);
             }
@@ -160,6 +162,14 @@ function Daily() {
   }, [searchQuery]);
 
   const handleAddTrack = async (track) => {
+    // Check if user has already run out of daily pool votes before submitting API block requests
+    if (votesRemaining <= 0) {
+        setSearchQuery('');
+        setSearchResults([]);
+        setShowNoVotesModal(true);
+        return;
+    }
+
     try {
         await axios.post(`${API_BASE_URL}/api/daily-aux/add`, {
             songId: track.id,
@@ -188,7 +198,10 @@ function Daily() {
   };
 
   const handleVote = async (trackId) => {
-    if (votesRemaining <= 0) return;
+    if (votesRemaining <= 0) {
+        setShowNoVotesModal(true);
+        return;
+    }
     try {
         await axios.post(`${API_BASE_URL}/api/daily-aux/vote`, { trackId, userId });
         fetchAuxPlaylist();
@@ -244,7 +257,7 @@ function Daily() {
             <div className="header-meta-titles">
               <h1 className="aux-main-heading">THE DAILY AUX</h1>
               <p className="aux-sub-heading-details">
-                Single, global playlist capped at 30 songs. Resets every 24 hours. Cast up to 10 votes across any tracks on the board.
+                The global playlist capped at 30 tracks resets every 24 hours. Use your daily votes to control the aux and back your favorite songs.
               </p>
             </div>
 
@@ -313,7 +326,6 @@ function Daily() {
                       <div className="aux-action-btn-cell">
                         <button 
                           className={`aux-votes-pill-btn ${userHasVotedThisSong ? 'voted-active-glow' : ''}`}
-                          disabled={votesRemaining <= 0}
                           onClick={() => handleVote(track._id)}
                         >
                           <span className="btn-plug-icon">🔌</span>
@@ -376,6 +388,23 @@ function Daily() {
           </div>
         </div>
       </div>
+
+      {/* --- VOTES DEPLETED MODAL --- */}
+      {showNoVotesModal && (
+        <div className="still-modal-overlay">
+          <div className="still-modal-card">
+            <h3 className="modal-title">NO VOTES REMAINING</h3>
+            <p className="modal-message">
+              Sorry you already used your votes, wait until it resets.
+            </p>
+            <div className="modal-actions">
+              <button className="modal-btn-primary" onClick={() => setShowNoVotesModal(false)}>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- STRICT POPUP MODAL ENFORCEMENT --- */}
       {showLimitModal && (
