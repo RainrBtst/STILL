@@ -160,9 +160,9 @@ function Daily() {
             <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
                 <span>Send a Song</span>
             </div>
-            {/* MATCHED: Turned into a standard text nav-note link style */}
+            {/* UPDATED: Cleaned text to match your exact link formatting styles */}
             <div className="nt-nav-note active-aux-note" style={{cursor: 'pointer'}}>
-                <span>The Daily Aux <span className="aux-mini-status">({hasVoted ? "VOTED" : "1 VOTE AVAIL"})</span></span>
+                <span>DAILY AUX <span className="aux-mini-status">({hasVoted ? "VOTED" : "1 VOTE AVAIL"})</span></span>
             </div>
         </div>
 
