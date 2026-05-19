@@ -1,4 +1,4 @@
-/* --- GLOBAL BROWSER RESET & CONTAINER --- */
+/* --- GLOBAL BROWSER RESET --- */
 html, body {
     margin: 0;
     padding: 0;
@@ -6,76 +6,72 @@ html, body {
     overflow-x: hidden; 
 }
 
+/* Base Colors & Layout */
 .nt-container {
     background-color: #121212;
     color: #ffffff;
     min-height: 100vh;
-    padding: 0 2rem 2rem 2rem;
+    padding: 0 2rem 2rem 2rem; 
     font-family: 'Inter', sans-serif;
 }
 
-/* --- NAVBAR STYLES --- */
+/* Navbar Container - Pinned position context for center absolute wrapper tracking */
 .nt-navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     max-width: 1350px;
-    margin: 0 auto 1.5rem auto; 
-    padding-top: 1rem; 
+    margin: 0 auto 2rem auto; 
+    padding-top: 0.8rem; 
     width: 100%;
+    position: relative; 
 }
 
 .nt-logo {
     color: #FAEF5D; 
     font-weight: 900;
     letter-spacing: -2px;
-    font-size: 2.2rem;
+    font-size: 2rem;
     margin: 0;
 }
 
+/* Center Links Navigation Wrapper inherited from home.css */
 .nt-nav-links-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    align-items: center;
-    gap: 30px;
+    gap: 40px; 
+    pointer-events: none;
+    top: inherit; 
+    align-self: center;
 }
 
-.nt-nav-note {
-    font-weight: 700;
-    font-size: 0.85rem;
+.nt-nav-links-wrapper .nt-nav-note {
+    position: relative; 
+    left: auto;
+    transform: none;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+    
+    /* Font styles extracted from your home.css setup */
+    font-weight: 600;
+    font-size: 0.9rem;
     color: #FAEF5D; 
     letter-spacing: 1px;
     text-transform: uppercase;
 }
 
-/* NAVBAR CENTER BADGE PILL */
-.nt-nav-badge-pill {
-    display: flex;
-    align-items: center;
-    background-color: #242202;
-    border: 1px solid #FAEF5D;
-    padding: 6px 14px;
-    border-radius: 30px;
-    gap: 8px;
+.nt-nav-links-wrapper .nt-nav-note:hover {
+    opacity: 0.8;
 }
 
-.nt-nav-badge-pill .aux-icon {
-    font-size: 0.9rem;
-}
-
-.nt-nav-badge-pill .aux-text {
+/* Subtle styling distinction for the vote availability state next to the link text */
+.aux-mini-status {
+    font-size: 0.75rem;
     font-weight: 800;
-    font-size: 0.8rem;
-    color: #fff;
-    letter-spacing: 0.5px;
-}
-
-.nt-nav-badge-pill .aux-status-tag {
-    background-color: #FAEF5D;
-    color: #000;
-    font-size: 0.7rem;
-    font-weight: 900;
-    padding: 2px 8px;
-    border-radius: 20px;
+    opacity: 0.9;
+    margin-left: 4px;
 }
 
 .nt-nav-actions {
@@ -83,18 +79,27 @@ html, body {
     align-items: center;
 }
 
+/* Profile Circle Frame */
 .nt-profile-circle {
-    width: 42px;          
-    height: 42px;         
+    width: 45px;          
+    height: 45px;         
     background: #282828;  
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 1.5rem;    
+    transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* --- RECREATED LAYOUT GRID ENGINE --- */
+.nt-profile-circle:hover {
+    background: #333;
+    transform: scale(1.1);
+    border-color: #FAEF5D; 
+}
+
+/* --- MAIN AUX DASHBOARD LAYOUT SCHEME --- */
 .aux-dashboard-wrapper {
     display: flex;
     max-width: 1350px;
@@ -107,7 +112,6 @@ html, body {
     flex: 1;
 }
 
-/* HEADER WITH SEARCH ROW */
 .aux-dashboard-header-row {
     display: flex;
     justify-content: space-between;
@@ -143,7 +147,7 @@ html, body {
     color: #FAEF5D;
 }
 
-/* FLOATING INPUT SEARCH BAR DESIGN */
+/* Floating Inline Search Block */
 .aux-search-input-field-wrapper {
     position: relative;
     width: 480px;
@@ -175,7 +179,7 @@ html, body {
     color: #555555;
 }
 
-/* SEARCH DROPDOWN OVERLAY BOX */
+/* Floating Autocomplete Search Dropdown Overlay Box */
 .aux-search-results-floating-box {
     position: absolute;
     top: 55px;
@@ -213,7 +217,7 @@ html, body {
 .result-text-node h6 {
     margin: 0;
     font-size: 0.85rem;
-    color: white
+    color: #ffffff;
 }
 
 .result-text-node p {
@@ -222,7 +226,7 @@ html, body {
     color: #888;
 }
 
-/* TRACK PANELS TWO-COLUMN GRID */
+/* Grid System Configuration */
 .aux-grid-tracks-system {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -293,7 +297,7 @@ html, body {
     letter-spacing: 0.5px;
 }
 
-/* VOTING BADGE BUTTON MODULE */
+/* Interactive Pill Badges */
 .aux-action-btn-cell {
     display: flex;
     flex-direction: column;
@@ -344,7 +348,7 @@ html, body {
     padding: 40px 0;
 }
 
-/* --- RIGHT SIDEBAR SIDEBAR STYLES --- */
+/* Sidebar Module Panels */
 .aux-dashboard-right-sidebar {
     width: 280px;
 }
@@ -391,7 +395,6 @@ html, body {
     font-size: 1.1rem;
 }
 
-/* COMPONENT FEEDBACK SUB-CARD */
 .sidebar-voted-display-card {
     background-color: #121212;
     border: 1px solid #262626;

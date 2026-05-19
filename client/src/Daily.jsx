@@ -160,10 +160,9 @@ function Daily() {
             <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
                 <span>Send a Song</span>
             </div>
-            <div className="nt-nav-badge-pill">
-                <span className="aux-icon">🔌</span>
-                <span className="aux-text">THE DAILY AUX</span>
-                <span className="aux-status-tag">{hasVoted ? "VOTED" : "1 VOTE AVAIL"}</span>
+            {/* MATCHED: Turned into a standard text nav-note link style */}
+            <div className="nt-nav-note active-aux-note" style={{cursor: 'pointer'}}>
+                <span>The Daily Aux <span className="aux-mini-status">({hasVoted ? "VOTED" : "1 VOTE AVAIL"})</span></span>
             </div>
         </div>
 
@@ -183,7 +182,6 @@ function Daily() {
             </div>
         </div>
       </nav>
-
       {/* --- RECREATED MAIN LAYOUT CONTAINER --- */}
       <div className="aux-dashboard-wrapper">
         <div className="aux-dashboard-left">
