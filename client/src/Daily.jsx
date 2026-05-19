@@ -11,6 +11,7 @@ function Daily() {
   // --- REQUIRED HOOKS & STATE VARIABLES ---
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const audioRef = useRef(null); // Reference for playing audio track element dynamically
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
@@ -20,13 +21,16 @@ function Daily() {
   const [playlist, setPlaylist] = useState([]);
   const [timeLeft, setTimeLeft] = useState('00:00:00');
   
+  // Media Player States
+  const [currentPlayingTrack, setCurrentPlayingTrack] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
   // Enforce new 10-vote pool allocations
   const [votesRemaining, setVotesRemaining] = useState(10);
   const [votedTracksList, setVotedTracksList] = useState([]);
   
   // Custom Limit Modal State
   const [showLimitModal, setShowLimitModal] = useState(false);
-  // NEW STATE VARIABLE FOR THE DUPLICATE TRACK SELECTION MODAL
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
@@ -52,6 +56,38 @@ function Daily() {
   const handleProfile = () => navigate('/profile');
   const handleRewind = () => navigate('/rewind');
   const handleAbout = () => navigate('/about');
+
+  // --- AUDIO HANDLING ---
+  const handlePlayPauseTrack = (track) => {
+    if (!track.previewUrl) {
+      alert("No preview audio available for this track!");
+      return;
+    }
+
+    if (currentPlayingTrack === track._id) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play().catch(err => console.log("Playback error:", err));
+        setIsPlaying(true);
+      }
+    } else {
+      // New Track Selection setup
+      setCurrentPlayingTrack(track._id);
+      setIsPlaying(true);
+      if (audioRef.current) {
+        audioRef.current.src = track.previewUrl;
+        audioRef.current.play().catch(err => console.log("Playback error:", err));
+      }
+    }
+  };
+
+  // Manage UI synchronization if music file naturally finishes playback duration cycle
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
+    setCurrentPlayingTrack(null);
+  };
 
   // --- CLICK OUTSIDE DROPDOWN LOGIC ---
   useEffect(() => {
@@ -87,12 +123,10 @@ function Daily() {
   // --- FETCH LEADERBOARD & USER STATUS BREAKDOWN FROM API ---
   const fetchAuxPlaylist = async () => {
     try {
-        // 1. Get tracks
         const res = await axios.get(`${API_BASE_URL}/api/daily-aux`);
         const sortedPlaylist = res.data.sort((a, b) => b.votes - a.votes);
         setPlaylist(sortedPlaylist);
 
-        // 2. Fetch specific user distribution metrics tracking totals
         const userStatusRes = await axios.get(`${API_BASE_URL}/api/daily-aux/user-status/${userId}`);
         setVotesRemaining(userStatusRes.data.votesRemaining);
         setVotedTracksList(userStatusRes.data.votedTracks);
@@ -143,11 +177,9 @@ function Daily() {
         setSearchQuery('');
         setSearchResults([]);
         
-        // Enforce modal popups if backend triggers specific validation protection status codes
         if (err.response && err.response.data && err.response.data.code === "LIMIT_REACHED") {
             setShowLimitModal(true);
         } else if (err.response && err.response.status === 400) {
-            // Catches standard bad request rules indicating the unique track entry item already exists on board
             setShowDuplicateModal(true);
         } else {
             alert(err.response?.data || "Could not pass this track to the dashboard");
@@ -167,6 +199,9 @@ function Daily() {
 
   return (
     <div className="nt-container">
+      {/* Hidden Audio Core element hook */}
+      <audio ref={audioRef} onEnded={handleAudioEnded} />
+
       {/* --- NAVBAR --- */}
       <nav className="nt-navbar">
         <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
@@ -219,7 +254,7 @@ function Daily() {
                 <span className="search-plug-vector">🔌</span>
                 <input 
                   type="text" 
-                  placeholder="Search song and  put it in Aux" 
+                  placeholder="Search song and put it in Aux" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -246,15 +281,30 @@ function Daily() {
               <p className="empty-aux-notice-label">The Aux is currently empty. Drop a track above to fill the leaderboard.</p>
             ) : (
               playlist.map((track, index) => {
-                // Find if this current user has cast an upvote on this item
                 const userContributions = track.votedUsers?.find(u => u.userId === userId);
                 const userHasVotedThisSong = !!userContributions;
+                const isCurrentTrackPlaying = currentPlayingTrack === track._id && isPlaying;
                 
                 return (
                   <div key={track._id || index} className="aux-grid-card-item">
-                    <div className="aux-index-marker-digit">{index + 1}.</div>
+                    {/* Dynamic rank text coloring */}
+                    <div 
+                      className="aux-index-marker-digit" 
+                      style={{ color: index < 3 ? '#FAEF5D' : '#555555' }}
+                    >
+                      {index + 1}.
+                    </div>
                     <div className="aux-card-inner-box">
-                      <img className="aux-card-artwork" src={track.albumArt || "https://via.placeholder.com/150"} alt="Art" />
+                      {/* Image Frame Wrapper carrying interactive player controls */}
+                      <div className="aux-card-artwork-container" onClick={() => handlePlayPauseTrack(track)}>
+                        <img className="aux-card-artwork" src={track.albumArt || "https://via.placeholder.com/150"} alt="Art" />
+                        <div className="artwork-playback-overlay">
+                          <span className="play-icon-symbol">
+                            {isCurrentTrackPlaying ? '⏸' : '▶'}
+                          </span>
+                        </div>
+                      </div>
+
                       <div className="aux-card-labels">
                         <h5 className="aux-track-headline">{track.title}</h5>
                         <p className="aux-track-byline">{track.artist}</p>
