@@ -132,7 +132,7 @@ html, body {
 /* Floating Inline Search Block */
 .aux-search-input-field-wrapper {
     position: relative;
-    width: 480px;
+    width: 320px;
     margin-top: 10px;
 }
 
