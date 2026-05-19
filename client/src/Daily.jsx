@@ -160,9 +160,9 @@ function Daily() {
             <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
                 <span>Send a Song</span>
             </div>
-            {/* UPDATED: Cleaned text to match your exact link formatting styles */}
+            {/* FIXED: Removed the vote status tag from text node */}
             <div className="nt-nav-note active-aux-note" style={{cursor: 'pointer'}}>
-                <span>DAILY AUX <span className="aux-mini-status">({hasVoted ? "VOTED" : "1 VOTE AVAIL"})</span></span>
+                <span>DAILY AUX</span>
             </div>
         </div>
 
@@ -182,6 +182,7 @@ function Daily() {
             </div>
         </div>
       </nav>
+
       {/* --- RECREATED MAIN LAYOUT CONTAINER --- */}
       <div className="aux-dashboard-wrapper">
         <div className="aux-dashboard-left">
@@ -193,16 +194,17 @@ function Daily() {
               <p className="aux-sub-heading-details">
                 Single, global playlist. Resets every 24 hours. Users get one upvote per day. Tracks rise or fall in real-time.
               </p>
-              <h2 className="aux-timer-title-string">RESET IN: <span className="yellow-timer-text">{timeLeft}</span></h2>
+              {/* FIXED: Removed the big tracking timer block element from here */}
             </div>
 
             {/* SEARCH BANNER FIELD */}
             <div className="aux-search-input-field-wrapper">
               <div className="aux-search-bar-inline">
                 <span className="search-plug-vector">🔌</span>
+                {/* FIXED: Updated placeholder prompt string */}
                 <input 
                   type="text" 
-                  placeholder="SEARCH & THROW A TRACK ON THE AUX (Paste Link or Search)" 
+                  placeholder="Search song and  put it in Aux" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -290,4 +292,4 @@ function Daily() {
   );
 }
 
-export default Daily;   
+export default Daily;

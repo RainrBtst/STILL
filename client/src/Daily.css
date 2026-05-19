@@ -15,7 +15,7 @@ html, body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Navbar Container - Pinned position context for center absolute wrapper tracking */
+/* Navbar Container */
 .nt-navbar {
     display: flex;
     justify-content: space-between;
@@ -35,7 +35,7 @@ html, body {
     margin: 0;
 }
 
-/* Center Links Navigation Wrapper inherited from home.css */
+/* Center Links Navigation Wrapper */
 .nt-nav-links-wrapper {
     position: absolute;
     left: 50%;
@@ -52,7 +52,6 @@ html, body {
     left: auto;
     transform: none;
     pointer-events: auto;
-    transition: opacity 0.3s ease;
     
     /* Font styles extracted from your home.css setup */
     font-weight: 600;
@@ -62,16 +61,9 @@ html, body {
     text-transform: uppercase;
 }
 
+/* FIXED: Removed opacity change on hover here to prevent dimming */
 .nt-nav-links-wrapper .nt-nav-note:hover {
-    opacity: 0.8;
-}
-
-/* Subtle styling distinction for the vote availability state next to the link text */
-.aux-mini-status {
-    font-size: 0.75rem;
-    font-weight: 800;
-    opacity: 0.9;
-    margin-left: 4px;
+    opacity: 1;
 }
 
 .nt-nav-actions {
@@ -134,13 +126,6 @@ html, body {
     margin: 0 0 12px 0;
     max-width: 600px;
     line-height: 1.4;
-}
-
-.aux-timer-title-string {
-    font-size: 1.6rem;
-    font-weight: 900;
-    margin: 0;
-    letter-spacing: -0.5px;
 }
 
 .yellow-timer-text {
