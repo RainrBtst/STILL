@@ -211,6 +211,140 @@ const handleMusicSearch = async (req, res) => {
 app.get("/music-search", handleMusicSearch);
 app.get("/api/search", handleMusicSearch);
 
+// --- 9.5. DAILY AUX API ENDPOINTS ---
+const DailyAux = require('./models/DailyAux');
+
+// Endpoint A: Fetch Complete Playlist
+app.get("/api/daily-aux", async (req, res) => {
+    try {
+        const tracks = await DailyAux.find().sort({ votes: -1 });
+        res.json(tracks);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to load leaderboard data" });
+    }
+});
+
+// Endpoint B: Add Track to Leaderboard (Max 30 Limit)
+app.post("/api/daily-aux/add", async (req, res) => {
+    const { songId, title, artist, albumArt, previewUrl, userId, username } = req.body;
+    try {
+        // Enforce the 30-song limit rule
+        const totalSongsCount = await DailyAux.countDocuments({});
+        if (totalSongsCount >= 30) {
+            return res.status(403).json({ code: "LIMIT_REACHED", error: "Leaderboard has a maximum songs, you can vote for now only" });
+        }
+
+        // Check if the song is already on the board
+        let existingTrack = await DailyAux.findOne({ songId });
+        if (existingTrack) {
+            return res.status(400).json("This song is already on the leaderboard! Upvote it instead.");
+        }
+
+        // Verify if user has remaining votes to submit the song (Submitting uses 1 vote)
+        const allTracks = await DailyAux.find({});
+        let standardSpentVotes = 0;
+        allTracks.forEach(t => {
+            const voteRecord = t.votedUsers.find(u => u.userId === userId);
+            if (voteRecord) standardSpentVotes += voteRecord.count;
+        });
+
+        if (standardSpentVotes >= 10) {
+            return res.status(400).json("You have already used all your 10 daily votes!");
+        }
+
+        const newTrack = new DailyAux({
+            songId,
+            title,
+            artist,
+            albumArt,
+            previewUrl,
+            votes: 1,
+            votedUsers: [{ userId, count: 1 }],
+            submittedBy: { userId, username }
+        });
+
+        await newTrack.save();
+        res.status(201).json(newTrack);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to upload track to Daily Aux" });
+    }
+});
+
+// Endpoint C: Cast a Vote (Max 10 per User)
+app.post("/api/daily-aux/vote", async (req, res) => {
+    const { trackId, userId } = req.body;
+    try {
+        // Compute total global votes cast by this user across all songs today
+        const allTracks = await DailyAux.find({});
+        let totalVotesUsed = 0;
+        allTracks.forEach(t => {
+            const record = t.votedUsers.find(u => u.userId === userId);
+            if (record) totalVotesUsed += record.count;
+        });
+
+        if (totalVotesUsed >= 10) {
+            return res.status(400).json("Vote quota exhausted! You can only use up to 10 votes daily.");
+        }
+
+        // Find the target track to update
+        const track = await DailyAux.findById(trackId);
+        if (!track) return res.status(404).json("Track not found");
+
+        const userVoteIndex = track.votedUsers.findIndex(u => u.userId === userId);
+        if (userVoteIndex > -1) {
+            track.votedUsers[userVoteIndex].count += 1;
+        } else {
+            track.votedUsers.push({ userId, count: 1 });
+        }
+
+        track.votes += 1;
+        await track.save();
+        res.json(track);
+    } catch (err) {
+        res.status(500).json({ error: "Could not register your upvote selection" });
+    }
+});
+
+// Endpoint D: Custom Profile Vote Summary Breakdown
+app.get("/api/daily-aux/user-status/:userId", async (req, res) => {
+    try {
+        const allTracks = await DailyAux.find({});
+        let totalVotesUsed = 0;
+        const votedSongsSummaryList = [];
+
+        allTracks.forEach(t => {
+            const match = t.votedUsers.find(u => u.userId === req.params.userId);
+            if (match) {
+                totalVotesUsed += match.count;
+                votedSongsSummaryList.push({
+                    title: t.title,
+                    artist: t.artist,
+                    votesContributed: match.count
+                });
+            }
+        });
+
+        res.json({
+            votesUsed: totalVotesUsed,
+            votesRemaining: Math.max(0, 10 - totalVotesUsed),
+            votedTracks: votedSongsSummaryList
+        });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to compile user vote breakdown telemetry" });
+    }
+});
+
+// Endpoint E: Complete Leaderboard Clean Reset Functionality
+// Call this function at midnight via your cron routine setup or routing wrappers
+const flushDailyLeaderboardData = async () => {
+    try {
+        await DailyAux.deleteMany({});
+        console.log("♻️ Daily Aux Leaderboard has successfully reset for the next 24-hour window.");
+    } catch (err) {
+        console.error("CRITICAL: Failed to clean database records:", err);
+    }
+};
+
 // --- 10. SERVER START ---
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Server active on port ${PORT}`));

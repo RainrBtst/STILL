@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const DailyAuxSchema = new mongoose.Schema({
   songId: {
     type: String,
-    required: true
+    required: true,
+    unique: true // Prevents duplicate instances of the same song on the dashboard
   },
   title: {
     type: String,
@@ -21,26 +22,24 @@ const DailyAuxSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  // Keeps track of total upvotes in real-time
   votes: {
     type: Number,
-    default: 1 // Starts with 1 vote when first dropped on the Aux
+    default: 1 // Automatically starts with 1 vote when first posted
   },
-  // Array of User IDs who voted for this track today (Prevents multiple votes)
-  votedUsers: {
-    type: [String],
-    default: []
-  },
-  // Tracks who dropped it on the board
+  // Tracks exactly how many votes a user added to this specific track
+  votedUsers: [
+    {
+      userId: { type: String, required: true },
+      count: { type: Number, default: 1 }
+    }
+  ],
   submittedBy: {
     userId: String,
     username: String
   },
-  // Setup timestamp to make clearing or filtering old tracks easier on rotation
   createdAt: {
     type: Date,
-    default: Date.now,
-    expires: 86400 // Optional: MongoDB will automatically drop data after 24 hours
+    default: Date.now
   }
 });
 
