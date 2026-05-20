@@ -146,25 +146,36 @@ function SendSong() {
             )}
 
             {/* --- EXACT HOME NAV BAR JSX --- */}
-            <nav className="nt-navbar">
-                <h1 className="nt-logo" onClick={handleHome}>STILL</h1>
-                <div className="nt-nav-note" onClick={() => window.location.href = '/send-song'}>
-                    <span>Send a Song</span>
-                </div>
-                <div className="nt-profile-container" ref={dropdownRef}>
-                    <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                        {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
-                    </div>
-                    {showProfileDropdown && (
-                        <div className="nt-profile-dropdown">
-                            <button className="nt-logout-btn-dropdown" onClick={handleHome}>HOME</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleProfile}>PROFILE</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleAbout}>ABOUT</button>
-                            <button className="nt-logout-btn-dropdown" onClick={handleLogout}>LOGOUT</button>
-                        </div>
-                    )}
-                </div>
-            </nav>
+           <nav className="nt-navbar">
+    <h1 className="nt-logo" onClick={handleHome}>STILL</h1>
+    
+    {/* This container bundles all links together securely */}
+    <div className="nt-nav-links-wrapper">
+        <div className="nt-nav-note" onClick={() => window.location.href = '/rhythm-rewind'}>
+            <span>Rhythm Rewind</span>
+        </div>
+        <div className="nt-nav-note active" onClick={() => window.location.href = '/send-song'}>
+            <span>Send a Song</span>
+        </div>
+        <div className="nt-nav-note" onClick={() => window.location.href = '/daily-aux'}>
+            <span>Daily Aux</span>
+        </div>
+    </div>
+
+    <div className="nt-profile-container" ref={dropdownRef}>
+        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+            {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
+        </div>
+        {showProfileDropdown && (
+            <div className="nt-profile-dropdown">
+                <button className="nt-logout-btn-dropdown" onClick={handleHome}>HOME</button>
+                <button className="nt-logout-btn-dropdown" onClick={handleProfile}>PROFILE</button>
+                <button className="nt-logout-btn-dropdown" onClick={handleAbout}>ABOUT</button>
+                <button className="nt-logout-btn-dropdown" onClick={handleLogout}>LOGOUT</button>
+            </div>
+        )}
+    </div>
+</nav>
 
             <header className="nt-hero">
                 <p className="ss-hero-subtitle">Express your untold message through song. Anonymously.</p>
