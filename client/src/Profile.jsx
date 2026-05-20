@@ -78,7 +78,6 @@ function Profile() {
 
     // --- HANDLERS ---
     const handleLogout = () => {
-        // IDENTIFY THE CURRENT WEEK KEY FOR REWIND PERSISTENCE
         const now = new Date();
         const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
         const seenFlag = localStorage.getItem(weekKey);
@@ -186,9 +185,10 @@ function Profile() {
                 </div>
             )}
 
-            {/* --- NAV BAR COPIED EXACTLY FROM HOME --- */}
+            {/* --- COMPLETE NAV BAR WITH ALL THREE BUTTONS --- */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
+                
                 <div className="nt-nav-links-wrapper">
                     <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
                         <span>Rhythm Rewind</span>
@@ -196,7 +196,11 @@ function Profile() {
                     <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
                         <span>Send a Song</span>
                     </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/daily-aux'} >
+                        <span>Daily Aux</span>
+                    </div>
                 </div>
+
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
                         <div className="nt-search-bar">

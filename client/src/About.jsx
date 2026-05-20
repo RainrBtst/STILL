@@ -7,18 +7,16 @@ function About() {
     const dropdownRef = useRef(null);
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
 
-    // --- ADDED: DEVELOPER SECTION STATE ---
+    // --- DEVELOPER SECTION STATE ---
     const [showDevInfo, setShowDevInfo] = useState(false);
 
     const handleLogout = () => {
-        // IDENTIFY THE CURRENT WEEK KEY FOR REWIND PERSISTENCE
         const now = new Date();
         const weekKey = `seenRewind_${now.getFullYear()}_${Math.ceil(now.getDate() / 7)}`;
         const seenFlag = localStorage.getItem(weekKey);
 
         localStorage.clear();
 
-        // RE-SET THE SEEN FLAG IF IT EXISTED SO REWIND DOESN'T RE-TRIGGER ON RE-LOGIN
         if (seenFlag) {
             localStorage.setItem(weekKey, seenFlag);
         }
@@ -53,7 +51,7 @@ function About() {
 
     return (
         <div className="nt-container">
-            {/* --- MATCHING NAVBAR START --- */}
+            {/* --- COMPLETE NAV BAR WITH ALL THREE BUTTONS --- */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
                 
@@ -61,8 +59,11 @@ function About() {
                     <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
                         <span>Rhythm Rewind</span>
                     </div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer', pointerEvents: 'auto'}} onClick={() => window.location.href = '/send-song'} >
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
                         <span>Send a Song</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/daily-aux'} >
+                        <span>Daily Aux</span>
                     </div>
                 </div>
 
@@ -86,7 +87,6 @@ function About() {
                     </div>
                 </div>
             </nav>
-            {/* --- MATCHING NAVBAR END --- */}
 
             <main className="nt-main">
                 <div className="about-section-container">
@@ -138,7 +138,6 @@ function About() {
                         </div>
                     </div>
 
-                    {/* --- PRIVACY SECTION START --- */}
                     <h2 className="about-title" style={{ marginTop: '60px', fontSize: '1.5rem' }}>PRIVACY</h2>
                     <div className="about-underline" style={{ marginBottom: '30px' }}></div>
 
@@ -154,15 +153,14 @@ function About() {
                             </p>
                         </div>
                     </div>
-                    {/* --- PRIVACY SECTION END --- */}
 
-                    {/* --- ADDED: DEVELOPER DROPDOWN TRIGGER --- */}
+                    {/* DEVELOPER DROPDOWN TRIGGER */}
                     <div className="dev-dropdown-trigger" onClick={() => setShowDevInfo(!showDevInfo)}>
                         <span className="dev-more-text">MORE</span>
                         <span className={`arrow-icon ${showDevInfo ? 'open' : ''}`}>▼</span>
                     </div>
 
-                    {/* --- ADDED: DEVELOPER DROPDOWN CONTENT --- */}
+                    {/* DEVELOPER DROPDOWN CONTENT */}
                     {showDevInfo && (
                         <div className="dev-section-container">
                             <div className="dev-layout">
