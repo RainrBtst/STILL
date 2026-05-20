@@ -214,9 +214,27 @@ app.get("/api/search", handleMusicSearch);
 // --- 9.5. DAILY AUX API ENDPOINTS ---
 const DailyAux = require('./models/DailyAux');
 
+// Helper checking function to reset board on day shifts
+const checkAndResetIfNewDay = async () => {
+    try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const sampleTrack = await DailyAux.findOne({});
+        if (sampleTrack) {
+            const trackDateStr = new Date(sampleTrack.createdAt || Date.now()).toISOString().split('T')[0];
+            if (trackDateStr !== todayStr) {
+                await DailyAux.deleteMany({});
+                console.log("♻️ Automatically cleared leaderboard: A new day has started.");
+            }
+        }
+    } catch (err) {
+        console.error("Failed executing automatic daily check reset routine:", err);
+    }
+};
+
 // Endpoint A: Fetch Complete Playlist
 app.get("/api/daily-aux", async (req, res) => {
     try {
+        await checkAndResetIfNewDay();
         const tracks = await DailyAux.find().sort({ votes: -1 });
         res.json(tracks);
     } catch (err) {
@@ -228,6 +246,7 @@ app.get("/api/daily-aux", async (req, res) => {
 app.post("/api/daily-aux/add", async (req, res) => {
     const { songId, title, artist, albumArt, previewUrl, userId, username } = req.body;
     try {
+        await checkAndResetIfNewDay();
         // Enforce the 30-song limit rule
         const totalSongsCount = await DailyAux.countDocuments({});
         if (totalSongsCount >= 30) {
@@ -260,7 +279,8 @@ app.post("/api/daily-aux/add", async (req, res) => {
             previewUrl,
             votes: 1,
             votedUsers: [{ userId, count: 1 }],
-            submittedBy: { userId, username }
+            submittedBy: { userId, username },
+            createdAt: new Date()
         });
 
         await newTrack.save();
@@ -274,6 +294,7 @@ app.post("/api/daily-aux/add", async (req, res) => {
 app.post("/api/daily-aux/vote", async (req, res) => {
     const { trackId, userId } = req.body;
     try {
+        await checkAndResetIfNewDay();
         // Compute total global votes cast by this user across all songs today
         const allTracks = await DailyAux.find({});
         let totalVotesUsed = 0;
@@ -308,6 +329,7 @@ app.post("/api/daily-aux/vote", async (req, res) => {
 // Endpoint D: Custom Profile Vote Summary Breakdown
 app.get("/api/daily-aux/user-status/:userId", async (req, res) => {
     try {
+        await checkAndResetIfNewDay();
         const allTracks = await DailyAux.find({});
         let totalVotesUsed = 0;
         const votedSongsSummaryList = [];
@@ -335,15 +357,15 @@ app.get("/api/daily-aux/user-status/:userId", async (req, res) => {
 });
 
 // Endpoint E: Complete Leaderboard Clean Reset Functionality
-// Call this function at midnight via your cron routine setup or routing wrappers
-const flushDailyLeaderboardData = async () => {
+app.post("/api/daily-aux/force-reset", async (req, res) => {
     try {
         await DailyAux.deleteMany({});
         console.log("♻️ Daily Aux Leaderboard has successfully reset for the next 24-hour window.");
+        res.status(200).json({ message: "Leaderboard cleared successfully." });
     } catch (err) {
-        console.error("CRITICAL: Failed to clean database records:", err);
+        res.status(500).json({ error: "CRITICAL: Failed to clean database records:" });
     }
-};
+});
 
 // --- 10. SERVER START ---
 const PORT = process.env.PORT || 3001;
