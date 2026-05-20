@@ -202,8 +202,10 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto 3rem auto;
+    padding: 20px;
     position: relative;
     width: 100%;
+    z-index: 1001;
 }
 
 .nt-logo {
@@ -212,6 +214,33 @@
     letter-spacing: -2px;
     font-size: 2rem;
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* NEW CONTAINER: Keeps links perfectly inline without absolute stack errors */
+.nt-nav-links-container {
+    display: flex;
+    gap: 2.5rem; 
+    align-items: center;
+    justify-content: center;
+}
+
+.nt-nav-link {
+    font-weight: 700;
+    color: #ffffff; /* Secondary links remain clean white */
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    transition: color 0.2s ease;
+}
+
+.nt-nav-link:hover {
+    color: #FAEF5D;
+}
+
+.nt-nav-note {
+    display: none;
 }
 
 .nt-nav-note {
