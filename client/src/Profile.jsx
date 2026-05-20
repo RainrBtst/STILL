@@ -196,7 +196,7 @@ function Profile() {
                     <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/send-song'} >
                         <span>Send a Song</span>
                     </div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/daily-aux'} >
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => window.location.href = '/daily'} >
                         <span>Daily Aux</span>
                     </div>
                 </div>
