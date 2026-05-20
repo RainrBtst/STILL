@@ -103,12 +103,24 @@ function Daily() {
 
   // --- DYNAMIC COUNTDOWN TIMER ---
   useEffect(() => {
-    const updateCountdown = () => {
+    const updateCountdown = async () => {
         const now = new Date();
         const midnight = new Date();
         midnight.setHours(24, 0, 0, 0);
         
         const diff = midnight - now;
+
+        if (diff <= 0) {
+            setTimeLeft('00:00:00');
+            try {
+                await axios.post(`${API_BASE_URL}/api/daily-aux/force-reset`);
+                fetchAuxPlaylist();
+            } catch (err) {
+                console.error("Error running client-side reset synchronization:", err);
+            }
+            return;
+        }
+        
         const hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
         const minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
         const seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
