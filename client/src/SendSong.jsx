@@ -151,13 +151,13 @@ function SendSong() {
     
     {/* This container bundles all links together securely */}
     <div className="nt-nav-links-wrapper">
-        <div className="nt-nav-note" onClick={() => window.location.href = '/rhythm-rewind'}>
+        <div className="nt-nav-note" onClick={() => window.location.href = '/rewind'}>
             <span>Rhythm Rewind</span>
         </div>
         <div className="nt-nav-note active" onClick={() => window.location.href = '/send-song'}>
             <span>Send a Song</span>
         </div>
-        <div className="nt-nav-note" onClick={() => window.location.href = '/daily-aux'}>
+        <div className="nt-nav-note" onClick={() => window.location.href = '/daily'}>
             <span>Daily Aux</span>
         </div>
     </div>
