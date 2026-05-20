@@ -195,6 +195,9 @@ if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) 
             <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
                 <span>Send a SonG</span>
             </div>
+            <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/daily')} >
+                <span>Daily Aux</span>
+            </div>
         </div>
         <div className="nt-nav-actions">
             <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>

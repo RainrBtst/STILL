@@ -145,12 +145,22 @@ function SendSong() {
                 </div>
             )}
 
-            {/* --- EXACT HOME NAV BAR JSX --- */}
+            {/* --- UPDATED NAVBAR WITH RHYTHM REWIND & DAILY AUX --- */}
             <nav className="nt-navbar">
                 <h1 className="nt-logo" onClick={handleHome}>STILL</h1>
-                <div className="nt-nav-note" onClick={() => window.location.href = '/send-song'}>
-                    <span>Send a Song</span>
+                
+                <div className="nt-nav-links-container">
+                    <div className="nt-nav-note" onClick={() => window.location.href = '/send-song'}>
+                        <span>Send a Song</span>
+                    </div>
+                    <div className="nt-nav-note" onClick={() => window.location.href = '/rhythm-rewind'}>
+                        <span>Rhythm Rewind</span>
+                    </div>
+                    <div className="nt-nav-note" onClick={() => window.location.href = '/daily-aux'}>
+                        <span>Daily Aux</span>
+                    </div>
                 </div>
+
                 <div className="nt-profile-container" ref={dropdownRef}>
                     <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                         {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
