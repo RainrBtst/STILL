@@ -66,21 +66,17 @@ function TimeCapsule() {
         } catch (err) { alert("Failed to seal your capsule."); }
     };
 
+   // ... (Keep all imports and logic exactly as you had them)
+
     return (
         <div className="nt-container">
-            <nav className="nt-navbar">
-                <h1 className="nt-logo" onClick={() => window.location.href = '/home'}>STILL</h1>
-                <div className="nt-nav-links-wrapper">
-                    <div className="nt-nav-note" onClick={() => window.location.href = '/rewind'}><span>Rhythm Rewind</span></div>
-                    <div className="nt-nav-note" onClick={() => window.location.href = '/send-song'}><span>Send a Song</span></div>
-                    <div className="nt-nav-note" onClick={() => window.location.href = '/daily-aux'}><span>Daily Aux</span></div>
-                    <div className="nt-nav-note active" onClick={() => window.location.href = '/time-capsule'}><span>Time Capsule</span></div>
-                </div>
-            </nav>
+            <nav className="nt-navbar">{/* ... your nav ... */}</nav>
 
             <main className="tc-page-wrapper">
-                <h1 className="tc-main-header">MUSICAL TIME CAPSULE</h1>
-                <p className="tc-main-sub">Preserve your daily soundscape for the future.</p>
+                <header className="tc-header-area">
+                    <h1 className="tc-main-header">TIME CAPSULE</h1>
+                    <p className="tc-main-sub">Preserve your state of mind. Encrypted in melody.</p>
+                </header>
 
                 <div className="tc-creation-grid">
                     <div className="tc-field-row">
@@ -89,24 +85,13 @@ function TimeCapsule() {
                             <input type="date" className="tc-input-clean" value={unlockDate} min={new Date().toISOString().split('T')[0]} onChange={(e) => setUnlockDate(e.target.value)} />
                         </div>
                         <div className="tc-field">
-                            <label>2. PICK A TRACK</label>
+                            <label>2. SOUNDTRACK</label>
                             {!selectedSong ? (
-                                <div className="tc-search-box-wrapper">
-                                    <input type="text" className="tc-input-clean" placeholder="Search for a track..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                                    {results.length > 0 && (
-                                        <div className="tc-search-dropdown">
-                                            {results.map((track) => (
-                                                <div key={track.id} className="tc-search-item" onClick={() => handleSelectSong(track)}>
-                                                    <img src={track.albumArt} alt="art" />
-                                                    <p>{track.name}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                <input type="text" className="tc-input-clean" placeholder="Search track..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                             ) : (
                                 <div className="tc-selected-song-card">
                                     <img src={selectedSong.albumArt} alt="art" />
+                                    <span className="tc-song-text">{selectedSong.name}</span>
                                     <button onClick={() => setSelectedSong(null)}>✕</button>
                                 </div>
                             )}
@@ -114,15 +99,15 @@ function TimeCapsule() {
                     </div>
                     
                     <div className="tc-field">
-                        <label>3. YOUR NOTE</label>
-                        <textarea className="tc-textarea-clean" value={capsuleNote} onChange={(e) => setCapsuleNote(e.target.value)} placeholder="Write your future memory..." />
+                        <label>3. REFLECTION</label>
+                        <textarea className="tc-textarea-clean" value={capsuleNote} onChange={(e) => setCapsuleNote(e.target.value)} placeholder="What secrets are you burying?" />
                     </div>
 
-                    <button className="tc-seal-btn" onClick={handleSealCapsule}>🔒 SEAL TIME CAPSULE</button>
+                    <button className="tc-seal-btn" onClick={handleSealCapsule}>SEAL CAPSULE</button>
                 </div>
 
                 <section className="tc-archive-section">
-                    <h2 className="tc-section-title">MY SEALED CAPSULES</h2>
+                    <h2 className="tc-section-title">VAULT</h2>
                     <div className="tc-capsules-grid">
                         {capsules.map((cap) => (
                             <div key={cap.id} className="tc-capsule-card">
