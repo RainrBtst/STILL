@@ -10,6 +10,7 @@ import Profile from './Profile'
 import About from './About' // 1. IMPORT THE ABOUT COMPONENT
 import Rewind from './Rewind' // Import the new file
 import Daily from './Daily' // IMPORT THE DAILY COMPONENT
+import TimeCapsule from './TimeCapsule'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/send-song" element={<SendSong />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/rewind' element={<Rewind />} />
+        <Route path='/time-capsule' element={<TimeCapsule />} />
         
         {/* DAILY AUX ROUTE USING /daily */}
         <Route path='/daily' element={<Daily />} />
