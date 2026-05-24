@@ -286,11 +286,11 @@ const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     
                 {/* Navigation Links (Desktop + Mobile Menu Dropdown) */}
                 <div className={`nt-nav-links-wrapper ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
-                 <div className="nt-nav-note" onClick={handleRewindNav}><span>Rhythm Rewind</span></div>
-                <div className="nt-nav-note" onClick={() => navigate('/send-song')}><span>Send a SonG</span></div>
-                <div className="nt-nav-note" onClick={() => navigate('/daily')}><span>Daily Aux</span></div>
-                <div className="nt-nav-note" onClick={() => { setShowArchives(true); setIsMobileMenuOpen(false); }}><span>Archive</span></div>
-                 </div>
+    <div className="nt-nav-note" onClick={() => { handleRewindNav(); setIsMobileMenuOpen(false); }}>Rhythm Rewind</div>
+    <div className="nt-nav-note" onClick={() => { navigate('/send-song'); setIsMobileMenuOpen(false); }}>Send a SonG</div>
+    <div className="nt-nav-note" onClick={() => { navigate('/daily'); setIsMobileMenuOpen(false); }}>Daily Aux</div>
+    <div className="nt-nav-note" onClick={() => { setShowArchives(true); setIsMobileMenuOpen(false); }}>Archive</div>
+</div>
 
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">

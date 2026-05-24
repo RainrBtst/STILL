@@ -580,35 +580,42 @@ html, body {
 
 /* iPhone / Mobile Responsiveness */
 @media (max-width: 768px) {
-    .nt-navbar { flex-wrap: wrap; padding: 1rem; }
+    /* Navbar Layout Fix */
+    .nt-navbar { 
+        display: grid; 
+        grid-template-columns: 1fr auto 1fr; 
+        align-items: center; 
+        padding: 1rem;
+    }
     
-    /* 1. Logo to middle */
-    .nt-logo { order: 2; margin: 0 auto; }
-    
-    /* 2. Hamburger Menu */
-    .nt-mobile-menu-btn { display: block; order: 1; cursor: pointer; font-size: 1.5rem; }
-    .nt-nav-links-wrapper { 
-        display: none; width: 100%; flex-direction: column; gap: 1rem; text-align: center; margin-top: 1rem; 
+    .nt-mobile-menu-btn { display: block; grid-column: 1; font-size: 1.5rem; cursor: pointer; }
+    .nt-logo { grid-column: 2; margin: 0; font-size: 1.5rem; }
+    .nt-nav-actions { grid-column: 3; justify-content: end; display: flex; gap: 10px; }
+
+    /* Fix: Hamburger Menu Content */
+    .nt-nav-links-wrapper {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background: #181818;
+        flex-direction: column;
+        padding: 20px;
+        z-index: 999;
+        text-align: center;
     }
     .nt-nav-links-wrapper.mobile-active { display: flex; }
-    
-    /* 3. Search & Profile on right */
-    .nt-nav-actions { order: 3; }
-    .nt-search-bar input { display: none; }
-    .nt-search-bar.active input { display: block; }
-    .nt-profile-dropdown { position: fixed; right: 10px; }
 
-    /* 4. Headers to middle */
+    /* Fix: 2-stanza header (Responsive Hero) */
     .nt-hero { text-align: center; }
+    .nt-welcome { font-size: 1.8rem; line-height: 1.2; }
+    .nt-subtitle { font-size: 1rem; margin-bottom: 2rem; }
 
-    /* 5. ReadJournal/Grid: 2 per column */
-    .nt-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    
-    /* Hide specific desktop-only items */
-    .nt-nav-links-wrapper .nt-nav-note:nth-child(4) { display: block; } /* Show Archive */
+    /* Fix: Grid to 1 column */
+    .nt-grid { grid-template-columns: 1fr; gap: 15px; }
 }
 
-/* Ensure desktop remains unaffected */
 @media (min-width: 769px) {
     .nt-mobile-menu-btn { display: none; }
 }
