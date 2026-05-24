@@ -174,4 +174,12 @@ html, body {
     .nt-nav-links-wrapper.show-menu {
         display: flex !important;
     }
+
+    .nt-navbar {
+        justify-content: flex-start;
+    }
+
+    .nt-nav-actions {
+        margin-left: auto;
+    }
 }
