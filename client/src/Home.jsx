@@ -23,6 +23,7 @@ function Home() {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
