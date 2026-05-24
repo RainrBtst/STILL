@@ -13,6 +13,8 @@ const API_BASE_URL = window.location.hostname === "localhost"
 function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [results, setResults] = useState([]);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     const [selectedSong, setSelectedSong] = useState(null);
     const [showArchives, setShowArchives] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -23,8 +25,7 @@ function Home() {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
