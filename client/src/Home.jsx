@@ -13,6 +13,8 @@ const API_BASE_URL = window.location.hostname === "localhost"
 function Home() {
     const [searchQuery, setSearchQuery] = useState('');
     const [results, setResults] = useState([]);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+const [showMobileSearch, setShowMobileSearch] = useState(false);
     const [selectedSong, setSelectedSong] = useState(null);
     const [showArchives, setShowArchives] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -276,6 +278,44 @@ function Home() {
             )}
 
             <nav className="nt-navbar">
+                {/* MOBILE LEFT MENU */}
+<div className="nt-mobile-left">
+    <button
+        className="nt-mobile-icon-btn"
+        onClick={() => setShowMobileMenu(!showMobileMenu)}
+    >
+        ☰
+    </button>
+
+    {showMobileMenu && (
+        <div className="nt-mobile-menu">
+            <div className="nt-mobile-menu-item" onClick={handleRewindNav}>
+                Rhythm Rewind
+            </div>
+
+            <div
+                className="nt-mobile-menu-item"
+                onClick={() => navigate('/send-song')}
+            >
+                Send a SonG
+            </div>
+
+            <div
+                className="nt-mobile-menu-item"
+                onClick={() => navigate('/daily')}
+            >
+                Daily Aux
+            </div>
+
+            <div
+                className="nt-mobile-menu-item"
+                onClick={() => setShowArchives(true)}
+            >
+                Archive
+            </div>
+        </div>
+    )}
+</div>
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
                 <div className="nt-nav-links-wrapper">
                     <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
@@ -289,6 +329,29 @@ function Home() {
                     </div>
                 </div>
                 <div className="nt-nav-actions">
+                    <div className="nt-mobile-search-wrapper">
+    <button
+        className="nt-mobile-icon-btn"
+        onClick={() => setShowMobileSearch(!showMobileSearch)}
+    >
+        🔍
+    </button>
+
+    {showMobileSearch && (
+        <div className="nt-mobile-search-dropdown">
+            <div className="nt-search-bar">
+                <span className="search-icon">🔍</span>
+
+                <input
+                    type="text"
+                    placeholder="Search Songs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+        </div>
+    )}
+</div>
                     <div className="nt-search-container">
                         <div className="nt-search-bar">
                             <span className="search-icon">🔍</span>

@@ -577,3 +577,176 @@ html, body {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* ========================================= */
+/* MOBILE RESPONSIVE */
+/* ========================================= */
+
+.nt-mobile-left,
+.nt-mobile-search-wrapper,
+.nt-mobile-icon-btn,
+.nt-mobile-menu {
+    display: none;
+}
+
+/* MOBILE ONLY */
+@media screen and (max-width: 768px) {
+
+    .nt-container {
+        padding: 0 1rem 2rem 1rem;
+    }
+
+    /* NAVBAR */
+    .nt-navbar {
+        position: relative;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+    }
+
+    /* CENTER LOGO */
+    .nt-logo {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+    /* HIDE DESKTOP NAV */
+    .nt-nav-links-wrapper {
+        display: none;
+    }
+
+    /* HIDE DESKTOP SEARCH */
+    .nt-search-container {
+        display: none;
+    }
+
+    /* SHOW MOBILE MENU */
+    .nt-mobile-left {
+        display: block;
+        position: relative;
+        z-index: 2000;
+    }
+
+    .nt-mobile-search-wrapper {
+        display: block;
+        position: relative;
+    }
+
+    .nt-mobile-icon-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* MOBILE MENU */
+    .nt-mobile-menu {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        background: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 12px;
+        width: 220px;
+        overflow: hidden;
+        z-index: 5000;
+    }
+
+    .nt-mobile-menu-item {
+        padding: 14px 18px;
+        border-bottom: 1px solid #333;
+        cursor: pointer;
+        color: white;
+        font-size: 0.95rem;
+    }
+
+    .nt-mobile-menu-item:hover {
+        background: #2a2a2a;
+    }
+
+    /* MOBILE SEARCH DROPDOWN */
+    .nt-mobile-search-dropdown {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        width: 260px;
+        background: #1e1e1e;
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        z-index: 5000;
+    }
+
+    /* PROFILE RIGHT SIDE */
+    .nt-nav-actions {
+        margin-left: auto;
+        gap: 0.8rem;
+    }
+
+    /* CENTER HEADERS */
+    .nt-hero {
+        text-align: center;
+    }
+
+    .nt-section-header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .nt-section-header h3 {
+        text-align: center;
+    }
+
+    /* RESPONSIVE TEXT */
+    .nt-welcome {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    .nt-subtitle {
+        font-size: 1rem;
+    }
+
+    /* PLAYER CARD */
+    .nt-player-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nt-player-details {
+        text-align: center;
+    }
+
+    /* READJOURNAL STYLE */
+    .nt-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .nt-card {
+        padding: 0.8rem;
+    }
+
+    .nt-date {
+        font-size: 0.9rem;
+    }
+
+    .nt-song-info {
+        font-size: 0.7rem;
+    }
+
+    /* PROFILE DROPDOWN FIX */
+    .nt-profile-dropdown {
+        right: 0 !important;
+        top: 50px !important;
+    }
+}
