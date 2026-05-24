@@ -233,6 +233,9 @@ function Home() {
         return () => clearTimeout(debounce);
     }, [searchQuery]);
 
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+
     return (
         <div className="nt-container">
             {modal.show && (
@@ -276,24 +279,25 @@ function Home() {
             )}
 
             <nav className="nt-navbar">
+                {/* Hamburger Menu (Mobile Only) */}
+                <div className="nt-mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</div>
+    
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
-                <div className="nt-nav-links-wrapper">
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
-                        <span>Rhythm Rewind</span>
-                    </div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
-                        <span>Send a SonG</span>
-                    </div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/daily')} >
-                        <span>Daily Aux</span>
-                    </div>
-                </div>
+    
+                {/* Navigation Links (Desktop + Mobile Menu Dropdown) */}
+                <div className={`nt-nav-links-wrapper ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
+                 <div className="nt-nav-note" onClick={handleRewindNav}><span>Rhythm Rewind</span></div>
+                <div className="nt-nav-note" onClick={() => navigate('/send-song')}><span>Send a SonG</span></div>
+                <div className="nt-nav-note" onClick={() => navigate('/daily')}><span>Daily Aux</span></div>
+                <div className="nt-nav-note" onClick={() => { setShowArchives(true); setIsMobileMenuOpen(false); }}><span>Archive</span></div>
+                 </div>
+
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
-                        <div className="nt-search-bar">
-                            <span className="search-icon">🔍</span>
-                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                        </div>
+                        <div className={`nt-search-bar ${isMobileSearchOpen ? 'active' : ''}`} onClick={() => setIsMobileSearchOpen(true)}>
+                <span className="search-icon">🔍</span>
+                <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            </div>
                         {results.length > 0 && (
                             <div className="nt-search-dropdown">
                                 {results.map((track) => (
@@ -308,19 +312,19 @@ function Home() {
                             </div>
                         )}
                     </div>
-                    <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
-                        <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                            {profilePic ? <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : "👤"}
-                        </div>
-                        {showProfileDropdown && (
-                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
-                                <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>HOME</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>PROFILE</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>ABOUT</button>
-                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>LOGOUT</button>
-                            </div>
-                        )}
-                    </div>
+                    <div className="nt-profile-container" ref={dropdownRef}>
+            <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
+            </div>
+            {showProfileDropdown && (
+                <div className="nt-profile-dropdown">
+                    <button onClick={handleHome}>HOME</button>
+                    <button onClick={handleProfile}>PROFILE</button>
+                    <button onClick={handleAbout}>ABOUT</button>
+                    <button onClick={handleLogout}>LOGOUT</button>
+                </div>
+            )}
+        </div>
                 </div>
             </nav>
 

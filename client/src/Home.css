@@ -577,3 +577,38 @@ html, body {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* iPhone / Mobile Responsiveness */
+@media (max-width: 768px) {
+    .nt-navbar { flex-wrap: wrap; padding: 1rem; }
+    
+    /* 1. Logo to middle */
+    .nt-logo { order: 2; margin: 0 auto; }
+    
+    /* 2. Hamburger Menu */
+    .nt-mobile-menu-btn { display: block; order: 1; cursor: pointer; font-size: 1.5rem; }
+    .nt-nav-links-wrapper { 
+        display: none; width: 100%; flex-direction: column; gap: 1rem; text-align: center; margin-top: 1rem; 
+    }
+    .nt-nav-links-wrapper.mobile-active { display: flex; }
+    
+    /* 3. Search & Profile on right */
+    .nt-nav-actions { order: 3; }
+    .nt-search-bar input { display: none; }
+    .nt-search-bar.active input { display: block; }
+    .nt-profile-dropdown { position: fixed; right: 10px; }
+
+    /* 4. Headers to middle */
+    .nt-hero { text-align: center; }
+
+    /* 5. ReadJournal/Grid: 2 per column */
+    .nt-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    
+    /* Hide specific desktop-only items */
+    .nt-nav-links-wrapper .nt-nav-note:nth-child(4) { display: block; } /* Show Archive */
+}
+
+/* Ensure desktop remains unaffected */
+@media (min-width: 769px) {
+    .nt-mobile-menu-btn { display: none; }
+}
