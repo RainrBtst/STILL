@@ -1,12 +1,10 @@
 /* --- GLOBAL BROWSER RESET --- */
-/* This kills the hidden white/dead space margins that browsers inject by default */
 html, body {
     margin: 0;
     padding: 0;
-    background-color: #121212; /* Keeps screen from flashing white on load */
+    background-color: #121212;
 }
 
-/* Base Colors & Layout */
 .nt-container {
     background-color: #121212;
     color: #ffffff;
@@ -17,7 +15,7 @@ html, body {
 
 /* Navbar */
 .nt-navbar {
-   display: flex;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     max-width: 1200px;
@@ -33,10 +31,45 @@ html, body {
     font-size: 2rem;
 }
 
+.nt-hamburger {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.nt-nav-links-wrapper {
+    display: flex;
+    gap: 40px;
+    position: static;
+    transform: none;
+}
+
+.nt-nav-links-wrapper .nt-nav-note {
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.nt-nav-note {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #FAEF5D;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
 .nt-nav-actions {
     display: flex;
     gap: 1.5rem;
     align-items: center;
+}
+
+/* Search */
+.nt-search-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .nt-search-bar {
@@ -55,141 +88,10 @@ html, body {
     outline: none;
 }
 
-/* Hero */
-.nt-hero {
-    text-align: center;
-    margin-bottom: 5rem;
-}
-
-.nt-welcome {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    letter-spacing: -1px;
-}
-
-.nt-subtitle {
-    color: #a7a7a7;
-    font-size: 1.2rem;
-    margin-bottom: 3.5rem;
-}
-
-.nt-btn-primary {
-    background-color: #FAEF5D;
-    color: #000;
-    border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 15px rgba(250, 239, 93, 0.3);
-}
-
-.nt-btn-primary:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(250, 239, 93, 0.5);
-}
-
-/* Grid & Cards */
-.nt-main {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.nt-section-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-}
-
-.nt-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 2rem;
-}
-
-.nt-card {
-    background: #1e1e1e;
-    padding: 1rem;
-    border-radius: 20px;
-    transition: 0.3s;
-    border: 1px solid #333;
-}
-
-.nt-card:hover {
-    border-color: #FAEF5D;
-    background: #252525;
-}
-
-.nt-album-placeholder {
-    width: 100%;
-    aspect-ratio: 1/1;
-    background: linear-gradient(135deg, #333, #000);
-    border-radius: 15px;
-    margin-bottom: 1rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.nt-play-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,0.5);
-    font-size: 2rem;
-    color: #FAEF5D;
-    opacity: 0;
-    transition: 0.3s;
-}
-
-.nt-card:hover .nt-play-overlay {
-    opacity: 1;
-}
-
-.nt-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.nt-date {
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-.nt-song-info {
-    color: #b3b3b3;
-    font-size: 0.9rem;
-}
-
-.nt-footer {
-    text-align: center;
-    margin-top: 4rem;
-}
-
-.nt-link {
-    background: none;
-    border: none;
-    color: #FAEF5D;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Search Dropdown Styles */
-.nt-search-container {
-   position: relative;
-    margin-top: 60px; /* This pushes the search bar lower */
-}
-
 .nt-search-dropdown {
     position: absolute;
     top: 55px;
-    right: 0;
+    left: 0;
     width: 300px;
     background: #282828;
     border-radius: 15px;
@@ -205,395 +107,58 @@ html, body {
     gap: 12px;
     padding: 10px 15px;
     cursor: pointer;
-    transition: background 0.2s;
 }
 
-.nt-search-item:hover {
-    background: #3e3e3e;
+.nt-search-item:hover { background: #3e3e3e; }
+.nt-search-item img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+.nt-search-info { display: flex; flex-direction: column; overflow: hidden; }
+.nt-search-name { font-size: 0.9rem; font-weight: bold; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nt-search-artist { font-size: 0.75rem; color: #b3b3b3; margin: 0; }
+
+/* Hero & Main */
+.nt-hero { text-align: center; margin-bottom: 5rem; }
+.nt-welcome { font-size: 3.5rem; font-weight: 800; margin-bottom: 1.5rem !important; letter-spacing: -1px; }
+.nt-subtitle { color: #a7a7a7; font-size: 1.2rem; margin-bottom: 3.5rem !important; line-height: 1.6; }
+
+.nt-btn-primary {
+    background-color: #FAEF5D; color: #000; border: none; padding: 1rem 2.5rem;
+    border-radius: 50px; font-weight: 900; font-size: 1.1rem; cursor: pointer;
+    transition: 0.3s; box-shadow: 0 0 15px rgba(250, 239, 93, 0.3);
 }
 
-.nt-search-item img {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    object-fit: cover;
-}
+.nt-main { max-width: 1200px; margin: 0 auto; }
+.nt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
+.nt-card { background: #1e1e1e; padding: 1rem; border-radius: 20px; transition: 0.3s; border: 1px solid #333; }
+.nt-card:hover { border-color: #FAEF5D; background: #252525; }
 
-.nt-search-info {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
+.nt-album-placeholder { width: 100%; aspect-ratio: 1/1; background: linear-gradient(135deg, #333, #000); border-radius: 15px; margin-bottom: 1rem; position: relative; overflow: hidden; }
+.nt-album-placeholder img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nt-play-overlay { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.5); font-size: 2rem; color: #FAEF5D; opacity: 0; transition: 0.3s; }
+.nt-card:hover .nt-play-overlay { opacity: 1; }
 
-.nt-search-name {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+/* Player */
+.nt-player-card { display: flex; align-items: center; justify-content: center; background: #282828; padding: 1.5rem; border-radius: 20px; gap: 20px; max-width: 500px; margin: 0 auto 3rem auto !important; border: 1px solid #333; position: relative; }
+.nt-player-card img { width: 80px; height: 80px; border-radius: 10px; }
+.nt-remove-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #ff5f5f; cursor: pointer; font-size: 1.2rem; }
 
-.nt-search-artist {
-    font-size: 0.75rem;
-    color: #b3b3b3;
-    margin: 0;
-}
+/* Modals */
+.still-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+.still-modal-card { background: #181818; border: 2px solid #FAEF5D; border-radius: 24px; padding: 40px; text-align: center; max-width: 450px; box-shadow: 0 0 40px rgba(250, 239, 93, 0.2); animation: modalSlideUp 0.4s ease-out; }
+.modal-title { font-size: 1.8rem; font-weight: 900; color: #FAEF5D; margin-bottom: 15px; }
+.modal-btn-primary { background: #FAEF5D; color: #000; border: none; padding: 12px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
 
-.nt-player-card {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #282828;
-    padding: 1.5rem;
-    border-radius: 20px;
-    gap: 20px;
-    max-width: 500px;
-    margin: 0 auto 3rem auto;
-    border: 1px solid #333;
-    position: relative;
-}
+/* Profile */
+.nt-profile-circle { width: 45px; height: 45px; background: #282828; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; }
+.nt-profile-dropdown { position: absolute; top: 55px !important; background: #282828; padding: 10px; border-radius: 10px; z-index: 1000; }
 
-.nt-player-card img {
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-
-.nt-player-details {
-    text-align: left;
-}
-
-.nt-player-details h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #fff;
-}
-
-.nt-player-details p {
-    margin: 0 0 10px 0;
-    color: #b3b3b3;
-    font-size: 0.9rem;
-}
-
-.nt-player-details audio {
-    height: 30px;
-    width: 200px;
-}
-
-.nt-remove-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    color: #ff5f5f;
-    cursor: pointer;
-    font-size: 1.2rem;
-}
-
-/* Spacing Adjustments */
-.nt-welcome {
-    margin-bottom: 1.5rem !important;
-}
-
-.nt-subtitle {
-    margin-bottom: 3.5rem !important;
-    line-height: 1.6;
-}
-
-.nt-player-card {
-    margin-bottom: 3rem !important;
-}
-
-/* Custom Play Button */
-.nt-custom-play {
-    background: white;
-    border: none;
-    color: black;
-    padding: 6px 12px;
-    font-weight: bold;
-    font-size: 0.8rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    transition: 0.2s;
-    text-transform: uppercase;
-}
-
-.nt-custom-play:hover {
-    background: #e0e0e0;
-}
-
-.play-icon, .pause-icon {
-    font-size: 0.9rem;
-}
-
-.nt-vibe-tag {
-    background: rgba(250, 239, 93, 0.2);
-    color: #FAEF5D;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.nt-logout-btn {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.3);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin: 0 15px;
-    transition: all 0.3s ease;
-}
-
-.nt-logout-btn:hover {
-    background: white;
-    color: black;
-}
-
-.nt-album-placeholder img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.nt-search-container {
-    display: flex;
-    flex-direction: column;
-}
-
-.nt-search-dropdown {
-    left: 0 !important;
-    right: auto !important;
-}
-
-/* Profile Icon Styling */
-.nt-profile-circle {
-    width: 45px;          
-    height: 45px;        
-    background: #282828;  
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;    
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.nt-profile-circle:hover {
-    background: #333;
-    transform: scale(1.1);
-    border-color: #FAEF5D;
-}
-
-.nt-profile-dropdown {
-    top: 55px !important;
-}
-
-.nt-nav-note {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #FAEF5D;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-/* Custom Themed Modals */
-.still-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-}
-
-.still-modal-card {
-    background: #121212;
-    padding: 2.5rem;
-    border-radius: 24px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    border: 1px solid #333;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
-    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.modal-title {
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    letter-spacing: -0.5px;
-}
-
-.modal-message {
-    color: #a7a7a7;
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 2.5rem;
-}
-
-.modal-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.modal-btn-primary {
-    background: #FAEF5D;
-    color: #000;
-    border: none;
-    padding: 14px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-}
-
-.modal-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(250, 239, 93, 0.4);
-}
-
-.modal-btn-secondary {
-    background: none;
-    border: none;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: 0.2s;
-    text-transform: uppercase;
-}
-
-.modal-btn-secondary:hover {
-    opacity: 1;
-    text-decoration: underline;
-}
-
-@keyframes modalPop {
-    from { opacity: 0; transform: scale(0.9) translateY(20px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* Center Links Navigation Wrapper */
-.nt-nav-links-wrapper {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 40px;
-    pointer-events: none;
-    /* CHANGED: This dynamically links center item height to the layout context */
-    top: inherit;
-    align-self: center;
-}
-
-.nt-nav-links-wrapper .nt-nav-note {
-    position: relative;
-    left: auto;
-    transform: none;
-    pointer-events: auto;
-    transition: opacity 0.3s ease;
-}
-
-/* Special Styling for the Rewind Alert */
-.still-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.still-modal-card {
-    background: #181818;
-    border: 2px solid #FAEF5D; /* Brand Yellow Border */
-    border-radius: 24px;
-    padding: 40px;
-    text-align: center;
-    max-width: 450px;
-    box-shadow: 0 0 40px rgba(250, 239, 93, 0.2);
-    animation: modalSlideUp 0.4s ease-out;
-}
-
-.modal-title {
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: #FAEF5D;
-    margin-bottom: 15px;
-    letter-spacing: -1px;
-}
-
-.modal-message {
-    color: #efefef;
-    font-size: 1.1rem;
-    line-height: 1.5;
-    margin-bottom: 30px;
-}
-
-.modal-btn-primary {
-    background: #FAEF5D;
-    color: #000;
-    border: none;
-    padding: 12px 35px;
-    border-radius: 50px;
-    font-weight: 900;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.modal-btn-primary:hover {
-    transform: scale(1.05);
-}
-
-@keyframes modalSlideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.nt-hamburger {
-    display: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin-right: 15px;
-}
-
-/* --- MOBILE RESPONSIVENESS (DO NOT REMOVE) --- */
+/* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 768px) {
-    .nt-hamburger {
-        display: block;
-    }
+    .nt-hamburger { display: block; }
+    .nt-navbar { justify-content: flex-start; }
+    .nt-nav-actions { margin-left: auto; }
 
     .nt-nav-links-wrapper {
-        display: none; /* Hidden by default on mobile */
+        display: none;
         position: absolute;
         top: 60px;
         left: 0;
@@ -607,14 +172,6 @@ html, body {
     }
 
     .nt-nav-links-wrapper.show-menu {
-        display: flex;
-    }
-
-    .nt-navbar {
-        justify-content: flex-start;
-    }
-
-    .nt-nav-actions {
-        margin-left: auto; /* Pushes Profile Icon to the right */
+        display: flex !important;
     }
 }

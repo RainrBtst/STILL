@@ -276,54 +276,55 @@ function Home() {
                 <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />
             )}
 
-           <nav className="nt-navbar">
-                <div className="nt-nav-left">
-                    <div className="nt-hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</div>
-                    <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
-                </div>
+          <nav className="nt-navbar">
+    <div className="nt-nav-left" style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="nt-hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</div>
+        <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
+    </div>
 
-                <div className={`nt-nav-links-wrapper ${isMenuOpen ? 'mobile-open' : ''}`}>
-                    <div className="nt-nav-note" onClick={handleRewindNav}><span>Rhythm Rewind</span></div>
-                    <div className="nt-nav-note" onClick={() => navigate('/send-song')}><span>Send a SonG</span></div>
-                    <div className="nt-nav-note" onClick={() => navigate('/daily')}><span>Daily Aux</span></div>
-                    <div className="nt-nav-note" onClick={() => {setShowArchives(true); setIsMenuOpen(false);}}><span>Archive</span></div>
-                </div>
+    {/* UPDATED: className now correctly uses isMenuOpen state to toggle 'show-menu' */}
+    <div className={`nt-nav-links-wrapper ${isMenuOpen ? 'show-menu' : ''}`}>
+        <div className="nt-nav-note" onClick={() => {handleRewindNav(); setIsMenuOpen(false);}}><span>Rhythm Rewind</span></div>
+        <div className="nt-nav-note" onClick={() => {navigate('/send-song'); setIsMenuOpen(false);}}><span>Send a SonG</span></div>
+        <div className="nt-nav-note" onClick={() => {navigate('/daily'); setIsMenuOpen(false);}}><span>Daily Aux</span></div>
+        <div className="nt-nav-note" onClick={() => {setShowArchives(true); setIsMenuOpen(false);}}><span>Archive</span></div>
+    </div>
 
-                <div className="nt-nav-actions">
-                    <div className="nt-search-container">
-                        <div className="nt-search-bar">
-                            <span className="search-icon">🔍</span>
-                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                        </div>
-                        {results.length > 0 && (
-                            <div className="nt-search-dropdown">
-                                {results.map((track) => (
-                                    <div key={track.id} className="nt-search-item" onClick={() => handleSelectSong(track)}>
-                                        <img src={track.albumArt} alt="art" />
-                                        <div className="nt-search-info">
-                                            <p className="nt-search-name">{track.name}</p>
-                                            <p className="nt-search-artist">{track.artist}</p>
-                                        </div>
-                                    </div>
-                                ))}
+    <div className="nt-nav-actions">
+        <div className="nt-search-container">
+            <div className="nt-search-bar">
+                <span className="search-icon">🔍</span>
+                <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            </div>
+            {results.length > 0 && (
+                <div className="nt-search-dropdown">
+                    {results.map((track) => (
+                        <div key={track.id} className="nt-search-item" onClick={() => handleSelectSong(track)}>
+                            <img src={track.albumArt} alt="art" />
+                            <div className="nt-search-info">
+                                <p className="nt-search-name">{track.name}</p>
+                                <p className="nt-search-artist">{track.artist}</p>
                             </div>
-                        )}
-                    </div>
-                    <div className="nt-profile-container" ref={dropdownRef}>
-                        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                            {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
                         </div>
-                        {showProfileDropdown && (
-                            <div className="nt-profile-dropdown">
-                                <button onClick={handleHome}>HOME</button>
-                                <button onClick={handleProfile}>PROFILE</button>
-                                <button onClick={handleAbout}>ABOUT</button>
-                                <button onClick={handleLogout}>LOGOUT</button>
-                            </div>
-                        )}
-                    </div>
+                    ))}
                 </div>
-            </nav>
+            )}
+        </div>
+        <div className="nt-profile-container" ref={dropdownRef}>
+            <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
+            </div>
+            {showProfileDropdown && (
+                <div className="nt-profile-dropdown">
+                    <button onClick={handleHome}>HOME</button>
+                    <button onClick={handleProfile}>PROFILE</button>
+                    <button onClick={handleAbout}>ABOUT</button>
+                    <button onClick={handleLogout}>LOGOUT</button>
+                </div>
+            )}
+        </div>
+    </div>
+</nav>
 
             {!showArchives ? (
                 <>
