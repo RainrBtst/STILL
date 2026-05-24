@@ -599,40 +599,39 @@ html, body {
     /* NAVBAR */
     .nt-navbar {
         position: relative;
+        display: flex;
         justify-content: space-between;
         align-items: center;
         padding-top: 1rem;
+        margin-bottom: 4.5rem;
     }
 
-    /* CENTER LOGO */
+    /* REMOVE DESKTOP NAV LINKS */
+    .nt-nav-links-wrapper {
+        display: none !important;
+    }
+
+    /* CENTER STILL LOGO */
     .nt-logo {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
         font-size: 1.8rem;
         margin: 0;
+        text-align: center;
+        width: max-content;
     }
 
-    /* HIDE DESKTOP NAV */
-    .nt-nav-links-wrapper {
-        display: none;
+    /* HIDE MOBILE SEARCH ICON */
+    .nt-mobile-search-wrapper {
+        display: none !important;
     }
 
-    /* HIDE DESKTOP SEARCH */
-    .nt-search-container {
-        display: none;
-    }
-
-    /* SHOW MOBILE MENU */
+    /* SHOW HAMBURGER */
     .nt-mobile-left {
         display: block;
         position: relative;
         z-index: 2000;
-    }
-
-    .nt-mobile-search-wrapper {
-        display: block;
-        position: relative;
     }
 
     .nt-mobile-icon-btn {
@@ -673,23 +672,44 @@ html, body {
         background: #2a2a2a;
     }
 
-    /* MOBILE SEARCH DROPDOWN */
-    .nt-mobile-search-dropdown {
-        position: absolute;
-        top: 50px;
-        right: 0;
-        width: 260px;
-        background: #1e1e1e;
-        padding: 10px;
-        border-radius: 12px;
-        border: 1px solid #333;
-        z-index: 5000;
+    /* HIDE DESKTOP SEARCH IN NAV */
+    .nt-search-container {
+        display: none;
     }
 
-    /* PROFILE RIGHT SIDE */
+    /* PROFILE POSITION */
     .nt-nav-actions {
         margin-left: auto;
-        gap: 0.8rem;
+        padding-right: 10px;
+    }
+
+    .nt-profile-container {
+        margin-right: 10px;
+    }
+
+    /* PROFILE DROPDOWN FIX */
+    .nt-profile-dropdown {
+        right: 0 !important;
+        top: 50px !important;
+    }
+
+    /* SEARCH BAR BELOW LOGO */
+    .nt-navbar::after {
+        content: "";
+        display: block;
+    }
+
+    .nt-mobile-search-below {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.8rem;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    .nt-mobile-search-below .nt-search-bar {
+        width: 100%;
+        max-width: 320px;
     }
 
     /* CENTER HEADERS */
@@ -726,7 +746,7 @@ html, body {
         text-align: center;
     }
 
-    /* READJOURNAL STYLE */
+    /* GRID */
     .nt-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
@@ -742,11 +762,5 @@ html, body {
 
     .nt-song-info {
         font-size: 0.7rem;
-    }
-
-    /* PROFILE DROPDOWN FIX */
-    .nt-profile-dropdown {
-        right: 0 !important;
-        top: 50px !important;
     }
 }

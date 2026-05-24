@@ -385,6 +385,20 @@ const [showMobileSearch, setShowMobileSearch] = useState(false);
                         )}
                     </div>
                 </div>
+
+                {/* MOBILE SEARCH BAR BELOW LOGO */}
+<div className="nt-mobile-search-below">
+    <div className="nt-search-bar">
+        <span className="search-icon">🔍</span>
+
+        <input
+            type="text"
+            placeholder="Search Songs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+        />
+    </div>
+</div>
             </nav>
 
             {!showArchives ? (
