@@ -233,35 +233,6 @@ function Home() {
         return () => clearTimeout(debounce);
     }, [searchQuery]);
 
-    // Add this state
-const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-// Inside your return()
-<nav className="nt-navbar">
-    <div className="nt-profile-container" ref={dropdownRef}>
-        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-             {profilePic ? <img src={profilePic} alt="P" /> : "👤"}
-        </div>
-    </div>
-    
-    <h1 className="nt-logo" onClick={handleHome}>STILL</h1>
-
-    <div className="nt-nav-right">
-        <div className="nt-search-container">
-            {/* Search Input remains the same */}
-        </div>
-        <div className="nt-hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</div>
-    </div>
-    
-    {isMenuOpen && (
-        <div className="nt-mobile-menu">
-            <button onClick={handleRewindNav}>Rhythm Rewind</button>
-            <button onClick={() => navigate('/send-song')}>Send a Song</button>
-            <button onClick={() => navigate('/daily')}>Daily Aux</button>
-        </div>
-    )}
-</nav>
-
     return (
         <div className="nt-container">
             {modal.show && (
@@ -304,31 +275,54 @@ const [isMenuOpen, setIsMenuOpen] = useState(false);
                 <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />
             )}
 
-           <nav className="nt-navbar">
-    {/* LEFT: Profile */}
-    <div className="nt-profile-container" ref={dropdownRef}>
-        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-             {profilePic ? <img src={profilePic} alt="P" /> : "👤"}
-        </div>
-    </div>
-    
-    {/* CENTER: Logo (Will be pinned to center) */}
-    <h1 className="nt-logo" onClick={handleHome}>STILL</h1>
-
-    {/* RIGHT: Hamburger & Menu */}
-    <div className="nt-nav-right">
-        <div className="nt-hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</div>
-    </div>
-    
-    {/* Mobile Menu Dropdown */}
-    {isMenuOpen && (
-        <div className="nt-mobile-menu">
-            <button onClick={handleRewindNav}>Rhythm Rewind</button>
-            <button onClick={() => navigate('/send-song')}>Send a Song</button>
-            <button onClick={() => navigate('/daily')}>Daily Aux</button>
-        </div>
-    )}
-</nav>
+            <nav className="nt-navbar">
+                <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
+                <div className="nt-nav-links-wrapper">
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
+                        <span>Rhythm Rewind</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
+                        <span>Send a SonG</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/daily')} >
+                        <span>Daily Aux</span>
+                    </div>
+                </div>
+                <div className="nt-nav-actions">
+                    <div className="nt-search-container">
+                        <div className="nt-search-bar">
+                            <span className="search-icon">🔍</span>
+                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                        </div>
+                        {results.length > 0 && (
+                            <div className="nt-search-dropdown">
+                                {results.map((track) => (
+                                    <div key={track.id} className="nt-search-item" onClick={() => handleSelectSong(track)}>
+                                        <img src={track.albumArt} alt="art" />
+                                        <div className="nt-search-info">
+                                            <p className="nt-search-name">{track.name}</p>
+                                            <p className="nt-search-artist">{track.artist}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    <div className="nt-profile-container" ref={dropdownRef} style={{position: 'relative'}}>
+                        <div className="nt-profile-circle" style={{cursor: 'pointer', overflow: 'hidden'}} onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                            {profilePic ? <img src={profilePic} alt="Profile" style={{width: '100%', height: '100%', objectFit: 'cover'}} /> : "👤"}
+                        </div>
+                        {showProfileDropdown && (
+                            <div className="nt-profile-dropdown" style={{position: 'absolute', top: '100%', right: 0, backgroundColor: '#181818', border: '1px solid #333', borderRadius: '8px', padding: '10px', marginTop: '10px', zIndex: 1000, minWidth: '120px'}}>
+                                <button className="nt-logout-btn-dropdown" onClick={handleHome} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>HOME</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleProfile} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>PROFILE</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleAbout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>ABOUT</button>
+                                <button className="nt-logout-btn-dropdown" onClick={handleLogout} style={{width: '100%', textAlign: 'left', background: 'none', border: 'none', color: 'white', padding: '5px', cursor: 'pointer'}}>LOGOUT</button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </nav>
 
             {!showArchives ? (
                 <>
