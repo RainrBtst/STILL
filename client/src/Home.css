@@ -24,13 +24,20 @@ html, body {
     margin: 0 auto 2rem auto; 
     padding-top: 0.8rem; /* ADJUST THIS: Make lower (e.g., 0.2rem) to push it even higher up */
     width: 100%;
+    position: relative; /* Required to anchor the absolute logo */
 }
 
 .nt-logo {
+   position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     color: #FAEF5D; 
     font-weight: 900;
     letter-spacing: -2px;
     font-size: 2rem;
+    margin: 0;
+    cursor: pointer;
+    z-index: 10;    
 }
 
 .nt-nav-actions {
@@ -586,15 +593,28 @@ html, body {
     }
 
     .nt-nav-links-wrapper { display: none; } /* Hide desktop links */
+    .nt-nav-actions { display: none; } /* Hide search/extra items if needed */
 
-    .nt-nav-right { display: flex; align-items: center; gap: 10px; }
+    .nt-nav-right { display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-left: auto; /* Pushes everything to the right edge */
+    z-index: 20; }
 
-    .nt-hamburger { display: block; font-size: 1.5rem; cursor: pointer; }
+    .nt-hamburger { display: block; }
 
     .nt-mobile-menu {
-        position: absolute; top: 70px; right: 20px;
-        background: #1e1e1e; padding: 20px; border-radius: 15px;
-        display: flex; flex-direction: column; gap: 15px;
+       position: absolute;
+        top: 60px;
+        right: 0;
+        background: #1e1e1e;
+        padding: 20px;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        border: 1px solid #333;
+        z-index: 1000;
     }
 
     /* 2. Hero & Content Centering */
