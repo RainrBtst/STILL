@@ -601,9 +601,10 @@ html, body {
         position: relative;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        padding-top: 1rem;
-        margin-bottom: 4.5rem;
+        align-items: flex-start;
+        padding-top: 0.3rem;
+        margin-bottom: 7rem;
+        min-height: 120px;
     }
 
     /* REMOVE DESKTOP NAV LINKS */
@@ -611,9 +612,10 @@ html, body {
         display: none !important;
     }
 
-    /* CENTER STILL LOGO */
+    /* MOVE LOGO TO TOP CENTER */
     .nt-logo {
         position: absolute;
+        top: 0;
         left: 50%;
         transform: translateX(-50%);
         font-size: 1.8rem;
@@ -630,7 +632,9 @@ html, body {
     /* SHOW HAMBURGER */
     .nt-mobile-left {
         display: block;
-        position: relative;
+        position: absolute;
+        top: -5px;
+        left: -8px;
         z-index: 2000;
     }
 
@@ -650,7 +654,7 @@ html, body {
         display: flex;
         flex-direction: column;
         position: absolute;
-        top: 50px;
+        top: 45px;
         left: 0;
         background: #1e1e1e;
         border: 1px solid #333;
@@ -680,11 +684,15 @@ html, body {
     /* PROFILE POSITION */
     .nt-nav-actions {
         margin-left: auto;
-        padding-right: 10px;
+        padding-right: 18px;
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 
     .nt-profile-container {
-        margin-right: 10px;
+        margin-right: 8px;
+        margin-top: -2px;
     }
 
     /* PROFILE DROPDOWN FIX */
@@ -693,23 +701,20 @@ html, body {
         top: 50px !important;
     }
 
-    /* SEARCH BAR BELOW LOGO */
-    .nt-navbar::after {
-        content: "";
-        display: block;
-    }
-
+    /* SEARCH BAR BELOW EVERYTHING */
     .nt-mobile-search-below {
         display: flex;
         justify-content: center;
-        margin-top: 1.8rem;
-        margin-bottom: 1rem;
         width: 100%;
+        position: absolute;
+        top: 55px;
+        left: 0;
+        padding: 0 1rem;
     }
 
     .nt-mobile-search-below .nt-search-bar {
         width: 100%;
-        max-width: 320px;
+        max-width: 500px;
     }
 
     /* CENTER HEADERS */
@@ -777,18 +782,25 @@ html, body {
 
     /* NAVBAR */
     .nt-navbar {
-        padding-top: 0.8rem;
-        margin-bottom: 5rem;
+        padding-top: 0.2rem;
+        margin-bottom: 7rem;
+        min-height: 115px;
     }
 
     /* LOGO */
     .nt-logo {
+        top: 0;
         font-size: 1.6rem;
         left: 50%;
         transform: translateX(-50%);
     }
 
     /* HAMBURGER */
+    .nt-mobile-left {
+        top: -8px;
+        left: -10px;
+    }
+
     .nt-mobile-icon-btn {
         font-size: 1.4rem;
         padding: 0;
@@ -801,14 +813,20 @@ html, body {
         font-size: 1.2rem;
     }
 
-    .nt-profile-container {
-        margin-right: 5px;
+    .nt-nav-actions {
+        top: -2px;
+        right: 2px;
+        padding-right: 12px;
     }
 
-    /* SEARCH BELOW LOGO */
+    .nt-profile-container {
+        margin-right: 4px;
+        margin-top: -3px;
+    }
+
+    /* SEARCH BAR BELOW TOP SECTION */
     .nt-mobile-search-below {
-        margin-top: 2rem;
-        margin-bottom: 1.5rem;
+        top: 50px;
         padding: 0 0.2rem;
     }
 

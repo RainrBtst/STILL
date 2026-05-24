@@ -386,7 +386,10 @@ const [showMobileSearch, setShowMobileSearch] = useState(false);
                     </div>
                 </div>
 
-                {/* MOBILE SEARCH BAR BELOW LOGO */}
+                
+            </nav>
+
+            {/* MOBILE SEARCH BAR BELOW LOGO */}
 <div className="nt-mobile-search-below">
     <div className="nt-search-bar">
         <span className="search-icon">🔍</span>
@@ -399,7 +402,6 @@ const [showMobileSearch, setShowMobileSearch] = useState(false);
         />
     </div>
 </div>
-            </nav>
 
             {!showArchives ? (
                 <>
