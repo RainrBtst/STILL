@@ -26,38 +26,30 @@ function Home() {
 
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
-    // Helper to calculate a true, bulletproof calendar week key
     const getWeekKey = () => {
         const now = new Date();
         const startOfYear = new Date(now.getFullYear(), 0, 1);
         const pastDaysOfYear = (now - startOfYear) / 86400000;
         const trueWeekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
-        
         return `seenRewind_Year${now.getFullYear()}_Week${trueWeekNumber}`;
     };
 
-    // --- 1. RHYTHM REWIND MODAL LOGIC (UPDATED ACCESS LOGIC) ---
     useEffect(() => {
         const checkRewindAvailability = () => {
             const now = new Date();
             const weekKey = getWeekKey();
-            
-            // Check if user has already dismissed/visited this modal THIS week
             const hasSeenRewind = localStorage.getItem(weekKey);
             if (hasSeenRewind === "true") return;
 
             const day = now.getDay(); 
             const hours = now.getHours();
             const minutes = now.getMinutes();
-
-            // Match active time matrix constraints
             const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
-            
-            // Tight release window: Triggers precisely at Sunday 11:59 PM (Day 0) 
-            // and remains active through the end of Monday (Day 1) to allow visibility upon login.
-            const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
-            const lockTime = (1 * 24 * 60) + (23 * 60) + 59;   // Monday 11:59 PM
+            const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; 
+            const lockTime = (1 * 24 * 60) + (23 * 60) + 59; 
 
             if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
                 setModal({
@@ -70,48 +62,29 @@ function Home() {
         };
 
         checkRewindAvailability();
-        const interval = setInterval(checkRewindAvailability, 60000); // Check every 60 seconds
+        const interval = setInterval(checkRewindAvailability, 60000);
         return () => clearInterval(interval);
     }, []);
 
-    // Helper to close rewind modal and save preference to localStorage using Week Key
     const handleCloseRewindModal = (shouldNavigate) => {
         const weekKey = getWeekKey();
         localStorage.setItem(weekKey, "true");
         setModal(prev => ({ ...prev, show: false }));
-        if (shouldNavigate) {
-            navigate('/rewind');
-        }
+        if (shouldNavigate) navigate('/rewind');
     };
 
     const handleLogout = () => {
         const weekKey = getWeekKey();
         const seenValue = localStorage.getItem(weekKey);
-        
         localStorage.clear(); 
-        
-        // Re-inject the seen tracking value back to ensure persistent state
-        if (seenValue) {
-            localStorage.setItem(weekKey, String(seenValue));
-        }
+        if (seenValue) localStorage.setItem(weekKey, String(seenValue));
         window.location.href = '/login';
     };
 
-    const handleHome = () => {
-        setShowArchives(false);
-    };
-
-    const handleProfile = () => {
-        navigate('/profile');
-    };
-
-    const handleAbout = () => {
-        navigate('/about');
-    };
-
-    const handleRewindNav = () => {
-        navigate('/rewind');
-    };
+    const handleHome = () => setShowArchives(false);
+    const handleProfile = () => navigate('/profile');
+    const handleAbout = () => navigate('/about');
+    const handleRewindNav = () => navigate('/rewind');
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -142,9 +115,7 @@ function Home() {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 setEntries(res.data);
-            } catch (err) { 
-                console.error("Failed to load journals", err); 
-            }
+            } catch (err) { console.error("Failed to load journals", err); }
         };
         loadEntries();
     }, [isJournaling]); 
@@ -187,10 +158,8 @@ function Home() {
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername"); 
         const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId"); 
-
         const newEntryData = {
-            userId: userId, 
-            username: username, 
+            userId, username,
             journalTitle: journalData.title,
             content: journalData.content,
             mood: journalData.mood,
@@ -209,12 +178,7 @@ function Home() {
             setSelectedSong(null);
         } catch (err) {
             console.error("Error saving entry:", err);
-            setModal({
-                show: true,
-                title: "Error",
-                message: "Could not save your entry. Please try again.",
-                type: "alert"
-            });
+            setModal({ show: true, title: "Error", message: "Could not save entry.", type: "alert" });
         }
     };
 
@@ -233,9 +197,6 @@ function Home() {
         return () => clearTimeout(debounce);
     }, [searchQuery]);
 
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-
     return (
         <div className="nt-container">
             {modal.show && (
@@ -246,58 +207,37 @@ const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
                         <div className="modal-actions">
                             {modal.type === "rewind" ? (
                                 <>
-                                    <button className="modal-btn-primary" onClick={() => handleCloseRewindModal(true)}>
-                                        VISIT
-                                    </button>
-                                    <button className="modal-btn-secondary" onClick={() => handleCloseRewindModal(false)}>
-                                        NOT NOW
-                                    </button>
+                                    <button className="modal-btn-primary" onClick={() => handleCloseRewindModal(true)}>VISIT</button>
+                                    <button className="modal-btn-secondary" onClick={() => handleCloseRewindModal(false)}>NOT NOW</button>
                                 </>
                             ) : (
-                                <>
-                                    <button className="modal-btn-primary" onClick={() => setModal({ ...modal, show: false })}>
-                                        {modal.type === "confirm" ? "KEEP EDITING" : "OKAY"}
-                                    </button>
-                                    {modal.type === "confirm" && (
-                                        <button className="modal-btn-secondary" onClick={() => setModal({ ...modal, show: false })}>
-                                            DISCARD
-                                        </button>
-                                    )}
-                                </>
+                                <button className="modal-btn-primary" onClick={() => setModal({ ...modal, show: false })}>OKAY</button>
                             )}
                         </div>
                     </div>
                 </div>
             )}
 
-            {isJournaling && (
-                <Journal selectedSong={selectedSong} onClose={() => setIsJournaling(false)} onSave={saveNewEntry} />
-            )}
-
-            {viewingEntry && (
-                <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />
-            )}
+            {isJournaling && <Journal selectedSong={selectedSong} onClose={() => setIsJournaling(false)} onSave={saveNewEntry} />}
+            {viewingEntry && <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />}
 
             <nav className="nt-navbar">
-                {/* Hamburger Menu (Mobile Only) */}
                 <div className="nt-mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</div>
-    
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
-    
-                {/* Navigation Links (Desktop + Mobile Menu Dropdown) */}
+                
                 <div className={`nt-nav-links-wrapper ${isMobileMenuOpen ? 'mobile-active' : ''}`}>
-    <div className="nt-nav-note" onClick={() => { handleRewindNav(); setIsMobileMenuOpen(false); }}>Rhythm Rewind</div>
-    <div className="nt-nav-note" onClick={() => { navigate('/send-song'); setIsMobileMenuOpen(false); }}>Send a SonG</div>
-    <div className="nt-nav-note" onClick={() => { navigate('/daily'); setIsMobileMenuOpen(false); }}>Daily Aux</div>
-    <div className="nt-nav-note" onClick={() => { setShowArchives(true); setIsMobileMenuOpen(false); }}>Archive</div>
-</div>
+                    <div className="nt-nav-note" onClick={() => { handleRewindNav(); setIsMobileMenuOpen(false); }}>Rhythm Rewind</div>
+                    <div className="nt-nav-note" onClick={() => { navigate('/send-song'); setIsMobileMenuOpen(false); }}>Send a SonG</div>
+                    <div className="nt-nav-note" onClick={() => { navigate('/daily'); setIsMobileMenuOpen(false); }}>Daily Aux</div>
+                    <div className="nt-nav-note" onClick={() => { setShowArchives(true); setIsMobileMenuOpen(false); }}>Archive</div>
+                </div>
 
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
                         <div className={`nt-search-bar ${isMobileSearchOpen ? 'active' : ''}`} onClick={() => setIsMobileSearchOpen(true)}>
-                <span className="search-icon">🔍</span>
-                <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-            </div>
+                            <span className="search-icon">🔍</span>
+                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                        </div>
                         {results.length > 0 && (
                             <div className="nt-search-dropdown">
                                 {results.map((track) => (
@@ -313,18 +253,18 @@ const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
                         )}
                     </div>
                     <div className="nt-profile-container" ref={dropdownRef}>
-            <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
-                {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
-            </div>
-            {showProfileDropdown && (
-                <div className="nt-profile-dropdown">
-                    <button onClick={handleHome}>HOME</button>
-                    <button onClick={handleProfile}>PROFILE</button>
-                    <button onClick={handleAbout}>ABOUT</button>
-                    <button onClick={handleLogout}>LOGOUT</button>
-                </div>
-            )}
-        </div>
+                        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                            {profilePic ? <img src={profilePic} alt="Profile" /> : "👤"}
+                        </div>
+                        {showProfileDropdown && (
+                            <div className="nt-profile-dropdown">
+                                <button onClick={handleHome}>HOME</button>
+                                <button onClick={handleProfile}>PROFILE</button>
+                                <button onClick={handleAbout}>ABOUT</button>
+                                <button onClick={handleLogout}>LOGOUT</button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 
@@ -361,7 +301,7 @@ const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
                                             <span className="nt-date">{entry.journalTitle || "Untitled Entry"}</span>
                                             {entry.mood && <span className="nt-vibe-tag">{entry.mood}</span>}
                                         </div>
-                                        <p className="nt-song-info">{new Date(entry.createdAt).toLocaleDateString()} • {entry.songDetails?.title} - {entry.songDetails?.artist}</p>
+                                        <p className="nt-song-info">{new Date(entry.createdAt).toLocaleDateString()} • {entry.songDetails?.title}</p>
                                     </div>
                                 </div>
                             ))}
