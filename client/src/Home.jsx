@@ -233,6 +233,35 @@ function Home() {
         return () => clearTimeout(debounce);
     }, [searchQuery]);
 
+    // Add this state
+const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+// Inside your return()
+<nav className="nt-navbar">
+    <div className="nt-profile-container" ref={dropdownRef}>
+        <div className="nt-profile-circle" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+             {profilePic ? <img src={profilePic} alt="P" /> : "👤"}
+        </div>
+    </div>
+    
+    <h1 className="nt-logo" onClick={handleHome}>STILL</h1>
+
+    <div className="nt-nav-right">
+        <div className="nt-search-container">
+            {/* Search Input remains the same */}
+        </div>
+        <div className="nt-hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>☰</div>
+    </div>
+    
+    {isMenuOpen && (
+        <div className="nt-mobile-menu">
+            <button onClick={handleRewindNav}>Rhythm Rewind</button>
+            <button onClick={() => navigate('/send-song')}>Send a Song</button>
+            <button onClick={() => navigate('/daily')}>Daily Aux</button>
+        </div>
+    )}
+</nav>
+
     return (
         <div className="nt-container">
             {modal.show && (

@@ -578,3 +578,41 @@ html, body {
     to { transform: translateY(0); opacity: 1; }
 }
 
+@media (max-width: 768px) {
+    /* 1. Navbar Mobile Layout */
+    .nt-navbar {
+        justify-content: space-between;
+        padding: 1rem;
+    }
+
+    .nt-nav-links-wrapper { display: none; } /* Hide desktop links */
+
+    .nt-nav-right { display: flex; align-items: center; gap: 10px; }
+
+    .nt-hamburger { display: block; font-size: 1.5rem; cursor: pointer; }
+
+    .nt-mobile-menu {
+        position: absolute; top: 70px; right: 20px;
+        background: #1e1e1e; padding: 20px; border-radius: 15px;
+        display: flex; flex-direction: column; gap: 15px;
+    }
+
+    /* 2. Hero & Content Centering */
+    .nt-hero, .nt-main {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nt-welcome { font-size: 2rem; }
+
+    /* 3. ReadJournal / Grid Layout */
+    .nt-grid {
+        grid-template-columns: 1fr; /* Stack cards vertically */
+        width: 90%;
+    }
+
+    /* 4. Archive placement */
+    /* Ensure your Archive component in JSX is placed after the grid */
+}
