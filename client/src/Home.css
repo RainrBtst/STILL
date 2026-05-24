@@ -577,3 +577,73 @@ html, body {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* --- IPHONE 14 & MOBILE RESPONSIVENESS --- */
+@media (max-width: 480px) {
+  .nt-container {
+    padding: 0 1rem 1rem 1rem;
+  }
+
+  /* Navbar Adjustments */
+  .nt-navbar {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .nt-nav-links-wrapper {
+    position: static; /* Remove absolute positioning */
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+  }
+
+  .nt-nav-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Hero Adjustments */
+  .nt-welcome {
+    font-size: 2rem;
+  }
+
+  .nt-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Player Card - Make it stack better */
+  .nt-player-card {
+    flex-direction: column;
+    text-align: center;
+    max-width: 90%;
+  }
+
+  .nt-player-details {
+    text-align: center;
+  }
+
+  .nt-player-details audio {
+    width: 100%;
+  }
+
+  /* Grid Adjustments */
+  .nt-grid {
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 1rem;
+  }
+
+  /* Search Bar Adjustments */
+  .nt-search-bar {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .nt-search-dropdown {
+    width: 90vw;
+    right: 5vw;
+  }
+}
