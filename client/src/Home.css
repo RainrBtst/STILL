@@ -579,31 +579,37 @@ html, body {
 }
 
 
-/* Mobile Menu Toggle - Hidden on Desktop */
-.nt-mobile-menu-toggle { display: none; font-size: 2rem; cursor: pointer; }
+/* --- RESPONSIVE UPDATES --- */
+.nt-mobile-menu-toggle { display: none; font-size: 2rem; cursor: pointer; color: #FAEF5D; }
 
 @media (max-width: 768px) {
-    /* 1. Hamburger Menu Logic */
     .nt-mobile-menu-toggle { display: block; }
+    
     .nt-nav-links-wrapper {
-        display: none; position: absolute; top: 70px; left: 0; width: 100%;
-        background: #181818; flex-direction: column; padding: 20px; gap: 20px; z-index: 100;
+        display: none;
+        position: absolute;
+        top: 80px; left: 0; width: 100%;
+        background: #121212;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 20px;
+        z-index: 999;
+        border-bottom: 1px solid #333;
     }
     .nt-nav-links-wrapper.active { display: flex; }
 
-    /* 2. Search Bar Icon-only Logic */
-    .nt-search-bar input { display: none; width: 0; transition: 0.3s; }
-    .nt-search-container.active input { display: block; width: 150px; }
+    /* Search Icon Only */
+    .nt-search-bar input { display: none; }
+    .nt-search-container.active .nt-search-bar input { display: block; width: 120px; }
 
-    /* 3. Headers to middle */
+    /* Centered Text */
     .nt-hero { text-align: center; }
-
-    /* 4. ReadJournal (Grid) to 2 columns */
-    .nt-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    
+    /* 2 Columns for Grid */
+    .nt-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1rem !important; }
 }
 
-/* Ensure Search bar stays visible on desktop */
 @media (min-width: 769px) {
-    .nt-search-bar input { display: block !important; }
-    .nt-mobile-menu-toggle { display: none !important; }
+    .nt-nav-links-wrapper { display: flex !important; position: static !important; }
 }
