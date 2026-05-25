@@ -90,16 +90,17 @@ html, body {
 
 /* --- MAIN AUX DASHBOARD LAYOUT SCHEME --- */
 .aux-dashboard-wrapper {
-  display: flex;
-    flex-direction: column; /* Ginawa nating vertical stack */
-    max-width: 900px;       /* Pinaliit ang total width para hindi masyadong malapad */
+ display: flex;
+    flex-direction: row; /* Balik sa row para magkatabi sila */
+    max-width: 1350px;
     margin: 0 auto;
     gap: 30px;
     width: 100%;
 }
 
 .aux-dashboard-left {
-   width: 100%;
+   flex: 2; /* Mas maliit na portion sa layout */
+    max-width: 700px;
 }
 
 .aux-dashboard-header-row {
@@ -218,10 +219,9 @@ html, body {
 
 /* Grid System Configuration */
 .aux-grid-tracks-system {
-   display: grid;
-    grid-template-columns: 1fr; /* 1 column na lang */
+  display: grid;
+    grid-template-columns: 1fr; /* 1 column lang para compact */
     gap: 16px;
-    width: 100%;
 }
 
 .aux-grid-card-item {
@@ -375,10 +375,10 @@ html, body {
 
 /* Sidebar Module Panels */
 .aux-dashboard-right-sidebar {
+    flex: 1;
     width: 100%;
-    max-width: 400px;       /* Control ang laki ng box */
-    align-self: flex-end;    /* Dito natin ilalagay sa kanan */
-    margin-top: 20px;
+    max-width: 350px;
+    margin-top: 50px; /* Adjust para magkapantay sila sa itaas */
 }
 
 .vote-status-sticky-panel {
@@ -546,7 +546,7 @@ html, body {
 
 /* 1. Bawasan ang width ng playlist cards para maging mas compact */
 .aux-grid-card-item {
-    max-width: 95%;
+   width: 100%;
 }
 
 /* 2. I-align ang search bar sa left (katapat ng Send a Song/Header) */
