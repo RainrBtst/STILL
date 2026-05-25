@@ -578,312 +578,72 @@ html, body {
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* ========================================================= */
-/* PREMIUM MOBILE RESPONSIVE DESIGN */
-/* ========================================================= */
-
-.nt-hamburger {
-    display: none;
-}
-
-.nt-mobile-search-icon {
-    display: none;
-}
-
-.nt-mobile-menu {
-    display: none;
-}
-
-/* ========================================================= */
-/* TABLETS */
-/* ========================================================= */
-
-@media screen and (max-width: 1024px) {
-
-    .nt-container {
-        padding: 0 1.5rem 2rem 1.5rem;
-    }
-
-    .nt-welcome {
-        font-size: 2.8rem;
-        line-height: 1.1;
-    }
-
-    .nt-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .nt-nav-links-wrapper {
-        gap: 25px;
-    }
-}
-
-/* ========================================================= */
-/* MOBILE */
-/* ========================================================= */
-
+/* --- MOBILE RESPONSIVE OPTIMIZATIONS --- */
 @media screen and (max-width: 768px) {
-
     .nt-container {
         padding: 0 1rem 2rem 1rem;
-        overflow-x: hidden;
     }
 
     .nt-navbar {
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        backdrop-filter: blur(20px);
-        background: rgba(18, 18, 18, 0.92);
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .nt-mobile-left {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-    }
-
-    .nt-hamburger {
-        display: flex;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: white;
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        backdrop-filter: blur(12px);
-        transition: 0.3s ease;
-    }
-
-    .nt-hamburger:hover {
-        border-color: #FAEF5D;
-        transform: scale(1.05);
-    }
-
-    .nt-logo {
-        font-size: 1.8rem;
-        letter-spacing: -1px;
-    }
-
-    /* HIDE DESKTOP NAV */
-    .nt-nav-links-wrapper {
-        display: none;
-    }
-
-    /* HIDE DESKTOP SEARCH */
-    .desktop-search {
-        display: none;
-    }
-
-    /* MOBILE SEARCH ICON */
-    .nt-mobile-search-icon {
-        display: flex;
-        width: 42px;
-        height: 42px;
-        background: rgba(255,255,255,0.06);
-        border-radius: 14px;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.1rem;
-        border: 1px solid rgba(255,255,255,0.08);
-        cursor: pointer;
-        transition: 0.3s ease;
-    }
-
-    .nt-mobile-search-icon:hover {
-        border-color: #FAEF5D;
-    }
-
-    .nt-nav-actions {
-        gap: 12px;
-    }
-
-    .nt-profile-circle {
-        width: 42px;
-        height: 42px;
-        font-size: 1.2rem;
-        border-radius: 14px;
-    }
-
-    /* MOBILE MENU */
-    .nt-mobile-menu {
-        display: flex;
         flex-direction: column;
-        position: absolute;
-        top: 90px;
-        left: 0;
-        right: 0;
-        margin: auto;
-        width: calc(100% - 2rem);
-        background: rgba(25,25,25,0.98);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 24px;
-        padding: 15px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        animation: mobileMenuFade 0.25s ease;
+        gap: 1.5rem;
+        padding-top: 1rem;
     }
 
-    .nt-mobile-menu-item {
-        padding: 16px 18px;
-        border-radius: 16px;
-        color: white;
-        font-weight: 600;
-        transition: 0.25s ease;
-        cursor: pointer;
-    }
-
-    .nt-mobile-menu-item:hover {
-        background: rgba(250,239,93,0.08);
-        color: #FAEF5D;
-    }
-
-    /* HERO */
-    .nt-hero {
-        margin-top: 2rem;
-        margin-bottom: 4rem;
+    .nt-nav-links-wrapper {
+        position: relative;
+        left: auto;
+        transform: none;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
     }
 
     .nt-welcome {
-        font-size: 2.3rem;
-        line-height: 1.05;
-        margin-bottom: 1rem !important;
+        font-size: 2.2rem;
+        line-height: 1.2;
     }
 
     .nt-subtitle {
         font-size: 1rem;
-        margin-bottom: 2.5rem !important;
+        margin-bottom: 2rem !important;
     }
 
-    .nt-btn-primary {
-        width: 100%;
-        max-width: 350px;
-        font-size: 1rem;
-        padding: 1rem;
-    }
-
-    /* PLAYER */
     .nt-player-card {
         flex-direction: column;
         text-align: center;
-        padding: 1.3rem;
         gap: 15px;
-        border-radius: 24px;
     }
 
-    .nt-player-details {
-        text-align: center;
-    }
-
-    .nt-player-details h3 {
-        font-size: 1rem;
-    }
-
-    .nt-player-details p {
-        font-size: 0.85rem;
-    }
-
-    .nt-custom-play {
-        justify-content: center;
+    .nt-player-details audio {
         width: 100%;
     }
 
-    /* GRID */
     .nt-grid {
         grid-template-columns: 1fr;
-        gap: 1.3rem;
+        gap: 1.5rem;
     }
 
-    .nt-card {
-        border-radius: 24px;
-        padding: 1rem;
-    }
-
-    .nt-card-content {
-        padding-top: 5px;
-    }
-
-    .nt-date {
-        font-size: 1rem;
-    }
-
-    .nt-song-info {
-        font-size: 0.8rem;
-        line-height: 1.5;
-    }
-
-    /* SEARCH DROPDOWN */
     .nt-search-dropdown {
-        width: 92vw;
-        left: 50% !important;
-        transform: translateX(-50%);
-        top: 60px;
-        border-radius: 20px;
+        width: 90vw;
+        right: 5vw;
+        left: auto !important;
     }
 
-    /* MODALS */
-    .still-modal-card {
-        width: calc(100% - 2rem);
-        padding: 2rem 1.5rem;
-        border-radius: 28px;
-    }
-
-    .modal-title {
-        font-size: 1.5rem;
-    }
-
-    .modal-message {
-        font-size: 0.95rem;
+    .nt-search-bar input {
+        width: 120px;
     }
 }
 
-/* ========================================================= */
-/* SMALL PHONES */
-/* ========================================================= */
-
-@media screen and (max-width: 480px) {
-
-    .nt-welcome {
-        font-size: 2rem;
-    }
-
-    .nt-logo {
-        font-size: 1.6rem;
-    }
-
-    .nt-btn-primary {
-        font-size: 0.95rem;
-    }
-
-    .nt-player-card img {
-        width: 70px;
-        height: 70px;
-    }
-
-    .nt-card {
-        padding: 0.9rem;
-    }
+/* Ensure images don't overflow on small screens */
+img {
+    max-width: 100%;
+    height: auto;
 }
 
-/* ========================================================= */
-/* ANIMATIONS */
-/* ========================================================= */
-
-@keyframes mobileMenuFade {
-
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Improve touch targets for mobile */
+button, .nt-nav-note, .nt-card {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
