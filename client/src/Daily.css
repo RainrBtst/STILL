@@ -90,15 +90,16 @@ html, body {
 
 /* --- MAIN AUX DASHBOARD LAYOUT SCHEME --- */
 .aux-dashboard-wrapper {
-    display: flex;
-    max-width: 1350px;
+  display: flex;
+    flex-direction: column; /* Ginawa nating vertical stack */
+    max-width: 900px;       /* Pinaliit ang total width para hindi masyadong malapad */
     margin: 0 auto;
     gap: 30px;
     width: 100%;
 }
 
 .aux-dashboard-left {
-    flex: 1;
+   width: 100%;
 }
 
 .aux-dashboard-header-row {
@@ -217,9 +218,10 @@ html, body {
 
 /* Grid System Configuration */
 .aux-grid-tracks-system {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+   display: grid;
+    grid-template-columns: 1fr; /* 1 column na lang */
     gap: 16px;
+    width: 100%;
 }
 
 .aux-grid-card-item {
@@ -373,7 +375,10 @@ html, body {
 
 /* Sidebar Module Panels */
 .aux-dashboard-right-sidebar {
-    width: 280px;
+    width: 100%;
+    max-width: 400px;       /* Control ang laki ng box */
+    align-self: flex-end;    /* Dito natin ilalagay sa kanan */
+    margin-top: 20px;
 }
 
 .vote-status-sticky-panel {
