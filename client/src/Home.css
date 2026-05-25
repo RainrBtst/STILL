@@ -577,3 +577,33 @@ html, body {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+
+/* Mobile Menu Toggle - Hidden on Desktop */
+.nt-mobile-menu-toggle { display: none; font-size: 2rem; cursor: pointer; }
+
+@media (max-width: 768px) {
+    /* 1. Hamburger Menu Logic */
+    .nt-mobile-menu-toggle { display: block; }
+    .nt-nav-links-wrapper {
+        display: none; position: absolute; top: 70px; left: 0; width: 100%;
+        background: #181818; flex-direction: column; padding: 20px; gap: 20px; z-index: 100;
+    }
+    .nt-nav-links-wrapper.active { display: flex; }
+
+    /* 2. Search Bar Icon-only Logic */
+    .nt-search-bar input { display: none; width: 0; transition: 0.3s; }
+    .nt-search-container.active input { display: block; width: 150px; }
+
+    /* 3. Headers to middle */
+    .nt-hero { text-align: center; }
+
+    /* 4. ReadJournal (Grid) to 2 columns */
+    .nt-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+}
+
+/* Ensure Search bar stays visible on desktop */
+@media (min-width: 769px) {
+    .nt-search-bar input { display: block !important; }
+    .nt-mobile-menu-toggle { display: none !important; }
+}

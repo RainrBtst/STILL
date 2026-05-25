@@ -233,6 +233,10 @@ function Home() {
         return () => clearTimeout(debounce);
     }, [searchQuery]);
 
+    // Add these to your state definitions
+const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const [isSearchVisible, setIsSearchVisible] = useState(false);
+
     return (
         <div className="nt-container">
             {modal.show && (
@@ -276,24 +280,20 @@ function Home() {
             )}
 
             <nav className="nt-navbar">
+                <div className="nt-mobile-menu-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>☰</div>
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
-                <div className="nt-nav-links-wrapper">
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
-                        <span>Rhythm Rewind</span>
-                    </div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
-                        <span>Send a SonG</span>
-                    </div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/daily')} >
-                        <span>Daily Aux</span>
-                    </div>
-                </div>
+               <div className={`nt-nav-links-wrapper ${isMobileMenuOpen ? 'active' : ''}`}>
+        <div className="nt-nav-note" onClick={handleRewindNav} ><span>Rhythm Rewind</span></div>
+        <div className="nt-nav-note" onClick={() => navigate('/send-song')} ><span>Send a SonG</span></div>
+        <div className="nt-nav-note" onClick={() => navigate('/daily')} ><span>Daily Aux</span></div>
+        <div className="nt-nav-note" onClick={() => setShowArchives(true)}><span>Archive</span></div>
+    </div>
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
-                        <div className="nt-search-bar">
-                            <span className="search-icon">🔍</span>
-                            <input type="text" placeholder="Search Songs..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                        </div>
+                        <div className={`nt-search-container ${isSearchVisible ? 'active' : ''}`}>
+            <span className="search-icon" onClick={() => setIsSearchVisible(!isSearchVisible)}>🔍</span>
+            <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+        </div>
                         {results.length > 0 && (
                             <div className="nt-search-dropdown">
                                 {results.map((track) => (
