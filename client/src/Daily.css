@@ -538,3 +538,19 @@ html, body {
     cursor: pointer;
     text-transform: uppercase;
 }
+
+/* 1. Bawasan ang width ng playlist cards para maging mas compact */
+.aux-grid-card-item {
+    max-width: 95%;
+}
+
+/* 2. I-align ang search bar sa left (katapat ng Send a Song/Header) */
+.aux-search-input-field-wrapper {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* 3. I-move ang voting status box nang kaunti sa left */
+.aux-dashboard-right-sidebar {
+    margin-left: -20px;
+}
