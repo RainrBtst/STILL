@@ -27,26 +27,38 @@ function Home() {
     const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic"));
     const [modal, setModal] = useState({ show: false, title: "", message: "", type: "" });
 
+    // Helper to calculate a true, bulletproof calendar week key
     const getWeekKey = () => {
         const now = new Date();
         const startOfYear = new Date(now.getFullYear(), 0, 1);
         const pastDaysOfYear = (now - startOfYear) / 86400000;
         const trueWeekNumber = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+       
         return `seenRewind_Year${now.getFullYear()}_Week${trueWeekNumber}`;
     };
 
+    // --- 1. RHYTHM REWIND MODAL LOGIC (UPDATED ACCESS LOGIC) ---
     useEffect(() => {
         const checkRewindAvailability = () => {
             const now = new Date();
             const weekKey = getWeekKey();
+           
+            // Check if user has already dismissed/visited this modal THIS week
             const hasSeenRewind = localStorage.getItem(weekKey);
             if (hasSeenRewind === "true") return;
+
             const day = now.getDay();
             const hours = now.getHours();
             const minutes = now.getMinutes();
+
+            // Match active time matrix constraints
             const currentAbsoluteMinutes = (day * 24 * 60) + (hours * 60) + minutes;
-            const unlockTime = (0 * 24 * 60) + (23 * 60) + 59;
-            const lockTime = (1 * 24 * 60) + (23 * 60) + 59;
+           
+            // Tight release window: Triggers precisely at Sunday 11:59 PM (Day 0)
+            // and remains active through the end of Monday (Day 1) to allow visibility upon login.
+            const unlockTime = (0 * 24 * 60) + (23 * 60) + 59; // Sunday 11:59 PM
+            const lockTime = (1 * 24 * 60) + (23 * 60) + 59;   // Monday 11:59 PM
+
             if (currentAbsoluteMinutes >= unlockTime && currentAbsoluteMinutes <= lockTime) {
                 setModal({
                     show: true,
@@ -56,30 +68,50 @@ function Home() {
                 });
             }
         };
+
         checkRewindAvailability();
-        const interval = setInterval(checkRewindAvailability, 60000);
+        const interval = setInterval(checkRewindAvailability, 60000); // Check every 60 seconds
         return () => clearInterval(interval);
     }, []);
 
+    // Helper to close rewind modal and save preference to localStorage using Week Key
     const handleCloseRewindModal = (shouldNavigate) => {
         const weekKey = getWeekKey();
         localStorage.setItem(weekKey, "true");
         setModal(prev => ({ ...prev, show: false }));
-        if (shouldNavigate) { navigate('/rewind'); }
+        if (shouldNavigate) {
+            navigate('/rewind');
+        }
     };
 
     const handleLogout = () => {
         const weekKey = getWeekKey();
         const seenValue = localStorage.getItem(weekKey);
+       
         localStorage.clear();
-        if (seenValue) { localStorage.setItem(weekKey, String(seenValue)); }
+       
+        // Re-inject the seen tracking value back to ensure persistent state
+        if (seenValue) {
+            localStorage.setItem(weekKey, String(seenValue));
+        }
         window.location.href = '/login';
     };
 
-    const handleHome = () => setShowArchives(false);
-    const handleProfile = () => navigate('/profile');
-    const handleAbout = () => navigate('/about');
-    const handleRewindNav = () => navigate('/rewind');
+    const handleHome = () => {
+        setShowArchives(false);
+    };
+
+    const handleProfile = () => {
+        navigate('/profile');
+    };
+
+    const handleAbout = () => {
+        navigate('/about');
+    };
+
+    const handleRewindNav = () => {
+        navigate('/rewind');
+    };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -110,7 +142,9 @@ function Home() {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 setEntries(res.data);
-            } catch (err) { console.error("Failed to load journals", err); }
+            } catch (err) {
+                console.error("Failed to load journals", err);
+            }
         };
         loadEntries();
     }, [isJournaling]);
@@ -134,7 +168,12 @@ function Home() {
 
     const handleStartEntry = () => {
         if (!selectedSong) {
-            setModal({ show: true, title: "No Song Selected", message: "Please search and choose a song before starting your journey.", type: "alert" });
+            setModal({
+                show: true,
+                title: "No Song Selected",
+                message: "Please search and choose a song before starting your journey.",
+                type: "alert"
+            });
             return;
         }
         if (audioRef.current) {
@@ -148,6 +187,7 @@ function Home() {
     const saveNewEntry = async (journalData) => {
         const username = localStorage.getItem("currentUsername");
         const userId = localStorage.getItem("currentUserId") || localStorage.getItem("userId");
+
         const newEntryData = {
             userId: userId,
             username: username,
@@ -161,6 +201,7 @@ function Home() {
                 previewUrl: selectedSong.previewUrl
             }
         };
+
         try {
             const response = await axios.post(`${API_BASE_URL}/api/journals`, newEntryData);
             setEntries(prev => [response.data, ...prev]);
@@ -168,7 +209,12 @@ function Home() {
             setSelectedSong(null);
         } catch (err) {
             console.error("Error saving entry:", err);
-            setModal({ show: true, title: "Error", message: "Could not save your entry. Please try again.", type: "alert" });
+            setModal({
+                show: true,
+                title: "Error",
+                message: "Could not save your entry. Please try again.",
+                type: "alert"
+            });
         }
     };
 
@@ -197,8 +243,12 @@ function Home() {
                         <div className="modal-actions">
                             {modal.type === "rewind" ? (
                                 <>
-                                    <button className="modal-btn-primary" onClick={() => handleCloseRewindModal(true)}>VISIT</button>
-                                    <button className="modal-btn-secondary" onClick={() => handleCloseRewindModal(false)}>NOT NOW</button>
+                                    <button className="modal-btn-primary" onClick={() => handleCloseRewindModal(true)}>
+                                        VISIT
+                                    </button>
+                                    <button className="modal-btn-secondary" onClick={() => handleCloseRewindModal(false)}>
+                                        NOT NOW
+                                    </button>
                                 </>
                             ) : (
                                 <>
@@ -206,7 +256,9 @@ function Home() {
                                         {modal.type === "confirm" ? "KEEP EDITING" : "OKAY"}
                                     </button>
                                     {modal.type === "confirm" && (
-                                        <button className="modal-btn-secondary" onClick={() => setModal({ ...modal, show: false })}>DISCARD</button>
+                                        <button className="modal-btn-secondary" onClick={() => setModal({ ...modal, show: false })}>
+                                            DISCARD
+                                        </button>
                                     )}
                                 </>
                             )}
@@ -214,15 +266,27 @@ function Home() {
                     </div>
                 </div>
             )}
-            {isJournaling && <Journal selectedSong={selectedSong} onClose={() => setIsJournaling(false)} onSave={saveNewEntry} />}
-            {viewingEntry && <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />}
-            
+
+            {isJournaling && (
+                <Journal selectedSong={selectedSong} onClose={() => setIsJournaling(false)} onSave={saveNewEntry} />
+            )}
+
+            {viewingEntry && (
+                <ReadJournal selectedSong={viewingEntry} existingData={viewingEntry} onClose={() => setViewingEntry(null)} />
+            )}
+
             <nav className="nt-navbar">
                 <h1 className="nt-logo" style={{cursor: 'pointer'}} onClick={handleHome}>STILL</h1>
                 <div className="nt-nav-links-wrapper">
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav}><span>Rhythm Rewind</span></div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')}><span>Send a SonG</span></div>
-                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/daily')}><span>Daily Aux</span></div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={handleRewindNav} >
+                        <span>Rhythm Rewind</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/send-song')} >
+                        <span>Send a SonG</span>
+                    </div>
+                    <div className="nt-nav-note" style={{cursor: 'pointer'}} onClick={() => navigate('/daily')} >
+                        <span>Daily Aux</span>
+                    </div>
                 </div>
                 <div className="nt-nav-actions">
                     <div className="nt-search-container">
